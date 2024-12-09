@@ -20,7 +20,7 @@ El proyecto está organizado de la siguiente manera:
 - `views/`: Archivos para generar las vistas y proporcionar una interfaz al usuario.
 - `index.php`: Archivo principal que sirve como punto de entrada al sitio web.
 
-## 🛠️ Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
 - **HTML5** y **CSS3**: Estructura y diseño del sitio.
 - **JavaScript**: Funcionalidades interactivas.
