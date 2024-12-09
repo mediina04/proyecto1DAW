@@ -7,7 +7,7 @@ Este proyecto representa un restaurante ficticio especializado en platos a base 
 
 Polbeiro es un restaurante especializado en ofrecer una experiencia gastronómica única centrada en platos elaborados con pulpo. 
 El objetivo principal del proyecto es desarrollar una página web funcional y estéticamente agradable que refleje la esencia del restaurante, 
-brindando una experiencia de usuario excelente. Esta pagina emula la pagina de un marca de ropa española como www.fakegods.com
+brindando una experiencia de usuario excelente. Esta pagina emula la pagina de un marca de ropa española como https://fakegodsbrand.com
 
 ## Estructura del Proyecto
 
