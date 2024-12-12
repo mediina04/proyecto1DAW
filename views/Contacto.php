@@ -8,21 +8,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Polbeiro</title>
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="Assets/css/styles.css">
 </head>
 <body>
     <!-- Encabezado -->
     <header class="header">
         <div class="nav">
             <ul class="menu">
-                <li><a href="Inicio.html">INICIO</a></li>
-                <li><a href="Nuestra-Carta.html">NUESTRA CARTA</a></li>
-                <li><a href="Restaurante.html">RESTAURANTE</a></li>
-                <li><a href="Contacto.html">CONTACTO</a></li>
+                <li><a href="Inicio.php">INICIO</a></li>
+                <li><a href="Nuestra-Carta.php">NUESTRA CARTA</a></li>
+                <li><a href="Restaurante.php">RESTAURANTE</a></li>
+                <li><a href="Contacto.php">CONTACTO</a></li>
             </ul>
             <div class="logo">
-                <a href="Inicio.html">
-                    <img src="IMG/ICONOS/HEADER/logo-polbeiro.png" alt="Logo Polbeiro">
+                <a href="Inicio.php">
+                    <img src="assets/img/ICONOS/HEADER/logo-polbeiro.png" alt="Logo Polbeiro">
                 </a>
             </div>
             
@@ -32,11 +32,11 @@
                 
                 <!-- Etiqueta para el icono de la lupa, actuará como botón -->
                 <label for="search-toggle">
-                    <img src="IMG/ICONOS/HEADER/icon-lupa.png" alt="Buscar" class="icon">
+                    <img src="assets/img/ICONOS/HEADER/icon-lupa.png" alt="Buscar" class="icon">
                 </label>
 
-                <a href="Cesta.html">
-                    <img src="IMG/ICONOS/HEADER/icon-cesta.png" alt="Cesta" class="icon">
+                <a href="Cesta.php">
+                    <img src="assets/img/ICONOS/HEADER/icon-cesta.png" alt="Cesta" class="icon">
                 </a>
             </div>
         </div>
@@ -63,15 +63,15 @@
         <div class="contact-container">
             <div class="contact-info">
                 <div class="contact-item">
-                    <img src="IMG/ICONOS/CONTACTO/icon-mail.png" alt="Email" class="contact-icon">
+                    <img src="Assets/IMG/ICONOS/CONTACTO/icon-mail.png" alt="Email" class="contact-icon">
                     <a href="mailto:polbeiroContacto@gmail.com">polbeiroContacto@gmail.com</a>
                 </div>
                 <div class="contact-item">
-                    <img src="IMG/ICONOS/CONTACTO/icon-direccion.png" alt="Ubicación" class="contact-icon">
+                    <img src="Assets/IMG/ICONOS/CONTACTO/icon-direccion.png" alt="Ubicación" class="contact-icon">
                     <p>Carrer Nostra Senyora de Lourdes, 34, Molins de Rei</p>
                 </div>
                 <div class="contact-item">
-                    <img src="IMG/ICONOS/CONTACTO/icon-mobile.png" alt="Teléfono" class="contact-icon">
+                    <img src="Assets/IMG/ICONOS/CONTACTO/icon-mobile.png" alt="Teléfono" class="contact-icon">
                     <p>+34 689 75 31 24</p>
                 </div>
             </div>
@@ -107,22 +107,22 @@
                 <p>Suscríbete a nuestra newsletter y recibe tu primer pedido gratis</p>
                 <form class="subscribe-form">
                     <div class="input-group">
-                        <input type="email" id="email" required placeholder="">
+                        <input type="email" id="email" required placeholder=" ">
                         <label for="email">Correo electrónico</label>
                     </div>
                     <button type="submit">SUSCRIBIRSE</button>
     
                     <!-- Logo y redes sociales -->
                     <div class="logo">
-                        <img src="IMG/ICONOS/HEADER/logo-polbeiro.png" alt="Polbeiro Logo">
+                        <img src="assets/img/ICONOS/HEADER/logo-polbeiro.png" alt="Polbeiro Logo">
                     </div>
                     
                     <div class="social-icons">
-                        <a href="#"><img src="IMG/ICONOS/REDES/icon-instagram.png" alt="Instagram"></a>
-                        <a href="#"><img src="IMG/ICONOS/REDES/icon-pinterest.png" alt="Pinterest"></a>
-                        <a href="#"><img src="IMG/ICONOS/REDES/icon-youtube.png" alt="YouTube"></a>
-                        <a href="#"><img src="IMG/ICONOS/REDES/icon-tiktok.png" alt="TikTok"></a>
-                        <a href="#"><img src="IMG/ICONOS/REDES/icon-whatsapp.png" alt="WhatsApp"></a>
+                        <a href="#"><img src="assets/img/ICONOS/REDES/icon-instagram.png" alt="Instagram"></a>
+                        <a href="#"><img src="assets/img/ICONOS/REDES/icon-pinterest.png" alt="Pinterest"></a>
+                        <a href="#"><img src="assets/img/ICONOS/REDES/icon-youtube.png" alt="YouTube"></a>
+                        <a href="#"><img src="assets/img/ICONOS/REDES/icon-tiktok.png" alt="TikTok"></a>
+                        <a href="#"><img src="assets/img/ICONOS/REDES/icon-whatsapp.png" alt="WhatsApp"></a>
                     </div>
                 </form>
             </div>

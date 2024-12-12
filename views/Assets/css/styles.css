@@ -763,8 +763,8 @@ body {
 .contact-button {
     background-color: #000096;
     color: #FFFFFF;
-    padding: 12px 28px;
-    font-size: 12px;
+    padding: 0.8em 2em; /* Usar valores relativos para escalabilidad */
+    font-size: 1em;
     font-family: 'Archivo', sans-serif;
     cursor: pointer;
     border: 2px solid transparent;
@@ -774,7 +774,6 @@ body {
     transition: color 0.3s, border-color 0.3s; 
     z-index: 1; 
 }
-
 
 /* Efecto deslizante en el botón */
 .contact-button::before {
@@ -788,15 +787,17 @@ body {
     transition: left 0.3s ease; 
 }
 
-
-.contact-button:hover::before {
+.contact-button:hover::before,
+.contact-button:focus::before { /* Compatibilidad con dispositivos táctiles */
     left: 0; 
 }
 
-.contact-button:hover {
+.contact-button:hover,
+.contact-button:focus {
     color: #000096; 
     border-color: #000096; 
 }
+
 
 
 .contact-button span {
@@ -804,11 +805,71 @@ body {
     z-index: 2; 
 }
 
+/* Página Cesta */
+.empty-cart {
+    text-align: center;
+    color: #000096;
+    margin-top: 50px;
+}
+
+.empty-cart h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+/* Botón de Cesta Vacía */
+.empty-cart button {
+    background-color: #000096;
+    color: #FFFFFF;
+    margin-top: 20px;
+    padding: 12px 28px;
+    font-size: 12px;
+    font-family: 'Archivo', sans-serif;
+    cursor: pointer;
+    border: 2px solid transparent;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden; 
+    transition: color 0.3s, border-color 0.3s; 
+    z-index: 1; 
+}
+
+/* Efecto deslizante en el botón */
+.empty-cart button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%; 
+    width: 100%;
+    height: 100%;
+    background-color: #FFFFFF;
+    z-index: 0; /* Asegura que el efecto no cubra el texto */
+    transition: left 0.3s ease; 
+}
+
+.empty-cart button:hover::before {
+    left: 0; 
+}
+
+.empty-cart button:hover {
+    color: #000096; 
+    border-color: #000096; 
+    z-index: 1; /* Mantiene el texto visible */
+}
+
+
+
+.empty-cart button span {
+    position: relative;
+    z-index: 2; 
+}
+
 .container {
     width: 100%;  
     padding: 20px;
+    box-sizing: border-box; /* Asegura que el padding no afecte el ancho total */
 }
 
+/* Título */
 .title {
     text-align: center;
     color: #000096;
@@ -818,12 +879,14 @@ body {
     margin-bottom: 20px;
 }
 
+/* Tabla del carrito */
 .cart-table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
 }
 
+/* Cabeceras de la tabla */
 .cart-table th,
 .cart-table td {
     padding: 10px;
@@ -831,19 +894,21 @@ body {
     border-bottom: 1px solid #000096;
 }
 
+/* Estilo de las cabeceras */
 .cart-table th {
     color: #000096;
     font-weight: normal;
     font-size: 11px;
     font-family: 'Archivo', sans-serif;
-
 }
 
+/* Estilo para el contenedor de los productos */
 .product {
     display: flex;
     align-items: center;
 }
 
+/* Imagen de los productos */
 .product-image {
     width: 80px;
     height: 80px;
@@ -851,70 +916,94 @@ body {
     border: 1px solid #000096;
 }
 
+/* Información del producto */
 .product-info {
     color: #000096;
+    flex-grow: 1; /* Asegura que el texto se expanda */
 }
 
+/* Nombre del producto */
 .product-name {
     font-weight: normal;
 }
 
-.quantity {
-    text-align: center;
+/* Celda de cantidad */
+.quantity-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra todo el contenido horizontalmente */
+    justify-content: center; /* Centra todo el contenido verticalmente */
 }
 
+/* Controles de cantidad */
 .quantity-controls {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    border: 1px solid #000096;
+    margin-bottom: 10px; /* Espacio entre la cantidad y el botón de eliminar */
 }
 
-.quantity-btn {
+/* Botones de cantidad */
+.quantity-button {
     background-color: #fff;
     border: none;
     padding: 5px 10px;
     cursor: pointer;
     color: #000096;
     font-weight: normal;
+    transition: background-color 0.3s ease;
+    box-shadow: none;
 }
 
+/* Input de cantidad */
 .quantity-input {
-    width: 30px;
+    width: 40px;
     text-align: center;
     border: none;
-}
-
-.remove-link {
+    background-color: #FFFFFF;
     color: #000096;
-    display: block;
-    margin-top: 5px;
-    text-decoration: none;
-    font-size: 0.9em;
+    font-size: 16px;
+    box-shadow: none;
 }
 
+/* Contenedor del botón de eliminar */
+.delete-btn-container {
+    margin-top: 5px; /* Espacio adicional para separar el botón de eliminar de la cantidad */
+    text-align: center; /* Centra el botón */
+}
+
+/* Estilo del botón de eliminar "Quitar" */
+.delete-btn {
+    background: none;
+    color: #000096;
+    border: none;
+    font-family: 'Archivo', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    text-decoration: underline;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+
+/* Estilo para el precio total */
 .total-price {
     text-align: left;
     color: #000096;
     font-weight: normal;
     font-size: 1.2em;
-    flex-grow: 1;
+    flex-grow: 1; /* Deja que el total ocupe el máximo espacio disponible */
 }
 
+/* Resumen de la cesta */
 .cart-summary {
     display: flex;
-    flex-direction: column;     
+    flex-direction: column;
     align-items: flex-end;      
     margin-top: 20px;
-    gap: 10px;                  
+    gap: 10px;
 }
 
-.total-price {
-    color: #000096;
-    font-weight: normal;
-    font-size: 1.2em;
-}
-
-
+/* Nota de los impuestos */
 .note {
     font-size: 0.9em;
     color: #000096;
@@ -926,6 +1015,7 @@ body {
     text-decoration: none;
 }
 
+/* Estilo del botón de checkout */
 .checkout-btn {
     background-color: #000096;
     color: #fff;
@@ -942,21 +1032,23 @@ body {
     z-index: 1;
 }
 
+/* Efecto de texto del botón */
 .checkout-btn span {
     position: relative;
     z-index: 2; 
 }
 
+/* Efecto de fondo del botón */
 .checkout-btn::before {
     content: "";
     position: absolute;
     top: 0;
-    left: -100%; 
+    left: -100%;
     width: 100%;
     height: 100%;
     background-color: #FFFFFF;
     transition: left 0.3s ease;
-    z-index: 1; 
+    z-index: 1;
 }
 
 .checkout-btn:hover::before {
@@ -968,7 +1060,7 @@ body {
     border-color: #000096; 
 }
 
-
+/* Contenedor del checkout */
 .checkout-container {
     display: flex;
     max-width: 1200px;
@@ -980,475 +1072,9 @@ body {
     border-radius: 10px;
 }
 
-/* Finalizar compra */
-h2, h3 {
-    margin: 0 0 10px;
-}
-
-p, span {
-    margin: 0;
-}
-
-input, button {
-    font-family: inherit;
-}
-
-.contenedor-principal {
-    display: flex;
-    height: 100vh;
-    overflow: hidden; /* Elimina barras de scroll innecesarias */
-    margin: 0; /* Elimina márgenes del contenedor */
-}
-
-/*Sección izquierda */
-.seccion-izquierda {
-    width: 60%;
-    padding: 20px;
-    background-color: #fff;
-    overflow-y: auto;
-}
-
-.seccion-izquierda > * {
-    margin-top: 20px; /* Ajusta el margen superior de los elementos dentro de la izquierda */
-}
-
-.seccion-izquierda::-webkit-scrollbar {
-    width: 0px; /* Oculta la barra de desplazamiento horizontal */
-    height: 0px; /* Oculta la barra de desplazamiento vertical */
-}
-
-/* Encabezado con logo e icono de bolsa */
-.encabezado-logo {
-    display: flex;
-    justify-content: center; /* Centra horizontalmente */
-    align-items: center; /* Centra verticalmente */
-    gap: 10px;
-    margin-bottom: 20px;
-    text-align: center; /* Asegura el centrado del contenido dentro del contenedor */
-}
-
-/* Imagen del logo */
-.logo img {
-    max-width: 200px;
-    display: block;
-}
-
-/* Icono de la bolsa */
-.icono-bolsa {
-    width: 25px;
-    height: 35px;
-}
-
-/* Media Query para pantallas pequeñas */
-@media (max-width: 768px) {
-    .encabezado-logo {
-        flex-direction: column; /* Apila elementos en columna */
-        gap: 5px; /* Espacio reducido */
-    }
-}
-
-/* Título de pago exprés */
-.titulo-pago {
-    text-align: center;
-    font-size: 16px;
-    color: gray;
-    margin-bottom: 20px;
-    font-family: 'Helvetica', sans-serif;
-    font-weight: normal;
-}
-
-/* Botones de pago */
-.botones-pago {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-/* Línea con "O" en el medio */
-.linea-con-o {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 20px 0;
-    gap: 10px;
-    color: #000;
-}
-
-.linea-separador {
-    flex: 1;
-    height: 1px;
-    background-color: #000096;
-    border: none;
-    margin: 0; /* Elimina cualquier margen de la línea */
-}
-
-
-.circulo-o {
-    font-size: 14px;
-    color: 808080;
-    font-weight: normal;
-    background-color: white; /* Fondo blanco para superponer sobre la línea */
-    padding: 0 10px;
-}
-
-
-.btn-pago {
-    flex: 1;
-    padding: 10px 0;
-    font-size: 16px;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-.shop {
-    background-color: #5a31f4;
-    color: white;
-}
-
-.paypal {
-    background-color: #ffc439;
-    color: black;
-}
-
-.gpay {
-    background-color: #000;
-    color: white;
-}
-
-.separador {
-    border: 0;
-    height: 1px;
-    background-color: #e0e0e0;
-    margin: 20px 0;
-}
-
-input[type="email"] {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #d9d9d9;
-    border-radius: 5px;
-}
-
-.opcion-suscripcion {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    font-size: 14px;
-}
-
-/* Mantén el estilo existente de input */
-input[type="email"],
-input[type="text"],
-input[type="tel"],
-select {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #d9d9d9;
-    border-radius: 5px;
-}
-
-/* Agrupación de elementos como nombre y apellidos */
-.campo-nombre-apellidos,
-.campo-codigo-ciudad {
-    display: flex;
-    gap: 10px;
-}
-
-.campo-nombre-apellidos input,
-.campo-codigo-ciudad input {
-    flex: 1; /* Asegura que ambos inputs ocupen el mismo ancho */
-}
-
-/* Select (como Provincia / Estado) */
-.campo-provincia select {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #d9d9d9;
-    border-radius: 5px;
-    font-size: 14px;
-}
-
-/* Opción de suscripción: Reutiliza lo existente */
-.opcion-suscripcion {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    font-size: 14px;
-}
-
-/* Métodos de envío */
-.metodos-envio {
-    margin-top: 20px;
-    background-color: #eaeaea;
-    padding: 15px;
-    border-radius: 5px;
-    font-size: 14px;
-    color: #666;
-    text-align: center;
-}
-
-/* Contenedor principal */
-.pago {
-    padding: 20px;
-    background-color: #fff;
-    margin: 20px auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 500px;
-    font-family: Arial, sans-serif;
-}
-
-/* Títulos */
-.pago h2 {
-    font-size: 24px;
-    margin-bottom: 10px;
-    font-weight: bold;
-}
-
-.pago p {
-    font-size: 14px;
-    color: #666;
-    margin-bottom: 20px;
-}
-
-/* Opciones de pago */
-.opciones-pago {
-    margin-bottom: 20px;
-}
-
-.opciones-pago label {
-    font-size: 16px;
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.iconos-tarjeta {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.iconos-tarjeta img {
-    height: 30px;
-    width: auto;
-}
-
-/* Campos de texto */
-.campo-pago input {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-    border: 1px solid #dcdcdc;
-    border-radius: 5px;
-    font-size: 14px;
-}
-
-.input-grupo-doble {
-    display: flex;
-    gap: 10px;
-}
-
-.input-grupo-doble input {
-    flex: 1;
-}
-
-/* Checkbox */
-.direccion-facturacion label {
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-/* Métodos de pago adicionales */
-.opciones-pago-otros label {
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    margin-top: 10px;
-    cursor: pointer;
-}
-
-.opciones-pago-otros span {
-    margin-left: 8px;
-}
-
-/* Seguridad */
-.seguridad {
-    display: flex;
-    align-items: center;
-    margin-top: 20px;
-    font-size: 14px;
-    color: #555;
-}
-
-.seguridad img {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
-}
-
-/* Botón */
-.btn-revisar {
-    background-color: #000096;
-    color: #fff;
-    font-size: 16px;
-    padding: 12px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    width: 100%;
-    margin-top: 20px;
-    font-weight: bold;
-}
-
-.btn-revisar:hover {
-    background-color: #000059;
-}
-
-
-
-
-/* Sección derecha */
-.seccion-derecha {
-    width: 40%;
-    padding: 20px;
-    background-color: white;
-    border-left: 1px solid #000096;
-    margin-top: 0; /* Elimina el margen superior */
-}
-
-.seccion-derecha::before {
-    content: ""; /* Añade una pseudo-línea */
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 60%; /* Ajusta el límite izquierdo al ancho de la sección izquierda */
-    width: 1px;
-    background-color: #000096;
-}
-
-.resumen-producto {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.resumen-producto img {
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-    border-radius: 5px;
-}
-
-.detalles-producto {
-    display: flex;
-    justify-content: space-between; 
-    align-items: center; 
-    flex: 1;
-}
-
-.detalles-producto h4 {
-    font-family: 'Helvetica', sans-serif;
-    font-weight: normal;
-    font-size: 14px;
-}
-
-.codigo-descuento {
-    display: flex; /* Flexbox para alineación horizontal */
-    gap: 10px; /* Espaciado entre el input y el botón */
-    margin-bottom: 20px;
-    align-items: center; /* Asegura que estén perfectamente alineados verticalmente */
-}
-
-.codigo-descuento input {
-    flex: 1; /* Input toma todo el espacio disponible */
-    padding: 10px;
-    border: 1px solid #d9d9d9;
-    border-radius: 5px;
-    box-sizing: border-box; /* Asegura que padding y border no afecten el tamaño total */
-    height: 42px; /* Altura fija para igualar al botón */
-}
-
-.codigo-descuento input:focus {
-    border-color: #000096;
-    outline: none;
-}
-
-.codigo-descuento button {
-    padding: 0 20px; /* Padding lateral para consistencia */
-    height: 42px; /* Misma altura que el input */
-    background-color: #000096;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    box-sizing: border-box; /* Consistencia en tamaños */
-    display: flex; /* Centra el contenido del botón */
-    align-items: center;
-    justify-content: center;
-}
-
-.codigo-descuento button:hover {
-    background-color: #000059;
-}
-
-.resumen-compra {
-    margin-bottom: 20px;
-}
-
-.resumen-compra div {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
-
-.envio {
-    display: flex;
-    gap: 30px; 
-    align-items: center;
-}
-
-/* Agrupa "Envío" e icono juntos */
-.envio-titulo {
-    display: flex;
-    align-items: center; 
-    gap: 5px; 
-}
-
-/* Ajusta la dirección de envío */
-.direccion-envio {
-    margin-left: 15px; 
-    margin-top: 5px; 
-    font-size: 14px; 
-}
-
-/* Icono de interrogante */
-.icono-interrogante {
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-}
-
-.total {
-    display: flex;
-    justify-content: space-between;
-    font-weight: bold;
-    font-size: 18px;
-    margin: 20px 0;
-}
-
-.impuestos {
-    font-size: 14px;
-    color: #555;
+/* Espaciado entre elementos dentro del contenedor */
+.checkout-container > * {
+    flex-grow: 1; /* Hace que los elementos crezcan para ocupar el espacio disponible */
 }
 
 /* Footer */
@@ -1462,28 +1088,34 @@ select {
 /* Sección superior del footer */
 .footer-top {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between; /* Espacio igual entre columnas */
     flex-wrap: wrap;
     margin-bottom: 20px;
     border-top: 1px solid #000;
     padding-top: 20px;
     width: 100%;
     box-sizing: border-box;
+    gap: 20px; /* Espaciado uniforme en dispositivos más pequeños */
 }
 
+/* Columnas individuales del footer */
 .footer-section {
     flex: 1;
     min-width: 200px;
+    max-width: 300px; /* Limitar el ancho máximo de las columnas */
     padding: 10px;
     text-align: left;
+    box-sizing: border-box;
 }
 
+/* Encabezados de las columnas */
 .footer-section h3 {
     font-size: 12px;
     color: #000;
     margin-bottom: 10px;
 }
 
+/* Textos y enlaces dentro de las columnas */
 .footer-section p,
 .footer-section a {
     font-size: 11px;
@@ -1492,59 +1124,61 @@ select {
     text-decoration: none;
 }
 
+/* Enlaces en hover */
 .footer-section a:hover {
     text-decoration: underline;
 }
 
-/* Estilos del formulario de suscripción */
+/* Contenedor principal */
 .subscribe-form {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start; /* Alinear todos los elementos a la izquierda */
+    justify-content: flex-start;
     margin-top: 20px;
     width: 100%;
-    max-width: 300px; /* Ajustar el tamaño del formulario */
-    margin-left: auto;
+    max-width: 300px; /* Limitar el ancho del formulario */
+    margin-left: 0; /* Alinear a la izquierda de la página */
     margin-right: auto;
+    gap: 20px; /* Espaciado uniforme entre elementos */
 }
 
-/* Ajustar el input */
+/* Grupo de input */
 .subscribe-form .input-group {
     position: relative;
     width: 100%;
-    margin-bottom: 20px; /* Añadir espacio entre el input y el botón */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Alinear label e input a la izquierda */
 }
 
+/* Input */
 .subscribe-form input[type="email"] {
     border: none;
     border-bottom: 1px solid #000096;
     padding: 10px 5px;
     width: 100%;
     outline: none;
-    font-size: 14px; /* Aumentar tamaño de fuente */
+    font-size: 14px;
     transition: border-color 0.3s ease;
-    text-align: center;
-}
-
-.subscribe-form input[type="email"]:focus {
-    border-bottom: 2px solid #000096;
+    text-align: left; /* Texto alineado a la izquierda */
+    box-sizing: border-box;
 }
 
 /* Label flotante */
 .subscribe-form label {
     position: absolute;
     bottom: 10px;
-    left: 5px;
+    left: 0; /* Asegurar que el label comience desde el borde izquierdo */
     color: #000096;
     font-size: 14px;
     pointer-events: none;
     background-color: white;
     padding: 0 5px;
     transition: 0.2s ease all;
-    margin-left: -10px;
 }
 
-/* Efecto flotante cuando el input está en focus o tiene texto */
+/* Efecto flotante */
 .subscribe-form input[type="email"]:focus + label,
 .subscribe-form input[type="email"]:not(:placeholder-shown) + label,
 .subscribe-form input[type="email"]:valid + label {
@@ -1553,70 +1187,85 @@ select {
     color: #000096;
 }
 
-/* Botón de suscribirse */
+/* Botón del footer */
 .subscribe-form button {
     background-color: #000096;
     color: #FFFFFF;
     padding: 10px 20px;
     font-family: 'Helvetica', sans-serif;
-    font-size: 14px; /* Ajustar tamaño del botón */
+    font-size: 14px;
     cursor: pointer;
     border: 2px solid transparent;
     text-transform: uppercase;
+    position: relative; /* Necesario para el efecto deslizante */
+    overflow: hidden; /* Asegura que el pseudoelemento se oculte fuera del botón */
     transition: color 0.3s, border-color 0.3s, background-color 0.3s;
-    margin-top: 10px; /* Asegurar que haya espacio entre el botón y el input */
-    width: 100%; /* Hacer que el botón ocupe el 100% del formulario */
+    width: 100%; /* El botón ocupa todo el ancho del formulario */
+    text-align: center; /* Texto centrado dentro del botón */
+    box-sizing: border-box;
 }
 
-/* Efecto de hover para el botón de suscribirse */
+/* Pseudoelemento para el efecto deslizante */
 .subscribe-form button::before {
     content: "";
     position: absolute;
     top: 0;
-    left: 0;
-    width: 0;
+    left: -100%; /* El pseudoelemento comienza fuera del botón */
+    width: 100%;
     height: 100%;
-    background-color: #FFFFFF;
-    transition: width 0.3s;
-    z-index: -1;
+    background-color: #FFFFFF; /* Color del efecto deslizante */
+    transition: left 0.3s ease; /* Transición suave para el efecto */
+    z-index: 0; /* El pseudoelemento se coloca por debajo del texto */
 }
 
+/* Efecto cuando el cursor está sobre el botón */
 .subscribe-form button:hover::before {
-    width: 100%;
+    left: 0; /* El pseudoelemento se desliza hacia el interior del botón */
 }
 
 .subscribe-form button:hover {
-    color: #000096;
-    border-color: #000096;
+    color: #000096; /* Cambia el color del texto */
+    border-color: #000096; /* Cambia el color del borde */
 }
 
-/* Logo y redes sociales */
+
+/* Logo */
 .subscribe-form .logo {
     margin-top: 20px;
-    text-align: center;
+    text-align: left; /* Asegurar que el logo esté alineado a la izquierda */
+    width: 100%; /* Ocupa todo el ancho del contenedor */
+    display: flex; /* Usar flexbox para manejar el contenido dentro del logo */
+    justify-content: flex-start; /* Asegurar alineación izquierda del contenido */
 }
 
 .subscribe-form .logo img {
-    max-width: 120px;
+    max-width: 200px; /* Limitar el tamaño máximo del logo */
     height: auto;
-    margin: 20px 10px;
+    display: block; /* Asegura que se respete el tamaño y posición */
+    margin: 0; /* Eliminar cualquier margen por defecto */
+    padding: 0; /* Eliminar cualquier padding adicional */
 }
+
 
 /* Redes sociales */
 .subscribe-form .social-icons {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start; /* Íconos alineados a la izquierda */
+    align-items: center;
     margin-top: 10px;
-    gap: 35px;
+    gap: 45px; /* Espaciado uniforme entre íconos */
 }
 
 .subscribe-form .social-icons a {
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .subscribe-form .social-icons img {
     width: 24px;
     height: 24px;
+    display: block;
 }
+
 

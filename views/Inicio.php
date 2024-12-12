@@ -1,6 +1,86 @@
 <?php
-// Aquí puedes agregar configuraciones o lógica PHP si es necesario, como variables dinámicas o datos de la base de datos.
+// Incluir la clase DataBase para la conexión a la base de datos
+require_once '../config/data_base.php';  // Asegúrate de que la ruta sea correcta
+require_once '../model/ProductosDAO.php';
+
+// Configuración de conexión a la base de datos
+$host = '127.0.0.1'; // Dirección IP del servidor de MySQL
+$dbname = 'polbeiro'; // Nombre de la base de datos
+$username = 'root'; // Usuario
+$password = 'Asdqwe!23'; // Contraseña
+
+try {
+    // Crear la conexión con PDO
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
+
+    // Configuración de los atributos de PDO
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+} catch (PDOException $e) {
+    // Manejo de errores de conexión
+    echo "Error al conectar a la base de datos: " . $e->getMessage();
+    exit;
+}
+
+// Consulta SQL para obtener 8 productos al azar de la tabla `platos`
+$sql = "SELECT id_plato, nombre, descripcion, precio, imagen_principal, imagen_secundaria FROM platos ORDER BY RAND() LIMIT 8";
+$stmt = $pdo->query($sql);
+
+// Iniciar la sesión si no está iniciada
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Verificar si el formulario ha sido enviado
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_plato'])) {
+    // Obtener el ID del plato desde el formulario
+    $id_plato = filter_input(INPUT_POST, 'id_plato', FILTER_VALIDATE_INT);
+
+    // Validar que el ID es válido
+    if ($id_plato && $id_plato > 0) {
+        // Verificar si el carrito ya está inicializado en la sesión
+        if (!isset($_SESSION['carrito'])) {
+            $_SESSION['carrito'] = [];
+        }
+
+        // Conectar a la base de datos y obtener el producto
+        $conexion = DataBase::connect();
+        $productosDAO = new ProductosDAO($conexion);
+        $producto = $productosDAO->obtenerPorId($id_plato);
+
+        // Verificar si el producto existe
+        if ($producto) {
+            // Si el producto ya está en el carrito, aumentar la cantidad
+            if (isset($_SESSION['carrito'][$id_plato])) {
+                $_SESSION['carrito'][$id_plato]['cantidad'] += 1;
+                $_SESSION['carrito'][$id_plato]['subtotal'] = $_SESSION['carrito'][$id_plato]['producto']->getPrecio() * $_SESSION['carrito'][$id_plato]['cantidad'];
+            } else {
+                // Si el producto no está en el carrito, agregarlo
+                $_SESSION['carrito'][$id_plato] = [
+                    'producto' => $producto,
+                    'cantidad' => 1,
+                    'subtotal' => $producto->getPrecio()
+                ];
+            }
+
+            // Establecer mensaje de éxito en la sesión
+            $_SESSION['success'] = "";
+        } else {
+            // Establecer mensaje de error si no se encuentra el producto
+            $_SESSION['error'] = "";
+        }
+    } else {
+        // Establecer mensaje de error si el ID es inválido
+        $_SESSION['error'] = "ID de producto no válido.";
+    }
+
+    // Redirigir a la página de la cesta (carrito)
+    header('Location: Inicio.php');
+    exit();
+}
 ?>
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -8,21 +88,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Polbeiro</title>
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="Assets/css/styles.css">
 </head>
 <body>
     <!-- Encabezado -->
     <header class="header">
         <div class="nav">
             <ul class="menu">
-                <li><a href="Inicio.html">INICIO</a></li>
-                <li><a href="Nuestra-Carta.html">NUESTRA CARTA</a></li>
-                <li><a href="Restaurante.html">RESTAURANTE</a></li>
-                <li><a href="Contacto.html">CONTACTO</a></li>
+                <li><a href="Inicio.php">INICIO</a></li>
+                <li><a href="Nuestra-Carta.php">NUESTRA CARTA</a></li>
+                <li><a href="Restaurante.php">RESTAURANTE</a></li>
+                <li><a href="Contacto.php">CONTACTO</a></li>
             </ul>
             <div class="logo">
-                <a href="Inicio.html">
-                    <img src="IMG/ICONOS/HEADER/logo-polbeiro.png" alt="Logo Polbeiro">
+                <a href="Inicio.php">
+                    <img src="assets/img/ICONOS/HEADER/logo-polbeiro.png" alt="Logo Polbeiro">
                 </a>
             </div>
             
@@ -32,11 +112,11 @@
                 
                 <!-- Etiqueta para el icono de la lupa, actuará como botón -->
                 <label for="search-toggle">
-                    <img src="IMG/ICONOS/HEADER/icon-lupa.png" alt="Buscar" class="icon">
+                    <img src="assets/img/ICONOS/HEADER/icon-lupa.png" alt="Buscar" class="icon">
                 </label>
 
-                <a href="Cesta.html">
-                    <img src="IMG/ICONOS/HEADER/icon-cesta.png" alt="Cesta" class="icon">
+                <a href="Cesta.php">
+                    <img src="assets/img/ICONOS/HEADER/icon-cesta.png" alt="Cesta" class="icon">
                 </a>
             </div>
         </div>
@@ -50,22 +130,21 @@
         </div>
     </div>
 
-
-  <!-- Sección de imágenes -->
+    <!-- Sección de imágenes -->
     <div class="contenedor-slider">
         <!-- Diapositiva 1: Vídeo -->
         <div class="diapositiva activa">
-            <video src="IMG/SLIDER/Slide-Polbeiro-1.mp4" autoplay muted loop></video>
+            <video src="Assets/IMG/SLIDER/Slide-Polbeiro-1.mp4" autoplay muted loop></video>
         </div>
         
         <!-- Diapositiva 2: Imagen -->
         <div class="diapositiva">
-            <img src="IMG/SLIDER/Slide-2-Polbeiro.png" alt="Imagen Total">
+            <img src="Assets/IMG/SLIDER/Slide-2-Polbeiro.png" alt="Slide-2-Polbeiro" />
         </div>
 
         <!-- Diapositiva 3: Vídeo -->
         <div class="diapositiva">
-            <video src="IMG/SLIDER/Slide-Polbeiro-3.mp4" autoplay muted loop></video>
+            <video src="Assets/IMG/SLIDER/Slide-Polbeiro-3.mp4" autoplay muted loop></video>
         </div>
 
         <!-- Botones de navegación con círculos de progreso -->
@@ -85,104 +164,41 @@
         </div>
     </div>
 
-    <!-- Sección de menú popular -->
+    <!-- Sección de productos desde la base de datos -->
     <section class="menu-section">
         <h2>THE MOST REQUESTED</h2>
         <div class="menu-gallery">
-            <!-- Item 1 -->
-            <div class="menu-item">
-                <span class="tag">MOST REQUESTED</span>
-                <img src="IMG/PRODUCTOS/1. Pulpo Tapa.webp" alt="Tapa de Pulpo">
-                <img src="IMG/PRODUCTOS/1.1 Pulpo Tapa.webp" alt="Tapa de Pulpo Hover" class="product-image-hover">
-                <div class="product-details">
-                    <p class="name">TAPA DE PULPO</p>
-                    <p class="price">€ 2,60</p>
-                    <button class="add-to-cart">AÑADIR AL CARRITO</button>
-                </div>
-            </div>
-            <!-- Item 2 -->
-            <div class="menu-item">
-                <span class="tag">MOST REQUESTED</span>
-                <img src="IMG/PRODUCTOS/2. Pulpo Pincho.webp" alt="Brocheta de Pulpo">
-                <img src="IMG/PRODUCTOS/2.1 Pulpo Pincho.webp" alt="Brocheta de Pulpo Hover" class="product-image-hover">
-                <div class="product-details">
-                    <p class="name">BROCHETA DE PULPO</p>
-                    <p class="price">€ 4,90</p>
-                    <button class="add-to-cart">AÑADIR AL CARRITO</button>
-                </div>
-            </div>
-            <!-- Item 3 -->
-            <div class="menu-item">
-                <span class="tag">MOST REQUESTED</span>
-                <img src="IMG/PRODUCTOS/3. Pulpo Gallega.webp" alt="Pulpo a la Gallega">
-                <img src="IMG/PRODUCTOS/3.1 Pulpo Gallega.webp" alt="Pulpo a la Gallega Hover" class="product-image-hover">
-                <div class="product-details">
-                    <p class="name">PULPO A LA GALLEGA</p>
-                    <p class="price">€ 5,60</p>
-                    <button class="add-to-cart">AÑADIR AL CARRITO</button>
-                </div>
-            </div>
-            <!-- Item 4 -->
-            <div class="menu-item">
-                <span class="tag">MOST REQUESTED</span>
-                <img src="IMG/PRODUCTOS/4. Ensalada de Pulpo.webp" alt="Ensalada de Pulpo">
-                <img src="IMG/PRODUCTOS/4.1 Ensalada de Pulpo.webp" alt="Ensalada de Pulpo Hover" class="product-image-hover">
-                <div class="product-details">
-                    <p class="name">ENSALADA DE PULPO</p>
-                    <p class="price">€ 4,75</p>
-                    <button class="add-to-cart">AÑADIR AL CARRITO</button>
-                </div>
-            </div>
-            <!-- Item 5 -->
-            <div class="menu-item">
-                <span class="tag">MOST REQUESTED</span>
-                <img src="IMG/PRODUCTOS/5. Pulpo Poke.webp" alt="Pulpo Poke">
-                <img src="IMG/PRODUCTOS/5.1 Pulpo Poke.webp" alt="Pulpo Poke Hover" class="product-image-hover">
-                <div class="product-details">
-                    <p class="name">PULPO POKE</p>
-                    <p class="price">€ 6,00</p>
-                    <button class="add-to-cart">AÑADIR AL CARRITO</button>
-                </div>
-            </div>
-            <!-- Item 6 -->
-            <div class="menu-item">
-                <span class="tag">MOST REQUESTED</span>
-                <img src="IMG/PRODUCTOS/6. Pulpo Burger.webp" alt="Pulpo Burger">
-                <img src="IMG/PRODUCTOS/6.1 Pulpo Burger.webp" alt="Pulpo Burger Hover" class="product-image-hover">
-                <div class="product-details">
-                    <p class="name">PULPO BURGER</p>
-                    <p class="price">€ 6,80</p>
-                    <button class="add-to-cart">AÑADIR AL CARRITO</button>
-                </div>
-            </div>
-            <!-- Item 7 -->
-            <div class="menu-item">
-                <span class="tag">MOST REQUESTED</span>
-                <img src="IMG/PRODUCTOS/7. Pizza Pulpo.webp" alt="Pizza de Pulpo">
-                <img src="IMG/PRODUCTOS/7.1 Pizza Pulpo.webp" alt="Pizza de Pulpo Hover" class="product-image-hover">
-                <div class="product-details">
-                    <p class="name">PIZZA DE PULPO</p>
-                    <p class="price">€ 8,50</p>
-                    <button class="add-to-cart">AÑADIR AL CARRITO</button>
-                </div>
-            </div>
-            <!-- Item 8 -->
-            <div class="menu-item">
-                <span class="tag">MOST REQUESTED</span>
-                <img src="IMG/PRODUCTOS/8. Nigiri Pulpo.webp" alt="Nigiri de Pulpo">
-                <img src="IMG/PRODUCTOS/8.1 Nigiri Pulpo.webp" alt="Nigiri de Pulpo Hover" class="product-image-hover">
-                <div class="product-details">
-                    <p class="name">NIGIRI DE PULPO</p>
-                    <p class="price">€ 6,20</p>
-                    <button class="add-to-cart">AÑADIR AL CARRITO</button>
-                </div>
-            </div>
+            <?php
+            // Comprobar si hay resultados de la base de datos
+            if ($stmt->rowCount() > 0) {
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                    echo '<div class="menu-item">';
+                    echo '<img src="' . $row['imagen_principal'] . '" alt="' . $row['nombre'] . '">';
+                    echo '<img src="' . $row['imagen_secundaria'] . '" alt="' . $row['nombre'] . ' Hover" class="product-image-hover">';
+                    echo '<div class="product-details">';
+                    echo '<p class="name">' . $row['nombre'] . '</p>';
+                    echo '<p class="price">€ ' . number_format($row['precio'], 2, ',', '.') . '</p>';
+
+                    // Formulario para añadir al carrito (sin redirección)
+                    echo '<form method="POST">';
+                    echo '<input type="hidden" name="id_plato" value="' . $row['id_plato'] . '">';
+                    echo '<button type="submit" class="add-to-cart">AÑADIR AL CARRITO</button>';
+                    echo '</form>';
+
+                    echo '</div>';
+                    echo '</div>';
+                }
+            } else {
+                echo "No se encontraron platos en la base de datos.";
+            }
+            ?>
         </div>
     </section>
-    
+
+
     <section class="restaurant">
         <div class="blackWhiteImg">
-            <img src="IMG/img-restauranteBW.webp" alt="restauranteimg">
+            <img src="Assets/IMG/img-restauranteBW.webp" alt="restauranteimg">
             <div class="overlay">
                 <h2>DESCUBRE NUESTRO RESTAURANTE</h2>
                 <a href="Restaurante.html" class="visit-button">VISITAR</a>
@@ -210,8 +226,8 @@
             </div>
             <button type="submit" class="reservation-button">RESERVA</button>
         </div>
-    </section>    
-    
+    </section>
+
     <footer class="footer">
         <div class="footer-top">
             <div class="footer-section">
@@ -219,22 +235,22 @@
                 <p>Suscríbete a nuestra newsletter y recibe tu primer pedido gratis</p>
                 <form class="subscribe-form">
                     <div class="input-group">
-                        <input type="email" id="email" required placeholder="">
+                        <input type="email" id="email" required placeholder=" ">
                         <label for="email">Correo electrónico</label>
                     </div>
                     <button type="submit">SUSCRIBIRSE</button>
     
                     <!-- Logo y redes sociales -->
                     <div class="logo">
-                        <img src="IMG/ICONOS/HEADER/logo-polbeiro.png" alt="Polbeiro Logo">
+                        <img src="assets/img/ICONOS/HEADER/logo-polbeiro.png" alt="Polbeiro Logo">
                     </div>
                     
                     <div class="social-icons">
-                        <a href="#"><img src="IMG/ICONOS/REDES/icon-instagram.png" alt="Instagram"></a>
-                        <a href="#"><img src="IMG/ICONOS/REDES/icon-pinterest.png" alt="Pinterest"></a>
-                        <a href="#"><img src="IMG/ICONOS/REDES/icon-youtube.png" alt="YouTube"></a>
-                        <a href="#"><img src="IMG/ICONOS/REDES/icon-tiktok.png" alt="TikTok"></a>
-                        <a href="#"><img src="IMG/ICONOS/REDES/icon-whatsapp.png" alt="WhatsApp"></a>
+                        <a href="#"><img src="assets/img/ICONOS/REDES/icon-instagram.png" alt="Instagram"></a>
+                        <a href="#"><img src="assets/img/ICONOS/REDES/icon-pinterest.png" alt="Pinterest"></a>
+                        <a href="#"><img src="assets/img/ICONOS/REDES/icon-youtube.png" alt="YouTube"></a>
+                        <a href="#"><img src="assets/img/ICONOS/REDES/icon-tiktok.png" alt="TikTok"></a>
+                        <a href="#"><img src="assets/img/ICONOS/REDES/icon-whatsapp.png" alt="WhatsApp"></a>
                     </div>
                 </form>
             </div>
@@ -260,6 +276,6 @@
             </div>
         </div>
     </footer>
-    <script src="script.js"></script>                 
+    <script src="Assets/js/script.js"></script>
 </body>
 </html>

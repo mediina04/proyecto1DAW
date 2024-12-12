@@ -1,4 +1,8 @@
 <?php
+// Incluir la clase DataBase para la conexión a la base de datos
+require_once '../config/data_base.php';  // Asegúrate de que la ruta sea correcta
+require_once '../model/ProductosDAO.php';
+
 // Configuración de conexión a la base de datos
 $host = '127.0.0.1'; // Dirección IP del servidor de MySQL
 $dbname = 'polbeiro'; // Nombre de la base de datos
@@ -18,9 +22,62 @@ try {
     exit;
 }
 
-// Consulta SQL para obtener los datos de la tabla `platos`
+// Consulta SQL para obtener todos los platos
 $sql = "SELECT id_plato, nombre, descripcion, precio, imagen_principal, imagen_secundaria FROM platos";
 $stmt = $pdo->query($sql);
+
+// Iniciar la sesión si no está iniciada
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Verificar si el formulario ha sido enviado
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_plato'])) {
+    // Obtener el ID del plato desde el formulario
+    $id_plato = filter_input(INPUT_POST, 'id_plato', FILTER_VALIDATE_INT);
+
+    // Validar que el ID es válido
+    if ($id_plato && $id_plato > 0) {
+        // Verificar si el carrito ya está inicializado en la sesión
+        if (!isset($_SESSION['carrito'])) {
+            $_SESSION['carrito'] = [];
+        }
+
+        // Conectar a la base de datos y obtener el producto
+        $conexion = DataBase::connect();
+        $productosDAO = new ProductosDAO($conexion);
+        $producto = $productosDAO->obtenerPorId($id_plato);
+
+        // Verificar si el producto existe
+        if ($producto) {
+            // Si el producto ya está en el carrito, aumentar la cantidad
+            if (isset($_SESSION['carrito'][$id_plato])) {
+                $_SESSION['carrito'][$id_plato]['cantidad'] += 1;
+                $_SESSION['carrito'][$id_plato]['subtotal'] = $_SESSION['carrito'][$id_plato]['producto']->getPrecio() * $_SESSION['carrito'][$id_plato]['cantidad'];
+            } else {
+                // Si el producto no está en el carrito, agregarlo
+                $_SESSION['carrito'][$id_plato] = [
+                    'producto' => $producto,
+                    'cantidad' => 1,
+                    'subtotal' => $producto->getPrecio()
+                ];
+            }
+
+            // Establecer mensaje de éxito en la sesión
+            $_SESSION['success'] = "";
+        } else {
+            // Establecer mensaje de error si no se encuentra el producto
+            $_SESSION['error'] = "";
+        }
+    } else {
+        // Establecer mensaje de error si el ID es inválido
+        $_SESSION['error'] = "ID de producto no válido.";
+    }
+
+    // Redirigir a la página de la cesta (carrito)
+    header('Location: Nuestra-Carta.php');
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -30,39 +87,37 @@ $stmt = $pdo->query($sql);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Polbeiro</title>
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="Assets/css/styles.css">
 </head>
 <body>
     <!-- Encabezado -->
     <header class="header">
         <div class="nav">
             <ul class="menu">
-                <li><a href="Inicio.html">INICIO</a></li>
-                <li><a href="Nuestra-Carta.html">NUESTRA CARTA</a></li>
-                <li><a href="Restaurante.html">RESTAURANTE</a></li>
-                <li><a href="Contacto.html">CONTACTO</a></li>
+                <li><a href="Inicio.php">INICIO</a></li>
+                <li><a href="Nuestra-Carta.php">NUESTRA CARTA</a></li>
+                <li><a href="Restaurante.php">RESTAURANTE</a></li>
+                <li><a href="Contacto.php">CONTACTO</a></li>
             </ul>
             <div class="logo">
-                <a href="Inicio.html">
-                    <img src="IMG/ICONOS/HEADER/logo-polbeiro.png" alt="Logo Polbeiro">
+                <a href="Inicio.php">
+                    <img src="assets/img/ICONOS/HEADER/logo-polbeiro.png" alt="Logo Polbeiro">
                 </a>
             </div>
             
             <div class="icons">
-                <!-- Checkbox oculto para alternar la visibilidad del campo de búsqueda -->
                 <input type="checkbox" id="search-toggle" hidden>
-                
-                <!-- Etiqueta para el icono de la lupa, actuará como botón -->
                 <label for="search-toggle">
-                    <img src="IMG/ICONOS/HEADER/icon-lupa.png" alt="Buscar" class="icon">
+                    <img src="assets/img/ICONOS/HEADER/icon-lupa.png" alt="Buscar" class="icon">
                 </label>
 
-                <a href="Cesta.html">
-                    <img src="IMG/ICONOS/HEADER/icon-cesta.png" alt="Cesta" class="icon">
+                <a href="Cesta.php">
+                    <img src="assets/img/ICONOS/HEADER/icon-cesta.png" alt="Cesta" class="icon">
                 </a>
             </div>
         </div>
-    </header>   
+    </header>
+
     <!-- Banner de mensaje -->
     <div class="banner">
         <div class="carousel-text">
@@ -85,7 +140,6 @@ $stmt = $pdo->query($sql);
             <?php
             // Comprobar si hay resultados de la base de datos
             if ($stmt->rowCount() > 0) {
-                // Recorrer los resultados y mostrarlos en la galería
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                     echo '<div class="menu-item">';
                     echo '<img src="' . $row['imagen_principal'] . '" alt="' . $row['nombre'] . '">';
@@ -93,12 +147,17 @@ $stmt = $pdo->query($sql);
                     echo '<div class="product-details">';
                     echo '<p class="name">' . $row['nombre'] . '</p>';
                     echo '<p class="price">€ ' . number_format($row['precio'], 2, ',', '.') . '</p>';
-                    echo '<button class="add-to-cart">AÑADIR AL CARRITO</button>';
+
+                    // Formulario para añadir al carrito
+                    echo '<form method="POST">';
+                    echo '<input type="hidden" name="id_plato" value="' . $row['id_plato'] . '">';
+                    echo '<button type="submit" class="add-to-cart">AÑADIR AL CARRITO</button>';
+                    echo '</form>';
+
                     echo '</div>';
                     echo '</div>';
                 }
             } else {
-                // Si no hay platos en la base de datos, mostrar un mensaje
                 echo "No se encontraron platos en la base de datos.";
             }
             ?>
@@ -112,22 +171,22 @@ $stmt = $pdo->query($sql);
                 <p>Suscríbete a nuestra newsletter y recibe tu primer pedido gratis</p>
                 <form class="subscribe-form">
                     <div class="input-group">
-                        <input type="email" id="email" required placeholder="">
+                        <input type="email" id="email" required placeholder=" ">
                         <label for="email">Correo electrónico</label>
                     </div>
                     <button type="submit">SUSCRIBIRSE</button>
     
                     <!-- Logo y redes sociales -->
                     <div class="logo">
-                        <img src="IMG/ICONOS/HEADER/logo-polbeiro.png" alt="Polbeiro Logo">
+                        <img src="assets/img/ICONOS/HEADER/logo-polbeiro.png" alt="Polbeiro Logo">
                     </div>
                     
                     <div class="social-icons">
-                        <a href="#"><img src="IMG/ICONOS/REDES/icon-instagram.png" alt="Instagram"></a>
-                        <a href="#"><img src="IMG/ICONOS/REDES/icon-pinterest.png" alt="Pinterest"></a>
-                        <a href="#"><img src="IMG/ICONOS/REDES/icon-youtube.png" alt="YouTube"></a>
-                        <a href="#"><img src="IMG/ICONOS/REDES/icon-tiktok.png" alt="TikTok"></a>
-                        <a href="#"><img src="IMG/ICONOS/REDES/icon-whatsapp.png" alt="WhatsApp"></a>
+                        <a href="#"><img src="assets/img/ICONOS/REDES/icon-instagram.png" alt="Instagram"></a>
+                        <a href="#"><img src="assets/img/ICONOS/REDES/icon-pinterest.png" alt="Pinterest"></a>
+                        <a href="#"><img src="assets/img/ICONOS/REDES/icon-youtube.png" alt="YouTube"></a>
+                        <a href="#"><img src="assets/img/ICONOS/REDES/icon-tiktok.png" alt="TikTok"></a>
+                        <a href="#"><img src="assets/img/ICONOS/REDES/icon-whatsapp.png" alt="WhatsApp"></a>
                     </div>
                 </form>
             </div>
@@ -153,5 +212,7 @@ $stmt = $pdo->query($sql);
             </div>
         </div>
     </footer>
+    
+    <script src="Assets/js/script.js"></script>
 </body>
 </html>
