@@ -86,6 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_plato'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Polbeiro</title>
+    <link rel="icon" href="Assets\IMG\ICONOS\HEADER\logo-polbeiro-head.svg" type="image/svg+xml">
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="Assets/css/styles.css">
 </head>
@@ -101,18 +102,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_plato'])) {
             </ul>
             <div class="logo">
                 <a href="Inicio.php">
-                    <img src="assets/img/ICONOS/HEADER/logo-polbeiro.png" alt="Logo Polbeiro">
+                    <img src="assets/img/ICONOS/HEADER/logo-polbeiro.svg" alt="Logo Polbeiro">
                 </a>
             </div>
             
             <div class="icons">
+
                 <input type="checkbox" id="search-toggle" hidden>
+                
+                <!-- Etiqueta para el icono de la lupa -->
                 <label for="search-toggle">
                     <img src="assets/img/ICONOS/HEADER/icon-lupa.png" alt="Buscar" class="icon">
                 </label>
 
                 <a href="Cesta.php">
                     <img src="assets/img/ICONOS/HEADER/icon-cesta.png" alt="Cesta" class="icon">
+                </a>
+
+                <a href="Usuario.php">
+                    <img src="assets/img/ICONOS/HEADER/icon-usuario.svg" alt="Usuario" class="icon">
                 </a>
             </div>
         </div>
@@ -170,7 +178,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_plato'])) {
                 <h3>NO TE PIERDAS NUESTRAS OFERTAS</h3>
                 <p>Suscríbete a nuestra newsletter y recibe tu primer pedido gratis</p>
                 <form class="subscribe-form">
-                    <div class="input-group">
+                    <div class="subscribe-input">
                         <input type="email" id="email" required placeholder=" ">
                         <label for="email">Correo electrónico</label>
                     </div>
@@ -178,7 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_plato'])) {
     
                     <!-- Logo y redes sociales -->
                     <div class="logo">
-                        <img src="assets/img/ICONOS/HEADER/logo-polbeiro.png" alt="Polbeiro Logo">
+                        <img src="assets/img/ICONOS/HEADER/logo-polbeiro.svg" alt="Polbeiro Logo">
                     </div>
                     
                     <div class="social-icons">

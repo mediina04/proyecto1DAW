@@ -1,14 +1,10 @@
-<?php
-// Aquí puedes agregar configuraciones o lógica PHP si es necesario, como variables dinámicas o datos de la base de datos.
-?>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Polbeiro</title>
+    <title>Usuario</title>
     <link rel="icon" href="Assets\IMG\ICONOS\HEADER\logo-polbeiro-head.svg" type="image/svg+xml">
-    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="Assets/css/styles.css">
 </head>
 <body>
@@ -23,64 +19,75 @@
             </ul>
             <div class="logo">
                 <a href="Inicio.php">
-                    <img src="assets/img/ICONOS/HEADER/logo-polbeiro.svg" alt="Logo Polbeiro">
+                <img src="assets/img/ICONOS/HEADER/logo-polbeiro.svg" alt="Logo Polbeiro">
                 </a>
             </div>
-            
             <div class="icons">
-
                 <input type="checkbox" id="search-toggle" hidden>
-                
-                <!-- Etiqueta para el icono de la lupa -->
                 <label for="search-toggle">
                     <img src="assets/img/ICONOS/HEADER/icon-lupa.png" alt="Buscar" class="icon">
                 </label>
-
                 <a href="Cesta.php">
                     <img src="assets/img/ICONOS/HEADER/icon-cesta.png" alt="Cesta" class="icon">
                 </a>
-
                 <a href="Usuario.php">
                     <img src="assets/img/ICONOS/HEADER/icon-usuario.svg" alt="Usuario" class="icon">
                 </a>
             </div>
         </div>
     </header>
-    
-    <!-- Banner de mensaje -->
-    <div class="banner">
-        <div class="carousel-text">
-            <div class="carousel-item">
-                <span>VEN A DISFRUTAR DEL MEJOR PULPO DEL BAIX LLOBREGAT</span>
+
+    <!-- Panel de Usuario -->
+    <div class="user-section">
+        <h2>Bienvenido, [Nombre del Usuario]</h2>
+        
+        <!-- Último pedido -->
+        <div class="last-order">
+            <div class="order-details">
+                <h3>Tu último pedido</h3>
+                <p><strong>Pedido #12345</strong></p>
+                <p>Fecha: 16/12/2024</p>
+                <p>Total: $45.00</p>
             </div>
-            <div class="carousel-item">
-                <span>DESCUBRE NUEVAS RECETAS CON EL SABOR GALLEGO</span>
-            </div>
-            <div class="carousel-item">
-                <span>EVENTOS ESPECIALES Y PROMOCIONES EXCLUSIVAS</span>
-            </div>
+            <form action="Cesta.php" method="GET">
+                <button type="submit" class="reservation-button">Volver a pedir</button>
+            </form>
+        </div>
+
+
+        
+        <!-- Formulario para editar datos -->
+        <div class="edit-profile">
+            <h3>Editar tus datos</h3>
+            <form action="" method="POST" id="editProfileForm">
+                <div class="input-Log-Sign">
+                    <input type="text" name="name" id="name"  required placeholder=" ">
+                    <label for="name">Nombre</label>
+                </div>
+                <div class="input-Log-Sign">
+                    <input type="text" name="lastname" id="lastname"  required placeholder=" ">
+                    <label for="lastname">Apellido</label>
+                </div>
+                <div class="input-Log-Sign">
+                    <input type="email" name="email" id="email"  required placeholder=" ">
+                    <label for="email">Correo Electrónico</label>
+                </div>
+                <div class="input-Log-Sign">
+                    <input type="number" name="phone" id="phone"  required placeholder=" ">
+                    <label for="phone">Teléfono</label>
+                </div>
+                <button type="submit" class="reservation-button">Guardar Cambios</button>
+            </form>
+        </div>
+
+        <!-- Botón para cerrar sesión -->
+        <div class="logout">
+            <form action="" method="POST">
+                <input type="hidden" name="logout" value="true">
+                <button type="submit" href="Login.php" class="reservation-button">Cerrar Sesión</button>
+            </form>
         </div>
     </div>
-    <!-- Sección Sobre Nosotros -->
-    <section class="sobre-nosotros">
-        <div class="texto-sobre-nosotros">
-            <h2>SOBRE NOSOTROS</h2>
-            <p>En Polbeiro rendimos homenaje a la tradición gallega de un modo singular: el pulpo de las más variadas maneras. A base de un contexto rústico, con mesas de madera y paredes de piedra, créeme cuando te digo que podrás disfrutar de auténticos platos en un ambiente cálido y hogareño. Ven a descubrir nuestras recetas, preparadas con los ingredientes más frescos, para hacerte sentir en Galicia desde el primer bocado.</p>
-        </div>
-        <div class="imagen-sobre-nosotros">
-            <img src="Assets/IMG/RESTAURANTE/sobre-nosotros.jpg" alt="Interior del restaurante Polbeiro">
-        </div>
-    </section>
-    <section class="restaurante">
-        <h2 class="restaurante-title">NUESTRO RESTAURANTE</h2>
-        <div class="restaurante-gallery">
-            <img src="Assets/IMG/RESTAURANTE/izq-arriba.jpg" alt="Vista del restaurante 1">
-            <img src="Assets/IMG/RESTAURANTE/der-arriba.jpg" alt="Vista del restaurante 2">
-            <img src="Assets/IMG/RESTAURANTE/izq-abajo.jpg" alt="Vista del restaurante 3">
-            <img src="Assets/IMG/RESTAURANTE/der-abajo.jpg" alt="Vista del restaurante 4">
-        </div>
-    </section>
-    
     <footer class="footer">
         <div class="footer-top">
             <div class="footer-section">
@@ -129,6 +136,5 @@
             </div>
         </div>
     </footer>
-                    
 </body>
 </html>

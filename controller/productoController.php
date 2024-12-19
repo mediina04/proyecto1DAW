@@ -69,50 +69,33 @@ class ProductoController {
     }
 
     // Actualizar la cantidad de un producto en el carrito
-    public function actualizarCantidad() {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        $id_plato = filter_input(INPUT_GET, 'id_plato', FILTER_VALIDATE_INT);
-        $accion = filter_input(INPUT_GET, 'accion', FILTER_SANITIZE_STRING); // '+' o '-'
-
-        if (!$id_plato || !$accion || ($accion !== '+' && $accion !== '-')) {
-            $_SESSION['error'] = "Acción no válida.";
-            $this->redirectBack();
-        }
-
-        try {
-            if (!isset($_SESSION['carrito'][$id_plato])) {
-                $_SESSION['error'] = "";
-                $this->redirectBack();
-            }
-
+    function actualizarCantidad($id_plato, $accion) {
+        if (isset($_SESSION['carrito'][$id_plato])) {
+            // Obtener la cantidad actual
+            $cantidad = $_SESSION['carrito'][$id_plato]['cantidad'];
+    
             // Modificar la cantidad según la acción
             if ($accion === '+') {
-                $_SESSION['carrito'][$id_plato]['cantidad']++;
-            } elseif ($accion === '-' && $_SESSION['carrito'][$id_plato]['cantidad'] > 1) {
-                $_SESSION['carrito'][$id_plato]['cantidad']--;
+                $cantidad++; // Incrementar cantidad
+            } elseif ($accion === '-' && $cantidad > 1) {
+                $cantidad--; // Decrementar cantidad
+            } elseif ($accion === '-' && $cantidad == 1) {
+                unset($_SESSION['carrito'][$id_plato]); // Eliminar si cantidad llega a 0
+                $_SESSION['success'] = "Producto eliminado del carrito.";
+                return;
             }
-
-            // Actualizar el subtotal
-            $_SESSION['carrito'][$id_plato]['subtotal'] = 
-                $_SESSION['carrito'][$id_plato]['producto']->getPrecio() *
-                $_SESSION['carrito'][$id_plato]['cantidad'];
-
-            // Si la cantidad es 0, eliminar el producto
-            if ($_SESSION['carrito'][$id_plato]['cantidad'] == 0) {
-                unset($_SESSION['carrito'][$id_plato]);
-                $_SESSION['success'] = "";
+    
+            // Actualizar cantidad y subtotal
+            if (isset($cantidad)) {
+                $_SESSION['carrito'][$id_plato]['cantidad'] = $cantidad;
+                $_SESSION['carrito'][$id_plato]['subtotal'] = $cantidad * $_SESSION['carrito'][$id_plato]['precio'];
+                $_SESSION['success'] = "Cantidad actualizada a $cantidad.";
             }
-
-            $this->redirectTo('producto', 'mostrarCarrito');
-        } catch (Exception $e) {
-            error_log("Error al actualizar la cantidad: " . $e->getMessage());
-            $_SESSION['error'] = "Ocurrió un error al actualizar la cantidad.";
-            $this->redirectBack();
+        } else {
+            $_SESSION['error'] = "El producto no existe en el carrito.";
         }
     }
+    
 
     // Función para eliminar un plato del carrito
     public function eliminarPlatoDeCesta($id_plato) {

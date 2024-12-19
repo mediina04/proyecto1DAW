@@ -1,23 +1,22 @@
 <?php
 // Incluir la clase DataBase para la conexión a la base de datos
-require_once '../config/data_base.php';  // Asegúrate de que la ruta sea correcta
+require_once '../config/data_base.php';
 require_once '../model/ProductosDAO.php';
+require_once __DIR__ . '/../model/reservasDAO.php';
+
+session_start();  // Iniciar la sesión si no está iniciada
 
 // Configuración de conexión a la base de datos
-$host = '127.0.0.1'; // Dirección IP del servidor de MySQL
-$dbname = 'polbeiro'; // Nombre de la base de datos
-$username = 'root'; // Usuario
-$password = 'Asdqwe!23'; // Contraseña
+$host = '127.0.0.1';
+$dbname = 'polbeiro';
+$username = 'root';
+$password = 'Asdqwe!23'; // Cambiar si es necesario
 
 try {
     // Crear la conexión con PDO
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
-
-    // Configuración de los atributos de PDO
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
 } catch (PDOException $e) {
-    // Manejo de errores de conexión
     echo "Error al conectar a la base de datos: " . $e->getMessage();
     exit;
 }
@@ -26,58 +25,38 @@ try {
 $sql = "SELECT id_plato, nombre, descripcion, precio, imagen_principal, imagen_secundaria FROM platos ORDER BY RAND() LIMIT 8";
 $stmt = $pdo->query($sql);
 
-// Iniciar la sesión si no está iniciada
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['accion'])) {
+    if ($_POST['accion'] == 'crear') {
+        // Obtener los datos del formulario
+        $nombre = $_POST['nombre'];
+        $telefono = $_POST['telefono'];
+        $personas = $_POST['personas'];
+        $fecha_reserva = $_POST['fecha_reserva']; // Fecha en formato DD-MM-YYYY HH:MM
 
-// Verificar si el formulario ha sido enviado
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_plato'])) {
-    // Obtener el ID del plato desde el formulario
-    $id_plato = filter_input(INPUT_POST, 'id_plato', FILTER_VALIDATE_INT);
+        // No validamos la fecha, simplemente la tomamos tal como está
 
-    // Validar que el ID es válido
-    if ($id_plato && $id_plato > 0) {
-        // Verificar si el carrito ya está inicializado en la sesión
-        if (!isset($_SESSION['carrito'])) {
-            $_SESSION['carrito'] = [];
-        }
+        // Crear la reserva
+        $usuarioId = 1; // Cambiar según el usuario autenticado
+        $reservaDAO = new ReservasDAO(DataBase::connect());
+        $reserva = new Reserva(null, $usuarioId, $fecha_reserva, $personas, $nombre, $telefono);
 
-        // Conectar a la base de datos y obtener el producto
-        $conexion = DataBase::connect();
-        $productosDAO = new ProductosDAO($conexion);
-        $producto = $productosDAO->obtenerPorId($id_plato);
+        // Insertar la reserva en la base de datos
+        $reservaId = $reservaDAO->crearReserva($reserva);
 
-        // Verificar si el producto existe
-        if ($producto) {
-            // Si el producto ya está en el carrito, aumentar la cantidad
-            if (isset($_SESSION['carrito'][$id_plato])) {
-                $_SESSION['carrito'][$id_plato]['cantidad'] += 1;
-                $_SESSION['carrito'][$id_plato]['subtotal'] = $_SESSION['carrito'][$id_plato]['producto']->getPrecio() * $_SESSION['carrito'][$id_plato]['cantidad'];
-            } else {
-                // Si el producto no está en el carrito, agregarlo
-                $_SESSION['carrito'][$id_plato] = [
-                    'producto' => $producto,
-                    'cantidad' => 1,
-                    'subtotal' => $producto->getPrecio()
-                ];
-            }
-
-            // Establecer mensaje de éxito en la sesión
-            $_SESSION['success'] = "";
-        } else {
-            // Establecer mensaje de error si no se encuentra el producto
-            $_SESSION['error'] = "";
-        }
-    } else {
-        // Establecer mensaje de error si el ID es inválido
-        $_SESSION['error'] = "ID de producto no válido.";
+        // Mensaje de éxito
+        $_SESSION['success'] = "Reserva creada con éxito. ID: " . $reservaId;
+        header('Location: Inicio.php');
+        exit();
     }
-
-    // Redirigir a la página de la cesta (carrito)
-    header('Location: Inicio.php');
-    exit();
 }
+
+
+
+
+// Verificar si el usuario tiene una reserva activa
+$reservaDAO = new ReservasDAO(DataBase::connect());
+$usuarioId = 1; // Cambiar según el usuario autenticado
+$reservasUsuario = $reservaDAO->obtenerReservasPorUsuario($usuarioId);
 ?>
 
 
@@ -87,6 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_plato'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Polbeiro</title>
+    <link rel="icon" href="Assets\IMG\ICONOS\HEADER\logo-polbeiro-head.svg" type="image/svg+xml">
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="Assets/css/styles.css">
 </head>
@@ -102,21 +82,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_plato'])) {
             </ul>
             <div class="logo">
                 <a href="Inicio.php">
-                    <img src="assets/img/ICONOS/HEADER/logo-polbeiro.png" alt="Logo Polbeiro">
+                    <img src="assets/img/ICONOS/HEADER/logo-polbeiro.svg" alt="Logo Polbeiro">
                 </a>
             </div>
             
             <div class="icons">
-                <!-- Checkbox oculto para alternar la visibilidad del campo de búsqueda -->
+
                 <input type="checkbox" id="search-toggle" hidden>
                 
-                <!-- Etiqueta para el icono de la lupa, actuará como botón -->
+                <!-- Etiqueta para el icono de la lupa -->
                 <label for="search-toggle">
                     <img src="assets/img/ICONOS/HEADER/icon-lupa.png" alt="Buscar" class="icon">
                 </label>
 
                 <a href="Cesta.php">
                     <img src="assets/img/ICONOS/HEADER/icon-cesta.png" alt="Cesta" class="icon">
+                </a>
+
+                <a href="Usuario.php">
+                    <img src="assets/img/ICONOS/HEADER/icon-usuario.svg" alt="Usuario" class="icon">
                 </a>
             </div>
         </div>
@@ -164,12 +148,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_plato'])) {
         </div>
     </div>
 
-    <!-- Sección de productos desde la base de datos -->
+    <!-- Sección de productos -->
     <section class="menu-section">
         <h2>THE MOST REQUESTED</h2>
         <div class="menu-gallery">
             <?php
-            // Comprobar si hay resultados de la base de datos
+
             if ($stmt->rowCount() > 0) {
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                     echo '<div class="menu-item">';
@@ -179,7 +163,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_plato'])) {
                     echo '<p class="name">' . $row['nombre'] . '</p>';
                     echo '<p class="price">€ ' . number_format($row['precio'], 2, ',', '.') . '</p>';
 
-                    // Formulario para añadir al carrito (sin redirección)
                     echo '<form method="POST">';
                     echo '<input type="hidden" name="id_plato" value="' . $row['id_plato'] . '">';
                     echo '<button type="submit" class="add-to-cart">AÑADIR AL CARRITO</button>';
@@ -201,30 +184,53 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_plato'])) {
             <img src="Assets/IMG/img-restauranteBW.webp" alt="restauranteimg">
             <div class="overlay">
                 <h2>DESCUBRE NUESTRO RESTAURANTE</h2>
-                <a href="Restaurante.html" class="visit-button">VISITAR</a>
+                <a href="Restaurante.php" class="visit-button">VISITAR</a>
             </div>
         </div>
     </section>
+    
+    <!-- Sección de Reservas -->
     <section class="reservation">
         <h2 class="reservation-title">RESERVAR MESA</h2>
         <div class="reservation-form">
-            <div class="input-group">
-                <input type="text" id="name" required placeholder=" ">
-                <label for="name">Nombre</label>
-            </div>
-            <div class="input-group">
-                <input type="tel" id="phone" required placeholder=" ">
-                <label for="phone">Teléfono</label>
-            </div>
-            <div class="input-group">
-                <input type="number" id="people" min="1" required placeholder=" ">
-                <label for="people">Personas</label>
-            </div>
-            <div class="input-group">
-                <input type="time" id="hora" min="12:00" max="23:00" required placeholder=" ">
-                <label for="hora">Hora</label>
-            </div>
-            <button type="submit" class="reservation-button">RESERVA</button>
+            <?php if (isset($_SESSION['success'])): ?>
+                <div class="success-message">
+                    <?php echo $_SESSION['success']; ?>
+                </div>
+                <?php unset($_SESSION['success']); ?>
+            <?php endif; ?>
+
+            <?php if (count($reservasUsuario) > 0): ?>
+                <h3>Tienes una reserva activa</h3>
+                <p><strong>Fecha y hora:</strong> <?php echo htmlspecialchars($reservasUsuario[0]['fecha_reserva']); ?></p>
+                <p><strong>Cantidad de personas:</strong> <?php echo htmlspecialchars($reservasUsuario[0]['cantidad_personas']); ?></p>
+                <p><strong>Comentarios:</strong> <?php echo htmlspecialchars($reservasUsuario[0]['comentarios']); ?></p>
+                <a href="index.php?controller=reserva&action=modificarReserva&id_reserva=<?php echo $reservasUsuario[0]['id_reserva']; ?>" class="btn-modificar">Modificar Reserva</a>
+                <a href="index.php?controller=reserva&action=anularReserva&id_reserva=<?php echo $reservasUsuario[0]['id_reserva']; ?>" class="btn-anular">Anular Reserva</a>
+            <?php else: ?>
+                <form method="POST" action="Inicio.php">
+    <input type="hidden" name="accion" value="crear">
+    
+    <div class="reserva-form">
+        <input type="text" name="nombre" required placeholder="Nombre">
+    </div>
+    <div class="reserva-form">
+        <input type="tel" name="telefono" required placeholder="Teléfono">
+    </div>
+    <div class="reserva-form">
+        <input type="number" name="personas" min="1" required placeholder="Número de personas">
+    </div>
+    <div class="reserva-form">
+        <!-- Campo para que el usuario ingrese la fecha y hora como un string -->
+        <input type="text" name="fecha_reserva" required placeholder="Fecha y hora (DD-MM-YYYY HH:MM)">
+    </div>
+    <button type="submit" class="reservation-button">RESERVAR</button>
+</form>
+
+
+
+
+            <?php endif; ?>
         </div>
     </section>
 
@@ -234,7 +240,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_plato'])) {
                 <h3>NO TE PIERDAS NUESTRAS OFERTAS</h3>
                 <p>Suscríbete a nuestra newsletter y recibe tu primer pedido gratis</p>
                 <form class="subscribe-form">
-                    <div class="input-group">
+                    <div class="subscribe-input">
                         <input type="email" id="email" required placeholder=" ">
                         <label for="email">Correo electrónico</label>
                     </div>
@@ -242,7 +248,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_plato'])) {
     
                     <!-- Logo y redes sociales -->
                     <div class="logo">
-                        <img src="assets/img/ICONOS/HEADER/logo-polbeiro.png" alt="Polbeiro Logo">
+                        <img src="assets/img/ICONOS/HEADER/logo-polbeiro.svg" alt="Polbeiro Logo">
                     </div>
                     
                     <div class="social-icons">

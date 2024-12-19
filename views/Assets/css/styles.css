@@ -12,6 +12,261 @@ body {
     margin-top: 60px;
 }
 
+/* Estilos específicos para el formulario de login y registro */
+.contenedor {
+    max-width: 400px;
+    margin: auto;
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #000096;
+    border-radius: 10px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    color: #000096;
+    margin-bottom: 20px;
+}
+
+.input-Log-Sign {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.input-Log-Sign input {
+    width: 100%;
+    padding: 10px 10px 10px 0;
+    border: none;
+    border-bottom: 2px solid #000096;
+    outline: none;
+    font-size: 14px;
+    background: transparent;
+    transition: border-color 0.3s ease;
+}
+
+.input-Log-Sign input:focus {
+    border-color: #000096;
+}
+
+.input-Log-Sign label {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    font-size: 14px;
+    color: #000096;
+    pointer-events: none;
+    transition: 0.2s ease all;
+}
+
+.input-Log-Sign input:focus + label,
+.input-Log-Sign input:not(:placeholder-shown) + label {
+    top: -10px;
+    left: 0;
+    font-size: 12px;
+    color: #000096;
+}
+
+.button-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Botón de inicio de sesión */
+.logIn-button {
+    background-color: #000096;
+    color: #FFFFFF;
+    padding: 12px 28px;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease;
+    width: 100%;
+}
+
+.logIn-button:hover {
+    background-color: #3333ff;
+}
+
+/* Botón de registro */
+.signUp-button {
+    background-color: #000096;
+    color: #FFFFFF;
+    padding: 12px 28px;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease;
+    width: 100%;
+}
+
+.signUp-button:hover {
+    background-color: #3333ff;
+}
+
+/* Botón para redireccionar al login */
+.redirect-login {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #000096;
+}
+
+.redirect-login a {
+    color: #000096;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.redirect-login a:hover {
+    color: #3333ff;
+    text-decoration: underline;
+}
+
+/* Botón para redireccionar al registro */
+.redirect-signup {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #000096;
+}
+
+.redirect-signup a {
+    color: #000096;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.redirect-signup a:hover {
+    color: #3333ff;
+    text-decoration: underline;
+}
+
+
+/* Estilos específicos para el panel de usuario */
+.user-section {
+    margin-top: 40px;
+    padding: 20px;
+    /* Se elimina el fondo de color gris y el borde */
+    border: none; /* Eliminamos el borde */
+    text-align: center;
+    /* Añadimos una sombra ligera para dar un toque sutil */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.user-section h2 {
+    color: #000096;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+/* Último pedido */
+.last-order {
+    display: flex; /* Usamos flexbox para alinear los elementos */
+    justify-content: space-between; /* Asegura que el contenido se distribuya entre el texto y el botón */
+    align-items: center; /* Alinea los elementos verticalmente */
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #ffffff; /* Fondo blanco para limpiar la sección */
+    border: 1px solid #000096; /* Mantener el borde azul */
+    border-radius: 10px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.last-order h3 {
+    color: #000096;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.order-details {
+    flex-grow: 1; /* Permite que los detalles del pedido ocupen el espacio restante */
+    text-align: left;
+}
+
+.order-details p {
+    font-size: 14px;
+    margin: 5px 0;
+    color: #333;
+}
+
+.order-details strong {
+    color: #000096;
+}
+
+/* Estilo de la edición de perfil */
+.edit-profile {
+    margin-top: 30px;
+}
+
+.edit-profile h3 {
+    color: #000096;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.input-group {
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #000096; /* Mantener borde azul */
+    border-radius: 5px;
+    font-size: 14px;
+    background-color: transparent;
+    transition: border-color 0.3s ease;
+}
+
+.input-group input:focus {
+    border-color: #3333ff; /* Cambio de color de borde al enfocar */
+}
+
+.input-group label {
+    font-size: 14px;
+    color: #000096;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Menú de usuario */
+.user-menu {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.user-menu li {
+    margin-bottom: 12px;
+}
+
+.user-menu li a {
+    text-decoration: none;
+    color: #000096;
+    font-size: 16px;
+    padding: 8px 15px;
+    border-radius: 5px;
+    display: inline-block;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.user-menu li a:hover {
+    background-color: #000096;
+    color: #ffffff;
+    text-decoration: underline;
+}
+
 /* Encabezado fijo */
 .header {
     position: fixed;
@@ -434,64 +689,65 @@ body {
 /* Estilo general de la sección de reserva */
 .reservation-form {
     display: flex;
-    justify-content: space-between; 
+    justify-content: space-between;
     align-items: center;
     margin-top: 40px;
-    gap: 20px;
+    gap: 10px; /* Espacio más pequeño entre los campos */
+    flex-wrap: wrap; /* Permite que se ajusten los elementos si no caben */
 }
 
 /* Estilo para los grupos de inputs */
-.input-group {
+.reserva-form {
     position: relative;
-    flex: 1 1 23%; /* Ajusta el tamaño de los inputs */
-    margin: 0 10px;
+    flex: 1 1 22%; /* Ajusta el tamaño de los inputs */
+    margin: 0 5px; /* Espacio más pequeño entre inputs */
 }
 
 /* Estilo para los inputs */
-.input-group input {
-    border: none; /* Eliminar borde por defecto */
-    border-bottom: 1px solid #000096; /* Línea azul inferior */
-    outline: none; /* Eliminar borde cuando el input está enfocado */
-    padding: 8px 5px; /* Espaciado adecuado */
-    width: 100%; /* El input ocupa todo el espacio disponible */
-    font-size: 14px; /* Fuente más pequeña */
-    background: transparent; /* Fondo transparente */
-    transition: border-color 0.3s ease; /* Transición para la línea */
+.reserva-form input {
+    border: none;
+    border-bottom: 1px solid #000096;
+    outline: none;
+    padding: 8px 5px;
+    width: 100%; /* Asegura que los inputs se ajusten bien */
+    font-size: 14px;
+    background: transparent;
+    transition: border-color 0.3s ease;
 }
 
 /* Estilo cuando el input está enfocado */
-.input-group input:focus {
-    border-bottom: 2px solid #000096; /* Línea inferior más gruesa */
+.reserva-form input:focus {
+    border-bottom: 2px solid #000096;
 }
 
 /* Estilo para los labels */
-.input-group label {
+.reserva-form label {
     position: absolute;
-    bottom: 12px; /* Separación inicial desde la línea inferior */
+    bottom: 12px;
     left: 0;
-    font-size: 14px; /* Tamaño adecuado para los labels */
-    color: #000096; /* Color azul */
-    background-color: white; /* Fondo blanco para que cubra la línea */
+    font-size: 14px;
+    color: #000096;
+    background-color: white;
     padding: 0 5px;
-    pointer-events: none; /* Evitar interferencias en la interacción */
-    transition: 0.2s ease all; /* Transición para el movimiento */
+    pointer-events: none;
+    transition: 0.2s ease all;
 }
 
 /* Cuando el input está enfocado o tiene valor */
-.input-group input:focus + label,
-.input-group input:not(:placeholder-shown) + label {
-    bottom: 25px; /* Mover el label hacia arriba */
-    font-size: 12px; /* Reducir el tamaño del label */
-    color: #000096; /* Mantener el color azul */
+.reserva-form input:focus + label,
+.reserva-form input:not(:placeholder-shown) + label {
+    bottom: 25px;
+    font-size: 12px;
+    color: #000096;
 }
 
 /* Ajustes para inputs de texto, teléfono, número y hora */
-.input-group input[type="text"],
-.input-group input[type="tel"],
-.input-group input[type="number"],
-.input-group input[type="time"] {
+.reserva-form input[type="text"],
+.reserva-form input[type="tel"],
+.reserva-form input[type="number"],
+.reserva-form input[type="time"] {
     appearance: none;
-    border-radius: 0; /* Sin bordes redondeados */
+    border-radius: 0;
 }
 
 /* Ajustes del botón de reserva */
@@ -536,8 +792,6 @@ body {
     color: #000096;
     border-color: #000096;
 }
-
-
 
 
 /* Sección Sobre Nosotros */
@@ -690,14 +944,14 @@ body {
     justify-content: space-between;
 }
 
-.input-group {
+.contact-input {
     position: relative;
     flex: 1 1 23%;
     margin: 0 10px;
 }
 
-.input-group input,
-.input-group textarea {
+.contact-input input,
+.contact-input textarea {
     border: none;
     border-bottom: 1px solid #000096;
     outline: none;
@@ -708,21 +962,21 @@ body {
     font-family: 'Archivo', sans-serif;
 }
 
-.input-group#message-group {
+.contact-input#message-group {
     flex: 1 1 100%;
 }
 
-.input-group textarea {
+.contact-input textarea {
     resize: vertical;
     min-height: 80px; 
 }
 
-.input-group input:focus,
-.input-group textarea:focus {
+.contact-input input:focus,
+.contact-input textarea:focus {
     border-bottom: 2px solid #000096;
 }
 
-.input-group label {
+.contact-input label {
     position: absolute;
     bottom: 8px;
     left: 0;
@@ -735,15 +989,15 @@ body {
 }
 
 /* Ajuste del label flotante cuando el campo está enfocado o tiene texto */
-.input-group input:focus + label,
-.input-group input:not(:placeholder-shown) + label {
+.contact-input input:focus + label,
+.contact-input input:not(:placeholder-shown) + label {
     bottom: 30px; 
     font-size: 12px;
     color: #000096;
 }
 
-.input-group textarea:focus + label,
-.input-group textarea:not(:placeholder-shown) + label {
+.contact-input textarea:focus + label,
+.contact-input textarea:not(:placeholder-shown) + label {
     bottom: 80px; 
     font-size: 12px;
     color: #000096;
@@ -884,104 +1138,123 @@ body {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
+    font-family: 'Archivo', sans-serif;
 }
 
 /* Cabeceras de la tabla */
-.cart-table th,
-.cart-table td {
-    padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid #000096;
-}
-
-/* Estilo de las cabeceras */
 .cart-table th {
     color: #000096;
     font-weight: normal;
     font-size: 11px;
-    font-family: 'Archivo', sans-serif;
+    text-align: left;
+    border-bottom: 2px solid #000096;
+    padding: 10px;
 }
 
-/* Estilo para el contenedor de los productos */
+/* Celdas de la tabla */
+.cart-table td {
+    padding: 10px 5px; /* Reducido para mejorar alineación */
+    border-bottom: 1px solid #ddd;
+    vertical-align: middle; /* Alineación vertical centrada */
+}
+
+/* Sección del producto */
+.product-cell {
+    display: flex;
+    align-items: center;
+}
+
 .product {
     display: flex;
     align-items: center;
 }
 
-/* Imagen de los productos */
 .product-image {
     width: 80px;
     height: 80px;
     margin-right: 15px;
     border: 1px solid #000096;
+    object-fit: cover;
 }
 
-/* Información del producto */
-.product-info {
-    color: #000096;
-    flex-grow: 1; /* Asegura que el texto se expanda */
-}
-
-/* Nombre del producto */
-.product-name {
-    font-weight: normal;
-}
-
-/* Celda de cantidad */
-.quantity-cell {
+.product-details {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centra todo el contenido horizontalmente */
-    justify-content: center; /* Centra todo el contenido verticalmente */
+    color: #000096;
 }
 
-/* Controles de cantidad */
+.product-name {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.product-price {
+    font-size: 12px;
+    color: #333;
+    margin-top: 5px;
+}
+
+/* Columna de cantidad */
+.quantity-cell {
+    text-align: center;
+    vertical-align: middle; /* Alinea verticalmente el contenido */
+    padding: 0; /* Elimina padding adicional */
+    height: 100%; /* Asegura que la celda se expanda completamente */
+}
+
+
 .quantity-controls {
     display: flex;
+    justify-content: center;
     align-items: center;
-    margin-bottom: 10px; /* Espacio entre la cantidad y el botón de eliminar */
+    gap: 5px; /* Espacio entre elementos */
+    margin: 0; /* Elimina márgenes innecesarios */
 }
 
-/* Botones de cantidad */
 .quantity-button {
-    background-color: #fff;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    color: #000096;
-    font-weight: normal;
-    transition: background-color 0.3s ease;
-    box-shadow: none;
-}
-
-/* Input de cantidad */
-.quantity-input {
-    width: 40px;
-    text-align: center;
-    border: none;
-    background-color: #FFFFFF;
+    background-color: transparent;
+    border: 1px solid #000096;
     color: #000096;
     font-size: 16px;
-    box-shadow: none;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 28px;
+    transition: all 0.3s ease;
 }
 
-/* Contenedor del botón de eliminar */
+.quantity-button:hover {
+    background-color: #000096;
+    color: #fff;
+}
+
+.quantity-input {
+    width: 40px;
+    height: 30px;
+    text-align: center;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    color: #000096;
+    margin: 0; /* Elimina margen innecesario */
+    box-sizing: border-box; /* Asegura consistencia en altura */
+}
+
+/* Botón Quitar */
 .delete-btn-container {
-    margin-top: 5px; /* Espacio adicional para separar el botón de eliminar de la cantidad */
-    text-align: center; /* Centra el botón */
+    text-align: center; /* Centra el botón horizontalmente */
+    margin-top: 5px; /* Espacio uniforme superior */
 }
 
-/* Estilo del botón de eliminar "Quitar" */
 .delete-btn {
     background: none;
     color: #000096;
     border: none;
-    font-family: 'Archivo', sans-serif;
-    font-size: 14px;
-    font-weight: normal;
     text-decoration: underline;
+    font-size: 12px;
     cursor: pointer;
-    transition: color 0.3s ease;
+    margin: 0; /* Elimina margen superior innecesario */
+    padding: 0; /* Consistencia */
 }
 
 
@@ -1144,7 +1417,7 @@ body {
 }
 
 /* Grupo de input */
-.subscribe-form .input-group {
+.subscribe-form .subscribe-input {
     position: relative;
     width: 100%;
     display: flex;

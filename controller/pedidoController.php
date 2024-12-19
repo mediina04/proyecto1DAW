@@ -4,35 +4,65 @@ require_once 'model/pedidosDAO.php';
 
 class PedidoController {
 
-    // Crear un nuevo pedido
     public function crear() {
         session_start();
-        if (isset($_SESSION['usuario']) && !empty($_SESSION['carrito'])) {
+
+        // Comprobar que el usuario esté autenticado
+        if (!isset($_SESSION['usuario']) || empty($_SESSION['usuario'])) {
+            $_SESSION['error'] = "Debes iniciar sesión para realizar un pedido.";
+            header("Location: views/Login.php");
+            exit();
+        }
+
+        if (!empty($_SESSION['carrito'])) {
             $usuarioId = $_SESSION['usuario']->getId();
             $productos = $_SESSION['carrito'];
 
-            $pedidoDAO = new PedidosDAO(DataBase::connect());
-            $pedidoId = $pedidoDAO->crearPedido($usuarioId, $productos);
+            // Calcular el total del pedido
+            $total = array_reduce($productos, function ($sum, $producto) {
+                return $sum + $producto['subtotal'];
+            }, 0);
 
-            if ($pedidoId) {
-                $_SESSION['carrito'] = [];
-                echo "Pedido realizado con éxito. ID del pedido: $pedidoId";
-            } else {
-                echo "Error al realizar el pedido.";
+            $pedidoDAO = new PedidosDAO(DataBase::connect());
+
+            try {
+                // Intentar crear el pedido
+                $pedidoId = $pedidoDAO->crearPedido($usuarioId, $productos, $total);
+
+                if ($pedidoId) {
+                    $_SESSION['carrito'] = []; // Vaciar el carrito
+                    $_SESSION['success'] = "Pedido realizado con éxito. ID del pedido: $pedidoId";
+                    header("Location: index.php?controller=pedido&action=historial");
+                    exit();
+                } else {
+                    throw new Exception("Error al crear el pedido.");
+                }
+            } catch (Exception $e) {
+                $_SESSION['error'] = "Ocurrió un error al realizar el pedido: " . $e->getMessage();
+                header("Location: views/Cesta.php");
+                exit();
             }
         } else {
-            echo "No hay productos en el carrito o el usuario no está autenticado.";
+            $_SESSION['error'] = "El carrito está vacío.";
+            header("Location: views/Cesta.php");
+            exit();
         }
     }
 
-    // Consultar los pedidos del usuario
     public function historial() {
         session_start();
-        if (isset($_SESSION['usuario'])) {
-            $usuarioId = $_SESSION['usuario']->getId();
-            $pedidoDAO = new PedidosDAO(DataBase::connect());
-            $pedidos = $pedidoDAO->obtenerPedidosPorUsuario($usuarioId);
-            require_once 'views/pedidos/historial.php'; // Mostrar historial en la vista
+
+        // Verificar autenticación del usuario
+        if (!isset($_SESSION['usuario'])) {
+            $_SESSION['error'] = "Debes iniciar sesión para ver tu historial.";
+            header("Location: views/Login.php");
+            exit();
         }
+
+        $usuarioId = $_SESSION['usuario']->getId();
+        $pedidoDAO = new PedidosDAO(DataBase::connect());
+        $pedidos = $pedidoDAO->obtenerPedidosPorUsuario($usuarioId);
+
+        require_once 'views/pedidos/historial.php'; // Mostrar historial en la vista
     }
 }
