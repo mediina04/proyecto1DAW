@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
-    <link rel="icon" href="Assets\IMG\ICONOS\HEADER\logo-polbeiro-head.svg" type="image/svg+xml">
+    <link rel="icon" href="Assets/IMG/ICONOS/HEADER/logo-polbeiro-head.svg" type="image/svg+xml">
     <link rel="stylesheet" href="Assets/css/styles.css">
 </head>
 <body>
     <div class="contenedor">
         <div class="title">Registro</div>
-        <form action="process_signup.php" method="POST" class="signup-form">
-            <div class="input-Log-Sign">
-                <input type="text" name="name" id="name" required placeholder=" ">
-                <label for="name">Usuario</label>
+        <form action="index.php?controller=usuario&action=registrar" method="POST" class="signup-form">
+        <div class="input-Log-Sign">
+                <input type="text" name="user" id="user" required placeholder=" ">
+                <label for="user">Usuario</label>
             </div>
             <div class="input-Log-Sign">
                 <input type="text" name="name" id="name" required placeholder=" ">
@@ -33,7 +33,7 @@
             </div>
             <div class="input-Log-Sign">
                 <input type="number" name="phone" id="phone" required placeholder=" ">
-                <label for="telf">Teléfono</label>
+                <label for="phone">Teléfono</label>
             </div>
             <div class="input-Log-Sign">
                 <input type="text" name="address" id="address" required placeholder=" ">
@@ -44,7 +44,7 @@
             </div>
         </form>
         <div class="redirect-login">
-            <p>¿Ya tienes una cuenta? <a href="login.php">Inicia sesión aquí</a>.</p>
+            <p>¿Ya tienes una cuenta? <a href="Login.php">Inicia sesión aquí</a>.</p>
         </div>
     </div>
 </body>

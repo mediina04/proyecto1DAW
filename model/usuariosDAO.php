@@ -1,115 +1,65 @@
 <?php
-require_once 'models/usuario.php';
-require_once 'config/dataBase.php';
+include_once __DIR__ . '/../config/data_base.php';
+include_once __DIR__ . '/../model/Usuario.php';
 
 class UsuariosDAO {
-    private $conexion;
-
-    public function __construct($conexion) {
-        $this->conexion = $conexion;
-    }
-
-    // Guardar un nuevo usuario
-    public function guardar($usuario) {
+    // Esta funcion permite insertar un usuario en la base de datos
+    public static function insert(Usuario $usuario) {
+        $con = DataBase::connect();
         $query = "INSERT INTO usuarios (usuario, nombre, apellido, email, contrasena, telefono, direccion) 
                   VALUES (?, ?, ?, ?, ?, ?, ?)";
-        $stmt = $this->conexion->prepare($query);
-        $stmt->bind_param(
-            "sssssss",
-            $usuario->getUsuario(),
-            $usuario->getNombre(),
-            $usuario->getApellido(),
-            $usuario->getEmail(),
-            $usuario->getContraseña(),
-            $usuario->getTelefono(),
-            $usuario->getDireccion()
-        );
-        return $stmt->execute();
-    }
 
-    // Validar login de un usuario
-    public function validateLogin($usuario, $password) {
-        $query = "SELECT * FROM usuarios WHERE usuario = ?";
-        $stmt = $this->conexion->prepare($query);
-        $stmt->bind_param("s", $usuario);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($row = $result->fetch_assoc()) {
-            if (password_verify($password, $row['contrasena'])) {
-                return new Usuario(
-                    $row['id_usuario'],
-                    $row['usuario'],
-                    $row['nombre'],
-                    $row['apellido'],
-                    $row['contrasena'],
-                    $row['email'],
-                    $row['telefono'],
-                    $row['direccion']
-                );
-            }
-        }
-        return null;
-    }
-
-    // Obtener un usuario por su email
-    public function buscarPorEmail($email) {
-        $query = "SELECT * FROM usuarios WHERE email = ?";
-        $stmt = $this->conexion->prepare($query);
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($row = $result->fetch_assoc()) {
-            return new Usuario(
-                $row['id_usuario'],
-                $row['usuario'],
-                $row['nombre'],
-                $row['apellido'],
-                $row['contrasena'],
-                $row['email'],
-                $row['telefono'],
-                $row['direccion']
+        if ($stmt = $con->prepare($query)) {
+            // Asociamos los parámetros
+            $stmt->bind_param("sssssss", 
+                $usuario->usuario, 
+                $usuario->nombre, 
+                $usuario->apellido, 
+                $usuario->email, 
+                $usuario->contrasena, 
+                $usuario->telefono, 
+                $usuario->direccion
             );
+
+            // Ejecutamos la consulta
+            if ($stmt->execute()) {
+                $stmt->close();
+                $con->close();
+                return true;  // Si la inserción fue exitosa
+            } else {
+                // Mostrar el error si no se ejecutó la consulta
+                echo "Error en la ejecución del INSERT: " . $stmt->error;
+                $stmt->close();
+                $con->close();
+                return false;
+            }
+        } else {
+            // Mostrar el error si no se pudo preparar la consulta
+            echo "Error en la preparación de la consulta: " . $con->error;
+            $con->close();
+            return false;
         }
-        return null;
     }
 
-    // Actualizar los datos de un usuario
-    public function actualizar($usuario) {
-        $query = "UPDATE usuarios SET usuario = ?, nombre = ?, apellido = ?, email = ?, telefono = ?, direccion = ? WHERE id_usuario = ?";
-        $stmt = $this->conexion->prepare($query);
-        $stmt->bind_param(
-            "ssssssi",
-            $usuario->getUsuario(),
-            $usuario->getNombre(),
-            $usuario->getApellido(),
-            $usuario->getEmail(),
-            $usuario->getTelefono(),
-            $usuario->getDireccion(),
-            $usuario->getId()
-        );
-        return $stmt->execute();
+    // Esta funcion permite validar el login de un usuario
+    public static function validateLogin($usuario, $password) {
+        $con = DataBase::connect();
+        $sql = "SELECT id_usuario FROM usuarios WHERE usuario='$usuario' AND contrasena='$password'";
+        $result = $con->query($sql);
+        $con->close();
+        return $result->num_rows > 0;
     }
 
-    // Obtener todos los usuarios
-    public function obtenerTodos() {
-        $query = "SELECT * FROM usuarios";
-        $result = $this->conexion->query($query);
-
+    public static function getAll() {
+        $con = DataBase::connect();
+        $sql = "SELECT * FROM usuarios";
+        $result = $con->query($sql);
         $usuarios = [];
         while ($row = $result->fetch_assoc()) {
-            $usuarios[] = new Usuario(
-                $row['id_usuario'],
-                $row['usuario'],
-                $row['nombre'],
-                $row['apellido'],
-                $row['contrasena'],
-                $row['email'],
-                $row['telefono'],
-                $row['direccion']
-            );
+            $usuarios[] = $row;
         }
+        $con->close();
         return $usuarios;
     }
 }
+?>

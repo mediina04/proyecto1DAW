@@ -59,7 +59,7 @@ function actualizarCantidad($id_plato, $accion) {
         // Si la cantidad es 0 o menor, eliminar el producto del carrito
         if ($cantidad <= 0) {
             unset($_SESSION['carrito'][$id_plato]);
-            $_SESSION['success'] = "Producto eliminado del carrito.";
+            $_SESSION['success'] = "";
         } else {
             // Actualizar la cantidad y subtotal si no se eliminó
             $_SESSION['carrito'][$id_plato]['cantidad'] = $cantidad;

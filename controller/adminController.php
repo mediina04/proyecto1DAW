@@ -9,7 +9,6 @@ class AdminController {
     // Ver todos los usuarios
     public function verUsuarios() {
         $usuarioDAO = new UsuariosDAO(DataBase::connect());
-        $usuarios = $usuarioDAO->obtenerTodos();
         require_once 'views/admin/usuarios.php'; // Mostrar usuarios en vista
     }
 

@@ -4,10 +4,9 @@ require_once 'config/data_base.php';
 
 $con = DataBase::connect();
 
-$query = "SELECT nombre FROM platos";
+$query = "SELECT nombre, descripcion FROM platos";
 
 $result = $con->query($query);
-
 
 $con->close();
 ?>

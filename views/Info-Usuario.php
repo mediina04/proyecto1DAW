@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Usuario</title>
-    <link rel="icon" href="Assets\IMG\ICONOS\HEADER\logo-polbeiro-head.svg" type="image/svg+xml">
+    <link rel="icon" href="Assets/IMG/ICONOS/HEADER/logo-polbeiro-head.svg" type="image/svg+xml">
     <link rel="stylesheet" href="Assets/css/styles.css">
 </head>
 <body>
@@ -19,7 +19,7 @@
             </ul>
             <div class="logo">
                 <a href="Inicio.php">
-                <img src="assets/img/ICONOS/HEADER/logo-polbeiro.svg" alt="Logo Polbeiro">
+                    <img src="assets/img/ICONOS/HEADER/logo-polbeiro.svg" alt="Logo Polbeiro">
                 </a>
             </div>
             <div class="icons">
@@ -39,41 +39,43 @@
 
     <!-- Panel de Usuario -->
     <div class="user-section">
-        <h2>Bienvenido, [Nombre del Usuario]</h2>
+        <h2>Bienvenido, <?php echo $_SESSION['usuario']->getNombre(); ?></h2> <!-- Nombre dinámico del usuario -->
         
         <!-- Último pedido -->
+        <?php if ($pedido): ?>
         <div class="last-order">
             <div class="order-details">
                 <h3>Tu último pedido</h3>
-                <p><strong>Pedido #12345</strong></p>
-                <p>Fecha: 16/12/2024</p>
-                <p>Total: $45.00</p>
+                <p><strong>Pedido #<?php echo $pedido['id_pedido']; ?></strong></p>
+                <p>Fecha: <?php echo $pedido['fecha']; ?></p>
+                <p>Total: $<?php echo $pedido['total']; ?></p>
             </div>
             <form action="Cesta.php" method="GET">
                 <button type="submit" class="reservation-button">Volver a pedir</button>
             </form>
         </div>
-
-
+        <?php else: ?>
+        <p>No tienes pedidos anteriores.</p>
+        <?php endif; ?>
         
         <!-- Formulario para editar datos -->
         <div class="edit-profile">
             <h3>Editar tus datos</h3>
-            <form action="" method="POST" id="editProfileForm">
+            <form action="index.php?controller=usuario&action=actualizar_datos" method="POST" id="editProfileForm">
                 <div class="input-Log-Sign">
-                    <input type="text" name="name" id="name"  required placeholder=" ">
+                    <input type="text" name="name" id="name" required placeholder=" " value="<?php echo $_SESSION['usuario']->getNombre(); ?>">
                     <label for="name">Nombre</label>
                 </div>
                 <div class="input-Log-Sign">
-                    <input type="text" name="lastname" id="lastname"  required placeholder=" ">
+                    <input type="text" name="lastname" id="lastname" required placeholder=" " value="<?php echo $_SESSION['usuario']->getApellido(); ?>">
                     <label for="lastname">Apellido</label>
                 </div>
                 <div class="input-Log-Sign">
-                    <input type="email" name="email" id="email"  required placeholder=" ">
+                    <input type="email" name="email" id="email" required placeholder=" " value="<?php echo $_SESSION['usuario']->getEmail(); ?>">
                     <label for="email">Correo Electrónico</label>
                 </div>
                 <div class="input-Log-Sign">
-                    <input type="number" name="phone" id="phone"  required placeholder=" ">
+                    <input type="number" name="phone" id="phone" required placeholder=" " value="<?php echo $_SESSION['usuario']->getTelefono(); ?>">
                     <label for="phone">Teléfono</label>
                 </div>
                 <button type="submit" class="reservation-button">Guardar Cambios</button>
@@ -82,12 +84,12 @@
 
         <!-- Botón para cerrar sesión -->
         <div class="logout">
-            <form action="" method="POST">
-                <input type="hidden" name="logout" value="true">
-                <button type="submit" href="Login.php" class="reservation-button">Cerrar Sesión</button>
+            <form action="index.php?controller=usuario&action=cerrar_sesion" method="POST">
+                <button type="submit" class="reservation-button">Cerrar Sesión</button>
             </form>
         </div>
     </div>
+
     <footer class="footer">
         <div class="footer-top">
             <div class="footer-section">
@@ -115,7 +117,6 @@
                 </form>
             </div>
     
-            <!-- Las otras secciones del footer se quedan igual -->
             <div class="footer-section">
                 <h3>OFERTAS ACTUALES</h3>
                 <p>CÓDIGO: POLBEIRO (10%)</p>

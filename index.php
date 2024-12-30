@@ -1,45 +1,50 @@
 <?php
-// Incluir los controladores necesarios
-include_once("controller/productoController.php");
-include_once("controller/usuarioController.php");
-include_once("controller/pedidoController.php");
-include_once("controller/reservaController.php"); // Asegúrate de incluir el controlador de reservas
+
+// Incluye los controladores necesarios
+include_once("controllers/productoController.php");
+include_once("controllers/UsuarioController.php");
+include_once("controllers/pedidoController.php");
+include_once("controllers/reservaController.php");
 include_once("config/parameters.php");
 
-// Redirigir al inicio si no hay controller ni action
-if (!isset($_GET['controller']) && !isset($_GET['action'])) {
-    header('Location: views/Inicio.php');
-    exit();
+// Debugging: Muestra los parámetros GET para verificar que se reciben correctamente
+echo "<pre>";
+var_dump($_GET);  // Muestra los parámetros GET
+echo "</pre>";
+
+// Redirigir a la URL por defecto si no se especifica controlador o acción
+if (empty($_GET['controller']) || empty($_GET['action'])) {
+    header('Location:' . url_base . '?controller=producto&action=index');
+    exit; // Asegúrate de salir después de la redirección
 }
 
-// Validar el controller
-if (!isset($_GET['controller']) || empty($_GET['controller'])) {
-    // Si no existe el controller, redirigir al inicio
-    header('Location: views/Inicio.php');
-    exit();
-} else {
-    $nombre_controller = ucfirst($_GET['controller']) . "Controller"; // Capitaliza el nombre del controller
-    
-    // Verificar si el controlador existe
-    if (class_exists($nombre_controller)) {
-        // Crear instancia del controlador
-        $controller = new $nombre_controller();
-        
-        // Verificar si la acción existe
-        $action = isset($_GET['action']) && method_exists($controller, $_GET['action']) 
-            ? $_GET['action'] 
-            : DEFAULT_ACTION;  // Utiliza la acción por defecto si no se especifica una
-        
-        // Ejecutar la acción correspondiente
+// Sanitize and validate controller and action
+$controller = $_GET['controller'] ?? 'producto';
+$action = $_GET['action'] ?? 'index';
+
+// Define el nombre del controlador a cargar
+$controllerClass = $controller . "Controller";
+
+// Comprobar si la clase existe
+if (class_exists($controllerClass)) {
+    // Crear una instancia del controlador
+    $controllerObj = new $controllerClass();
+
+    // Verificar si la acción solicitada existe en el controlador
+    if (method_exists($controllerObj, $action)) {
         try {
-            $controller->$action();
+            // Ejecutar la acción solicitada
+            $controllerObj->$action();
         } catch (Exception $e) {
-            // Si ocurre un error en la ejecución de la acción, mostrar un mensaje
+            // Manejo de errores: se captura y muestra el error
             echo "Error al ejecutar la acción: " . htmlspecialchars($e->getMessage());
         }
     } else {
-        // Si no existe el controlador, mostrar un mensaje de error
-        echo "No existe el controlador: " . htmlspecialchars($nombre_controller);
+        // Si la acción no existe, redirigir o mostrar error
+        echo "La acción '" . htmlspecialchars($action) . "' no existe en el controlador '" . htmlspecialchars($controllerClass) . "'.";
     }
+} else {
+    // Si el controlador no existe, mostrar un mensaje de error
+    echo "El controlador '" . htmlspecialchars($controllerClass) . "' no existe.";
 }
 ?>

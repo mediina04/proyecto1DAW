@@ -12,10 +12,10 @@ class ProductosDAO {
     // Obtener todos los productos
     public function obtenerTodos() {
         $query = "SELECT * FROM platos";
-        $stmt = $this->conexion->query($query);
+        $stmt = $this->conexion->query($query); // Usar query directamente para consultas simples
         $productos = [];
 
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        while ($row = $stmt->fetch_assoc()) { // Cambiado a fetch_assoc para mysqli
             $productos[] = new Producto(
                 $row['id_plato'],
                 $row['nombre'],
@@ -32,10 +32,17 @@ class ProductosDAO {
     public function obtenerPorId($id) {
         $query = "SELECT * FROM platos WHERE id_plato = ?";
         $stmt = $this->conexion->prepare($query);
-        $stmt->bindParam(1, $id, PDO::PARAM_INT);
-        $stmt->execute();
 
-        if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        if (!$stmt) {
+            throw new Exception("Error al preparar la consulta: " . $this->conexion->error);
+        }
+
+        // Vincular parámetros usando bind_param (mysqli)
+        $stmt->bind_param("i", $id); // "i" indica que el parámetro es un entero
+        $stmt->execute();
+        $result = $stmt->get_result(); // Obtener el resultado de la consulta
+
+        if ($row = $result->fetch_assoc()) {
             return new Producto(
                 $row['id_plato'],
                 $row['nombre'],
@@ -45,23 +52,29 @@ class ProductosDAO {
                 $row['imagen_secundaria']
             );
         }
-        return null;
+        return null; // Retornar null si no se encuentra el producto
     }
 
     // Método para agregar un nuevo producto
     public function agregar($producto) {
         $query = "INSERT INTO platos (nombre, descripcion, precio, imagen_principal, imagen_secundaria) 
-                  VALUES (:nombre, :descripcion, :precio, :imagen_principal, :imagen_secundaria)";
-        
-        // Preparar la consulta
+                  VALUES (?, ?, ?, ?, ?)";
+
         $stmt = $this->conexion->prepare($query);
-        
-        // Vincular los parámetros con los valores del objeto Producto
-        $stmt->bindParam(':nombre', $producto->getNombre());
-        $stmt->bindParam(':descripcion', $producto->getDescripcion());
-        $stmt->bindParam(':precio', $producto->getPrecio());
-        $stmt->bindParam(':imagen_principal', $producto->getImagenPrincipal());
-        $stmt->bindParam(':imagen_secundaria', $producto->getImagenSecundaria());
+
+        if (!$stmt) {
+            throw new Exception("Error al preparar la consulta: " . $this->conexion->error);
+        }
+
+        // Vincular parámetros con los valores del objeto Producto
+        $stmt->bind_param(
+            "ssdss", // Tipos: s (string), d (double), i (integer)
+            $producto->getNombre(),
+            $producto->getDescripcion(),
+            $producto->getPrecio(),
+            $producto->getImagenPrincipal(),
+            $producto->getImagenSecundaria()
+        );
 
         // Ejecutar la consulta
         return $stmt->execute(); // Devuelve true si la inserción fue exitosa

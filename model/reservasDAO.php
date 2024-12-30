@@ -53,13 +53,24 @@ class ReservasDAO {
     // Obtener todas las reservas de un usuario
     public function obtenerReservasPorUsuario($id_usuario) {
         try {
+            // Preparar la consulta
             $stmt = $this->db->prepare("SELECT * FROM reservas WHERE id_usuario = ? ORDER BY fecha_reserva DESC");
-            $stmt->execute([$id_usuario]);
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            // Convertir cada fila del resultado en un objeto Reserva
+            
+            // Verificar si la consulta fue preparada correctamente
+            if (!$stmt) {
+                throw new Exception("Error al preparar la consulta: " . $this->db->error);
+            }
+    
+            // Asociar parámetros y ejecutar la consulta
+            $stmt->bind_param("i", $id_usuario);
+            $stmt->execute();
+    
+            // Obtener el resultado
+            $result = $stmt->get_result();
+    
+            // Procesar los resultados
             $reservas = [];
-            foreach ($result as $reservaData) {
+            while ($reservaData = $result->fetch_assoc()) {
                 $reservas[] = new Reserva(
                     $reservaData['id_reserva'],
                     $reservaData['id_usuario'],
@@ -68,13 +79,16 @@ class ReservasDAO {
                     $reservaData['comentarios']
                 );
             }
-
+    
+            $stmt->close();
             return $reservas;
-        } catch (PDOException $e) {
+    
+        } catch (Exception $e) {
             echo "Error al obtener las reservas del usuario: " . $e->getMessage();
             return [];
         }
     }
+    
 
     // Eliminar una reserva
     public function eliminarReserva($id_reserva) {

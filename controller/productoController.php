@@ -130,7 +130,7 @@ class ProductoController {
 
     // Redirigir a una acción
     private function redirectTo($controller, $action) {
-        header('Location: ' . URL_BASE . "index.php?controller=$controller&action=$action");
+        header('Location: ' . url_base . "index.php?controller=$controller&action=$action");
         exit();
     }
 

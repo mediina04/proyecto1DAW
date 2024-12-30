@@ -25,38 +25,58 @@ try {
 $sql = "SELECT id_plato, nombre, descripcion, precio, imagen_principal, imagen_secundaria FROM platos ORDER BY RAND() LIMIT 8";
 $stmt = $pdo->query($sql);
 
+// Verificar si el formulario de reserva ha sido enviado
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['accion'])) {
+    $reservaDAO = new ReservasDAO(DataBase::connect());
+    $usuarioId = 1; // Simulando un usuario fijo
+
     if ($_POST['accion'] == 'crear') {
         // Obtener los datos del formulario
         $nombre = $_POST['nombre'];
         $telefono = $_POST['telefono'];
         $personas = $_POST['personas'];
-        $fecha_reserva = $_POST['fecha_reserva']; // Fecha en formato DD-MM-YYYY HH:MM
-
-        // No validamos la fecha, simplemente la tomamos tal como está
+        $fecha_reserva = $_POST['hora']; // Fecha en formato string
 
         // Crear la reserva
-        $usuarioId = 1; // Cambiar según el usuario autenticado
-        $reservaDAO = new ReservasDAO(DataBase::connect());
         $reserva = new Reserva(null, $usuarioId, $fecha_reserva, $personas, $nombre, $telefono);
 
         // Insertar la reserva en la base de datos
-        $reservaId = $reservaDAO->crearReserva($reserva);
+        $reservaDAO->crearReserva($reserva);
 
         // Mensaje de éxito
-        $_SESSION['success'] = "Reserva creada con éxito. ID: " . $reservaId;
+        $_SESSION['success'] = "Mesa reservada con éxito.";
+        header('Location: Inicio.php');
+        exit();
+    } elseif ($_POST['accion'] == 'anular') {
+        // Anular la reserva
+        $id_reserva = $_POST['id_reserva'];
+        $reservaDAO->eliminarReserva($id_reserva);
+
+        // Mensaje de anulación
+        $_SESSION['success'] = "Reserva anulada.";
+        header('Location: Inicio.php');
+        exit();
+    } elseif ($_POST['accion'] == 'modificar') {
+        // Modificar la reserva
+        $id_reserva = $_POST['id_reserva'];
+        $personas = $_POST['personas'];
+        $fecha_reserva = $_POST['hora'];
+
+        // Actualizar en la base de datos
+        $reservaDAO->actualizarReserva($id_reserva, $fecha_reserva, $personas);
+
+        // Mensaje de éxito
+        $_SESSION['success'] = "Reserva modificada con éxito.";
         header('Location: Inicio.php');
         exit();
     }
 }
 
-
-
-
-// Verificar si el usuario tiene una reserva activa
+// Obtener la reserva activa para el usuario (si existe)
 $reservaDAO = new ReservasDAO(DataBase::connect());
-$usuarioId = 1; // Cambiar según el usuario autenticado
-$reservasUsuario = $reservaDAO->obtenerReservasPorUsuario($usuarioId);
+$reservasUsuario = $reservaDAO->obtenerReservasPorUsuario(1); // Usuario fijo
+
+
 ?>
 
 
@@ -99,7 +119,7 @@ $reservasUsuario = $reservaDAO->obtenerReservasPorUsuario($usuarioId);
                     <img src="assets/img/ICONOS/HEADER/icon-cesta.png" alt="Cesta" class="icon">
                 </a>
 
-                <a href="Usuario.php">
+                <a href="Info-Usuario.php">
                     <img src="assets/img/ICONOS/HEADER/icon-usuario.svg" alt="Usuario" class="icon">
                 </a>
             </div>
@@ -191,48 +211,61 @@ $reservasUsuario = $reservaDAO->obtenerReservasPorUsuario($usuarioId);
     
     <!-- Sección de Reservas -->
     <section class="reservation">
-        <h2 class="reservation-title">RESERVAR MESA</h2>
-        <div class="reservation-form">
-            <?php if (isset($_SESSION['success'])): ?>
-                <div class="success-message">
-                    <?php echo $_SESSION['success']; ?>
+    <h2 class="reservation-title">RESERVAR MESA</h2>
+    <div class="reservation-form">
+        <?php if (isset($_SESSION['success'])): ?>
+            <div class="success-message">
+                <?php echo htmlspecialchars($_SESSION['success']); ?>
+            </div>
+            <?php unset($_SESSION['success']); ?>
+        <?php endif; ?>
+
+        <?php if (!empty($reservasUsuario)): ?>
+            <!-- Mostrar detalles de la reserva -->
+            <h3>Tienes una reserva activa</h3>
+            <p><strong>Fecha y hora:</strong> <?php echo htmlspecialchars($reservasUsuario[0]->getFechaReserva()); ?></p>
+            <p><strong>Cantidad de personas:</strong> <?php echo htmlspecialchars($reservasUsuario[0]->getCantidadPersonas()); ?></p>
+            <p><strong>Comentarios:</strong> <?php echo htmlspecialchars($reservasUsuario[0]->getComentarios()); ?></p>
+            
+            <!-- Botón para modificar la reserva -->
+            <form method="POST" action="Inicio.php" style="display: inline-block;">
+                <input type="hidden" name="accion" value="modificar">
+                <input type="hidden" name="id_reserva" value="<?php echo $reservasUsuario[0]->getIdReserva(); ?>">
+                <button type="submit" class="btn-modificar">Modificar Reserva</button>
+            </form>
+
+            <!-- Botón para anular la reserva -->
+            <form method="POST" action="Inicio.php" style="display: inline-block;">
+                <input type="hidden" name="accion" value="anular">
+                <input type="hidden" name="id_reserva" value="<?php echo $reservasUsuario[0]->getIdReserva(); ?>">
+                <button type="submit" class="btn-anular">Anular Reserva</button>
+            </form>
+        <?php else: ?>
+            <!-- Formulario para crear una reserva -->
+            <form method="POST" action="Inicio.php" class="reservation-container">
+                <input type="hidden" name="accion" value="crear">
+                
+                <div class="reserva-form">
+                    <input type="text" name="nombre" required placeholder="">
+                    <label for="name">Nombre</label>
                 </div>
-                <?php unset($_SESSION['success']); ?>
-            <?php endif; ?>
-
-            <?php if (count($reservasUsuario) > 0): ?>
-                <h3>Tienes una reserva activa</h3>
-                <p><strong>Fecha y hora:</strong> <?php echo htmlspecialchars($reservasUsuario[0]['fecha_reserva']); ?></p>
-                <p><strong>Cantidad de personas:</strong> <?php echo htmlspecialchars($reservasUsuario[0]['cantidad_personas']); ?></p>
-                <p><strong>Comentarios:</strong> <?php echo htmlspecialchars($reservasUsuario[0]['comentarios']); ?></p>
-                <a href="index.php?controller=reserva&action=modificarReserva&id_reserva=<?php echo $reservasUsuario[0]['id_reserva']; ?>" class="btn-modificar">Modificar Reserva</a>
-                <a href="index.php?controller=reserva&action=anularReserva&id_reserva=<?php echo $reservasUsuario[0]['id_reserva']; ?>" class="btn-anular">Anular Reserva</a>
-            <?php else: ?>
-                <form method="POST" action="Inicio.php">
-    <input type="hidden" name="accion" value="crear">
-    
-    <div class="reserva-form">
-        <input type="text" name="nombre" required placeholder="Nombre">
+                <div class="reserva-form">
+                    <input type="tel" name="telefono" required placeholder="">
+                    <label for="phone">Teléfono</label>
+                </div>
+                <div class="reserva-form">
+                    <input type="number" name="personas" min="1" required placeholder="">
+                    <label for="people">Personas</label>
+                </div>
+                <div class="reserva-form">
+                    <input type="time" min="12:00" max="17:00" name="hora" required placeholder="">
+                    <label for="hora">Hora</label>
+                </div>
+                <button type="submit" class="reservation-button">RESERVAR</button>
+            </form>
+        <?php endif; ?>
     </div>
-    <div class="reserva-form">
-        <input type="tel" name="telefono" required placeholder="Teléfono">
-    </div>
-    <div class="reserva-form">
-        <input type="number" name="personas" min="1" required placeholder="Número de personas">
-    </div>
-    <div class="reserva-form">
-        <!-- Campo para que el usuario ingrese la fecha y hora como un string -->
-        <input type="text" name="fecha_reserva" required placeholder="Fecha y hora (DD-MM-YYYY HH:MM)">
-    </div>
-    <button type="submit" class="reservation-button">RESERVAR</button>
-</form>
-
-
-
-
-            <?php endif; ?>
-        </div>
-    </section>
+</section>
 
     <footer class="footer">
         <div class="footer-top">

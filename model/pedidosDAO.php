@@ -37,10 +37,33 @@ class PedidosDAO {
         }
     }
 
+    // Obtener el último pedido de un usuario
+    public function getLatestPedidoByUsuarioId($id_usuario) {
+        $query = "SELECT * FROM pedidos WHERE id_usuario = :id_usuario ORDER BY fecha DESC LIMIT 1";
+        $stmt = $this->db->prepare($query); // Cambié $this->con por $this->db
+        $stmt->bindParam(":id_usuario", $id_usuario, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC); // Devuelve el último pedido
+    }
+
+    // Obtener todos los productos de un pedido
+    public function getProductosByPedidoId($id_pedido) {
+        $query = "SELECT p.id_plato, p.nombre, dp.cantidad, dp.subtotal 
+                  FROM detalles_pedido dp
+                  JOIN platos p ON dp.id_plato = p.id_plato
+                  WHERE dp.id_pedido = :id_pedido";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(":id_pedido", $id_pedido, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC); // Devuelve los productos asociados al pedido
+    }
+
+    // Obtener los pedidos de un usuario
     public function obtenerPedidosPorUsuario($usuarioId) {
         $stmt = $this->db->prepare("SELECT * FROM pedidos WHERE id_usuario = ? ORDER BY fecha DESC");
         $stmt->execute([$usuarioId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
+
 

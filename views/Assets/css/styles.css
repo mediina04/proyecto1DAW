@@ -666,14 +666,15 @@ body {
 
 /* Estilos para la sección de reserva */
 .reservation {
-    max-width: 1450px;
-    margin: 60px auto;
-    padding: 20px;
+    max-width: 1450px; /* Asegura que ocupe todo el ancho disponible */
+    margin: 60px auto; /* Centrar la sección */
+    padding: 20px 40px; /* Espaciado interno */
     border: 1px solid #000096;
     text-align: center;
     position: relative;
 }
 
+/* Título de la sección */
 .reservation-title {
     font-size: 18px;
     color: #000096;
@@ -686,21 +687,23 @@ body {
     transform: translateX(-50%);
 }
 
-/* Estilo general de la sección de reserva */
-.reservation-form {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 40px;
-    gap: 10px; /* Espacio más pequeño entre los campos */
-    flex-wrap: wrap; /* Permite que se ajusten los elementos si no caben */
+/* Contenedor del formulario */
+.reservation-container {
+    display: flex; /* Coloca los inputs y el botón en fila */
+    flex-wrap: wrap; /* Permite que los elementos bajen si no hay espacio */
+    justify-content: space-between; /* Espacio igual entre los elementos */
+    align-items: center; /* Alinea los elementos verticalmente */
+    gap: 20px; /* Espaciado entre los inputs */
+    max-width: 1450px;
+    margin: 0 auto; /* Centra el formulario horizontalmente */
 }
 
 /* Estilo para los grupos de inputs */
 .reserva-form {
     position: relative;
-    flex: 1 1 22%; /* Ajusta el tamaño de los inputs */
-    margin: 0 5px; /* Espacio más pequeño entre inputs */
+    flex: 1; /* Los inputs ocupan todo el espacio disponible */
+    min-width: 150px; /* Ancho mínimo para los inputs */
+    margin: 0; /* Elimina márgenes extra */
 }
 
 /* Estilo para los inputs */
@@ -709,7 +712,7 @@ body {
     border-bottom: 1px solid #000096;
     outline: none;
     padding: 8px 5px;
-    width: 100%; /* Asegura que los inputs se ajusten bien */
+    width: 100%; /* Input ocupa todo el contenedor */
     font-size: 14px;
     background: transparent;
     transition: border-color 0.3s ease;
@@ -741,37 +744,25 @@ body {
     color: #000096;
 }
 
-/* Ajustes para inputs de texto, teléfono, número y hora */
-.reserva-form input[type="text"],
-.reserva-form input[type="tel"],
-.reserva-form input[type="number"],
-.reserva-form input[type="time"] {
-    appearance: none;
-    border-radius: 0;
-}
-
-/* Ajustes del botón de reserva */
+/* Botón de reserva */
 .reservation-button {
     background-color: #000096;
     color: #FFFFFF;
-    padding: 12px 28px;
-    font-size: 12px;
+    padding: 12px 20px; /* Ajusta el tamaño del botón */
+    font-size: 14px;
     font-family: 'Helvetica', sans-serif;
     cursor: pointer;
     border: 2px solid transparent;
-    margin-top: 20px;
     text-transform: uppercase;
     position: relative;
     overflow: hidden;
     transition: color 0.3s, border-color 0.3s;
     z-index: 1;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+    flex-shrink: 0; /* Evita que el botón se reduzca */
+    align-self: stretch; /* Asegura que el botón tenga la misma altura que los inputs */
 }
 
-/* Efecto en el botón de reserva */
+/* Efecto del botón al pasar el mouse */
 .reservation-button::before {
     content: "";
     position: absolute;
@@ -792,6 +783,7 @@ body {
     color: #000096;
     border-color: #000096;
 }
+
 
 
 /* Sección Sobre Nosotros */

@@ -91,7 +91,7 @@
                         <input type="email" id="email" required placeholder=" ">
                         <label for="email">Correo electrónico</label>
                     </div>
-                    <button type="submit">SUSCRIBIRSE</button>
+                    <button class="reservation-button">SUSCRIBIRSE</button>
     
                     <!-- Logo y redes sociales -->
                     <div class="logo">
