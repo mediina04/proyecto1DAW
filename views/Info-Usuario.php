@@ -1,5 +1,20 @@
+<?php
+session_start(); // Asegúrate de que la sesión esté iniciada
+
+// Verificación de si el usuario está autenticado
+if (!isset($_SESSION['usuario'])) {
+    // Redirigir al login si el usuario no está autenticado
+    header("Location: index.php?controller=usuario&action=login");
+    exit;
+}
+
+// Suponiendo que el pedido esté disponible desde la base de datos o la sesión
+// Asegúrate de que $pedido esté definido correctamente en este contexto
+$pedido = isset($_SESSION['pedido']) ? $_SESSION['pedido'] : null;
+?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,16 +54,16 @@
 
     <!-- Panel de Usuario -->
     <div class="user-section">
-        <h2>Bienvenido, <?php echo $_SESSION['usuario']->getNombre(); ?></h2> <!-- Nombre dinámico del usuario -->
+        <h2>Bienvenido, <?php echo htmlspecialchars($_SESSION['usuario']->getNombre()); ?></h2> <!-- Nombre dinámico del usuario -->
         
         <!-- Último pedido -->
         <?php if ($pedido): ?>
         <div class="last-order">
             <div class="order-details">
                 <h3>Tu último pedido</h3>
-                <p><strong>Pedido #<?php echo $pedido['id_pedido']; ?></strong></p>
-                <p>Fecha: <?php echo $pedido['fecha']; ?></p>
-                <p>Total: $<?php echo $pedido['total']; ?></p>
+                <p><strong>Pedido #<?php echo htmlspecialchars($pedido['id_pedido']); ?></strong></p>
+                <p>Fecha: <?php echo htmlspecialchars($pedido['fecha']); ?></p>
+                <p>Total: $<?php echo htmlspecialchars($pedido['total']); ?></p>
             </div>
             <form action="Cesta.php" method="GET">
                 <button type="submit" class="reservation-button">Volver a pedir</button>
@@ -63,19 +78,19 @@
             <h3>Editar tus datos</h3>
             <form action="index.php?controller=usuario&action=actualizar_datos" method="POST" id="editProfileForm">
                 <div class="input-Log-Sign">
-                    <input type="text" name="name" id="name" required placeholder=" " value="<?php echo $_SESSION['usuario']->getNombre(); ?>">
+                    <input type="text" name="name" id="name" required placeholder=" " value="<?php echo htmlspecialchars($_SESSION['usuario']->getNombre()); ?>">
                     <label for="name">Nombre</label>
                 </div>
                 <div class="input-Log-Sign">
-                    <input type="text" name="lastname" id="lastname" required placeholder=" " value="<?php echo $_SESSION['usuario']->getApellido(); ?>">
+                    <input type="text" name="lastname" id="lastname" required placeholder=" " value="<?php echo htmlspecialchars($_SESSION['usuario']->getApellido()); ?>">
                     <label for="lastname">Apellido</label>
                 </div>
                 <div class="input-Log-Sign">
-                    <input type="email" name="email" id="email" required placeholder=" " value="<?php echo $_SESSION['usuario']->getEmail(); ?>">
+                    <input type="email" name="email" id="email" required placeholder=" " value="<?php echo htmlspecialchars($_SESSION['usuario']->getEmail()); ?>">
                     <label for="email">Correo Electrónico</label>
                 </div>
                 <div class="input-Log-Sign">
-                    <input type="number" name="phone" id="phone" required placeholder=" " value="<?php echo $_SESSION['usuario']->getTelefono(); ?>">
+                    <input type="number" name="phone" id="phone" required placeholder=" " value="<?php echo htmlspecialchars($_SESSION['usuario']->getTelefono()); ?>">
                     <label for="phone">Teléfono</label>
                 </div>
                 <button type="submit" class="reservation-button">Guardar Cambios</button>

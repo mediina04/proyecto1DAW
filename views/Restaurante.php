@@ -40,7 +40,7 @@
                     <img src="assets/img/ICONOS/HEADER/icon-cesta.png" alt="Cesta" class="icon">
                 </a>
 
-                <a href="Usuario.php">
+                <a href="Info-Usuario.php">
                     <img src="assets/img/ICONOS/HEADER/icon-usuario.svg" alt="Usuario" class="icon">
                 </a>
             </div>

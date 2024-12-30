@@ -7,20 +7,28 @@ include_once("controllers/pedidoController.php");
 include_once("controllers/reservaController.php");
 include_once("config/parameters.php");
 
-// Debugging: Muestra los parámetros GET para verificar que se reciben correctamente
-echo "<pre>";
-var_dump($_GET);  // Muestra los parámetros GET
-echo "</pre>";
-
 // Redirigir a la URL por defecto si no se especifica controlador o acción
 if (empty($_GET['controller']) || empty($_GET['action'])) {
-    header('Location:' . url_base . '?controller=producto&action=index');
-    exit; // Asegúrate de salir después de la redirección
+    header('Location: ' . url_base . '?controller=producto&action=index');
+    exit;
 }
 
 // Sanitize and validate controller and action
-$controller = $_GET['controller'] ?? 'producto';
-$action = $_GET['action'] ?? 'index';
+$controller = isset($_GET['controller']) ? filter_var($_GET['controller'], FILTER_SANITIZE_STRING) : 'producto';
+$action = isset($_GET['action']) ? filter_var($_GET['action'], FILTER_SANITIZE_STRING) : 'index';
+
+// Validar el controlador y la acción
+$allowedControllers = ['producto', 'usuario', 'pedido', 'reserva']; // Puedes agregar más controladores aquí
+$allowedActions = ['index', 'login', 'registrar', 'menu_usuario', 'cerrar_sesion', 'pedidos_info', 'panel_admin']; // Acciones permitidas
+
+// Verificar si el controlador y la acción son válidos
+if (!in_array($controller, $allowedControllers)) {
+    die("Controlador no válido.");
+}
+
+if (!in_array($action, $allowedActions)) {
+    die("Acción no válida.");
+}
 
 // Define el nombre del controlador a cargar
 $controllerClass = $controller . "Controller";
