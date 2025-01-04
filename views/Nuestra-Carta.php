@@ -1,6 +1,5 @@
 <?php
-// Incluir la clase DataBase para la conexión a la base de datos
-require_once '../config/data_base.php';  // Asegúrate de que la ruta sea correcta
+require_once '../config/data_base.php';  
 require_once '../model/ProductosDAO.php';
 
 // Configuración de conexión a la base de datos
@@ -32,12 +31,12 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Verificar si el formulario ha sido enviado
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_plato'])) {
-    // Obtener el ID del plato desde el formulario
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_plato'])) {
+    // Obtener el ID del plato desde el formulario y validarlo
     $id_plato = filter_input(INPUT_POST, 'id_plato', FILTER_VALIDATE_INT);
 
-    // Validar que el ID es válido
-    if ($id_plato && $id_plato > 0) {
+    // Validar que el ID es válido y mayor que 0
+    if ($id_plato !== false && $id_plato > 0) {
         // Verificar si el carrito ya está inicializado en la sesión
         if (!isset($_SESSION['carrito'])) {
             $_SESSION['carrito'] = [];
@@ -57,9 +56,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_plato'])) {
             } else {
                 // Si el producto no está en el carrito, agregarlo
                 $_SESSION['carrito'][$id_plato] = [
-                    'producto' => $producto,
-                    'cantidad' => 1,
-                    'subtotal' => $producto->getPrecio()
+                    'imagen' => $producto->getImagenPrincipal() ?? 'default.jpg', // Imagen principal
+                    'nombre' => $producto->getNombre(), // Nombre del producto
+                    'descripcion' => $producto->getDescripcion(), // Descripción del producto
+                    'precio' => $producto->getPrecio(), // Precio del producto
+                    'producto' => $producto, // Objeto de producto (opcional)
+                    'cantidad' => 1, // Iniciar con una cantidad de 1
+                    'subtotal' => $producto->getPrecio() // Establecer el subtotal inicial
                 ];
             }
 
@@ -67,17 +70,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_plato'])) {
             $_SESSION['success'] = "";
         } else {
             // Establecer mensaje de error si no se encuentra el producto
-            $_SESSION['error'] = "";
+            $_SESSION['error'] = "Producto no encontrado en la base de datos.";
         }
     } else {
-        // Establecer mensaje de error si el ID es inválido
+        // Establecer mensaje de error si el ID no es válido
         $_SESSION['error'] = "ID de producto no válido.";
     }
-
-    // Redirigir a la página de la cesta (carrito)
-    header('Location: Nuestra-Carta.php');
-    exit();
+    
+    // Redirigir o continuar según lo necesites
+    header("Location: Nuestra-Carta.php");
+    exit;
 }
+
 ?>
 
 <!DOCTYPE html>

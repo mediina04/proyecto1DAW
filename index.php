@@ -1,10 +1,10 @@
 <?php
 
 // Incluye los controladores necesarios
-include_once("controllers/productoController.php");
-include_once("controllers/UsuarioController.php");
-include_once("controllers/pedidoController.php");
-include_once("controllers/reservaController.php");
+include_once("controller/ProductoController.php");
+include_once("controller/UsuarioController.php");
+include_once("controller/PedidoController.php");
+include_once("controller/ReservaController.php");
 include_once("config/parameters.php");
 
 // Redirigir a la URL por defecto si no se especifica controlador o acción
@@ -21,7 +21,6 @@ $action = isset($_GET['action']) ? filter_var($_GET['action'], FILTER_SANITIZE_S
 $allowedControllers = ['producto', 'usuario', 'pedido', 'reserva']; // Puedes agregar más controladores aquí
 $allowedActions = ['index', 'login', 'registrar', 'menu_usuario', 'cerrar_sesion', 'pedidos_info', 'panel_admin']; // Acciones permitidas
 
-// Verificar si el controlador y la acción son válidos
 if (!in_array($controller, $allowedControllers)) {
     die("Controlador no válido.");
 }
@@ -31,7 +30,7 @@ if (!in_array($action, $allowedActions)) {
 }
 
 // Define el nombre del controlador a cargar
-$controllerClass = $controller . "Controller";
+$controllerClass = ucfirst($controller) . "Controller";
 
 // Comprobar si la clase existe
 if (class_exists($controllerClass)) {

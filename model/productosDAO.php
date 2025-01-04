@@ -1,5 +1,5 @@
 <?php
-require_once 'producto.php';
+require_once 'Producto.php';
 
 class ProductosDAO {
 
@@ -12,10 +12,10 @@ class ProductosDAO {
     // Obtener todos los productos
     public function obtenerTodos() {
         $query = "SELECT * FROM platos";
-        $stmt = $this->conexion->query($query); // Usar query directamente para consultas simples
-        $productos = [];
+        $stmt = $this->conexion->query($query); // Consulta directa para obtener todos los productos
 
-        while ($row = $stmt->fetch_assoc()) { // Cambiado a fetch_assoc para mysqli
+        $productos = [];
+        while ($row = $stmt->fetch_assoc()) {
             $productos[] = new Producto(
                 $row['id_plato'],
                 $row['nombre'],
@@ -30,19 +30,23 @@ class ProductosDAO {
 
     // Obtener un producto por su ID
     public function obtenerPorId($id) {
+        if (!is_numeric($id) || $id <= 0) {
+            throw new InvalidArgumentException("ID de producto inválido.");
+        }
+    
         $query = "SELECT * FROM platos WHERE id_plato = ?";
         $stmt = $this->conexion->prepare($query);
-
+    
         if (!$stmt) {
             throw new Exception("Error al preparar la consulta: " . $this->conexion->error);
         }
-
-        // Vincular parámetros usando bind_param (mysqli)
-        $stmt->bind_param("i", $id); // "i" indica que el parámetro es un entero
+    
+        $stmt->bind_param("i", $id);
         $stmt->execute();
-        $result = $stmt->get_result(); // Obtener el resultado de la consulta
-
+        $result = $stmt->get_result();
+    
         if ($row = $result->fetch_assoc()) {
+            $stmt->close(); // Cerrar el statement
             return new Producto(
                 $row['id_plato'],
                 $row['nombre'],
@@ -51,12 +55,21 @@ class ProductosDAO {
                 $row['imagen_principal'],
                 $row['imagen_secundaria']
             );
+        } else {
+            error_log("Producto con ID $id no encontrado."); // Registro en el log
         }
-        return null; // Retornar null si no se encuentra el producto
+    
+        $stmt->close(); // Cerrar el statement
+        return null;
     }
+    
 
-    // Método para agregar un nuevo producto
+    // Agregar un nuevo producto
     public function agregar($producto) {
+        if (!$producto instanceof Producto) {
+            throw new InvalidArgumentException("El objeto proporcionado no es una instancia de Producto.");
+        }
+
         $query = "INSERT INTO platos (nombre, descripcion, precio, imagen_principal, imagen_secundaria) 
                   VALUES (?, ?, ?, ?, ?)";
 
@@ -66,7 +79,6 @@ class ProductosDAO {
             throw new Exception("Error al preparar la consulta: " . $this->conexion->error);
         }
 
-        // Vincular parámetros con los valores del objeto Producto
         $stmt->bind_param(
             "ssdss", // Tipos: s (string), d (double), i (integer)
             $producto->getNombre(),
@@ -76,7 +88,57 @@ class ProductosDAO {
             $producto->getImagenSecundaria()
         );
 
-        // Ejecutar la consulta
-        return $stmt->execute(); // Devuelve true si la inserción fue exitosa
+        $resultado = $stmt->execute();
+        $stmt->close(); // Cerrar el statement
+        return $resultado;
+    }
+
+    // Eliminar un producto por ID
+    public function eliminar($id) {
+        if (!is_numeric($id) || $id <= 0) {
+            throw new InvalidArgumentException("ID de producto inválido.");
+        }
+
+        $query = "DELETE FROM platos WHERE id_plato = ?";
+        $stmt = $this->conexion->prepare($query);
+
+        if (!$stmt) {
+            throw new Exception("Error al preparar la consulta: " . $this->conexion->error);
+        }
+
+        $stmt->bind_param("i", $id);
+        $resultado = $stmt->execute();
+        $stmt->close(); // Cerrar el statement
+        return $resultado;
+    }
+
+    // Actualizar un producto existente
+    public function actualizar($producto) {
+        if (!$producto instanceof Producto) {
+            throw new InvalidArgumentException("El objeto proporcionado no es una instancia de Producto.");
+        }
+
+        $query = "UPDATE platos SET nombre = ?, descripcion = ?, precio = ?, imagen_principal = ?, imagen_secundaria = ?
+                  WHERE id_plato = ?";
+
+        $stmt = $this->conexion->prepare($query);
+
+        if (!$stmt) {
+            throw new Exception("Error al preparar la consulta: " . $this->conexion->error);
+        }
+
+        $stmt->bind_param(
+            "ssdssi", // Tipos: s (string), d (double), i (integer)
+            $producto->getNombre(),
+            $producto->getDescripcion(),
+            $producto->getPrecio(),
+            $producto->getImagenPrincipal(),
+            $producto->getImagenSecundaria(),
+            $producto->getId()
+        );
+
+        $resultado = $stmt->execute();
+        $stmt->close(); // Cerrar el statement
+        return $resultado;
     }
 }

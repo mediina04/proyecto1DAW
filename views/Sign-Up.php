@@ -10,9 +10,9 @@
 <body>
     <div class="contenedor">
         <div class="title">Registro</div>
-        <form action="index.php?controller=usuario&action=registrar" method="POST" class="signup-form">
+        <form action="index.php?controller=usuario&action=registrar" method="POST" class="signup-form" onsubmit="return validatePassword()">
             <div class="input-Log-Sign">
-                <input type="text" name="user" id="user" required placeholder=" ">
+                <input type="text" name="usuario" id="user" required placeholder=" " minlength="3">
                 <label for="user">Usuario</label>
             </div>
             <div class="input-Log-Sign">
@@ -36,7 +36,7 @@
                 <label for="confirm_password">Confirmar Contraseña</label>
             </div>
             <div class="input-Log-Sign">
-                <input type="number" name="phone" id="phone" required placeholder=" ">
+                <input type="number" name="phone" id="phone" required placeholder=" " pattern="\d{9}" title="Introduce un número de teléfono válido (9 dígitos)">
                 <label for="phone">Teléfono</label>
             </div>
             <div class="input-Log-Sign">
@@ -45,7 +45,7 @@
             </div>
 
             <!-- Token CSRF -->
-            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? ''); ?>">
 
             <div class="button-container">
                 <button type="submit" class="reservation-button">Registrarse</button>

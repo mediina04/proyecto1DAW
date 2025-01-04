@@ -1342,6 +1342,11 @@ body {
     flex-grow: 1; /* Hace que los elementos crezcan para ocupar el espacio disponible */
 }
 
+/*Botones Info Usuario*/
+.auth-buttons{
+    margin-top: 30px;
+}
+
 /* Footer */
 .footer {
     background-color: #ffffff;

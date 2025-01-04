@@ -1,6 +1,6 @@
 <?php
-require_once 'model/pedido.php';
-require_once 'model/pedidosDAO.php';
+require_once 'model/Pedido.php';
+require_once 'model/PedidosDAO.php';
 
 class PedidoController {
 

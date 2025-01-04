@@ -1,122 +1,82 @@
 <?php
-require_once 'model/Usuario.php';
-require_once 'model/UsuariosDAO.php';
-require_once 'model/PedidosDAO.php';
+include_once __DIR__ . '/../model/Usuario.php';
+include_once __DIR__ . '/../model/UsuariosDAO.php';
 
 class UsuarioController {
-
-    public function __construct() {
-        session_start();
-    }
-
-    private function verificarSesion() {
-        if (!isset($_SESSION['usuario'])) {
-            header("Location: index.php?controller=usuario&action=login");
-            exit;
-        }
-    }
-
+    // Funciones para controlar las vistas de los usuarios
     public function login() {
-        if (isset($_SESSION['usuario'])) {
-            header("Location: index.php?controller=usuario&action=menu_usuario");
-            exit;
-        }
-        $view = "views/login.php";
-        include_once 'views/Inicio.php';
-   }
-   
-
-   public function registrar() {
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        // Validar datos
-        $usuario = htmlspecialchars(trim($_POST['usuario']));
-        $nombre = htmlspecialchars(trim($_POST['name']));
-        $apellido = htmlspecialchars(trim($_POST['lastname']));
-        $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
-        $password = trim($_POST['password']);
-        $telefono = htmlspecialchars(trim($_POST['phone']));
-        $direccion = htmlspecialchars(trim($_POST['address']));
-
-        if (!$email || strlen($password) < 6) {
-            header("Location: index.php?controller=usuario&action=sign_up&error=invalid_data");
-            exit;
-        }
-
-        // Verificar si ya existe el usuario
-        $usuarioExistente = UsuariosDAO::findByEmailOrUsername($email, $usuario);
-        if ($usuarioExistente) {
-            header("Location: index.php?controller=usuario&action=sign_up&error=user_exists");
-            exit;
-        }
-
-        // Crear objeto usuario
-        $passwordHash = password_hash($password, PASSWORD_BCRYPT);
-        $usuario_obj = new Usuario($usuario, $nombre, $apellido, $passwordHash, $email, $telefono, $direccion);
-
-        // Insertar en base de datos
-        $result = UsuariosDAO::insert($usuario_obj);
-        if ($result) {
-            $_SESSION['usuario'] = $usuario_obj;
-            header("Location: index.php?controller=usuario&action=menu_usuario");
-            exit;
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $usuario = $_POST['username'];
+            $password = $_POST['password'];
+    
+            // Obtener el usuario desde la base de datos
+            $user = UsuariosDAO::getUserByUsername($usuario);
+    
+            if ($user && password_verify($password, $user['contrasena'])) {
+                session_start();
+                $_SESSION['login'] = true;
+                $_SESSION['usuario'] = new Usuario(
+                    $user['usuario'], 
+                    $user['nombre'], 
+                    $user['apellido'], 
+                    $user['contrasena'], 
+                    $user['email'], 
+                    $user['telefono'], 
+                    $user['direccion']
+                );
+    
+                // Redirigir al menú del usuario
+                header("Location: Info-Usuario.php?controller=usuario&action=menu_usuario");
+                exit;
+            } else {
+                // Redirigir al login con un mensaje de error
+                header("Location: index.php?controller=usuario&action=login&error=1");
+                exit;
+            }
         } else {
-            header("Location: index.php?controller=usuario&action=sign_up&error=register_failed");
-            exit;
+            // Verificar si hay un error en la URL
+            $error = isset($_GET['error']) ? "Nombre de usuario o contraseña incorrectos." : null;
+    
+            // Mostrar la vista de inicio de sesión
+            include_once 'views/Login.php';
         }
     }
-}
+    
 
+    public function registro() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $usuario = $_POST['usuario'];
+            $nombre = $_POST['name'];
+            $apellido = $_POST['lastname'];
+            $email = $_POST['email'];
+            $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Encriptar contraseña
+            $telefono = $_POST['phone'];
+            $direccion = $_POST['address'];
 
-    public function menu_usuario() {
-        $this->verificarSesion();
-        $view = "views/menu_usuario.php";
-        include_once 'views/Inicio.php';
-    }
+            $user = new Usuario($usuario, $nombre, $apellido, $password, $email, $telefono, $direccion);
 
-    public function pedidos_info() {
-        $this->verificarSesion();
-        $view = "views/pedidos_info.php";
-        include_once 'views/Inicio.php';
+            if (UsuariosDAO::insert($user)) {
+                session_start();
+                $_SESSION['login'] = true;
+                $_SESSION['usuario'] = $user;
+
+                // Redirigir a Inicio.php después del registro
+                header("Location: views/Inicio.php");
+                exit;
+            } else {
+                echo "<div>Error: No se ha completado el registro.</div>";
+                include_once 'views/Sign-Up.php';
+            }
+        } else {
+            include_once 'views/Sign-Up.php';
+        }
     }
 
     public function cerrar_sesion() {
-        session_unset(); // Limpia todas las variables de sesión
-        session_destroy(); // Destruye la sesión
-        header("Location: index.php");
+        session_start();
+        session_unset();
+        session_destroy();
+        header("Location: views/Login.php");
         exit;
     }
-   
-
-    public function pedir_pedido_anterior() {
-        $this->verificarSesion();
-        $usuario = $_SESSION['usuario'];
-        $id_usuario = $usuario->id;
-
-        try {
-            $pedidosDAO = new PedidosDAO(DataBase::connect());
-            $pedido = $pedidosDAO->getLatestPedidoByUsuarioId($id_usuario);
-
-            if ($pedido) {
-                $_SESSION['cart'] = $pedidosDAO->getProductosByPedidoId($pedido['id_pedido']);
-                header("Location: index.php?controller=producto&action=compra");
-                exit;
-            } else {
-                echo "No se encontró ningún pedido anterior.";
-            }
-        } catch (Exception $e) {
-            echo "Error al recuperar el pedido: " . $e->getMessage();
-        }
-    }
-
-    public function panel_admin() {
-        $this->verificarSesion();
-        if ($_SESSION['usuario']->getTipoUsuario() === 'admin') {
-            include_once 'api/panel_admin.html';
-        } else {
-            header("Location: index.php?controller=usuario&action=menu_usuario");
-            exit;
-        }
-    }
-   
 }
-?>

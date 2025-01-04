@@ -1,15 +1,7 @@
 <?php
 session_start(); // Asegúrate de que la sesión esté iniciada
 
-// Verificación de si el usuario está autenticado
-if (!isset($_SESSION['usuario'])) {
-    // Redirigir al login si el usuario no está autenticado
-    header("Location: index.php?controller=usuario&action=login");
-    exit;
-}
-
-// Suponiendo que el pedido esté disponible desde la base de datos o la sesión
-// Asegúrate de que $pedido esté definido correctamente en este contexto
+// Simulación del último pedido (puedes reemplazarlo con datos reales desde la base de datos)
 $pedido = isset($_SESSION['pedido']) ? $_SESSION['pedido'] : null;
 ?>
 
@@ -18,7 +10,7 @@ $pedido = isset($_SESSION['pedido']) ? $_SESSION['pedido'] : null;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Usuario</title>
+    <title>Información del Usuario</title>
     <link rel="icon" href="Assets/IMG/ICONOS/HEADER/logo-polbeiro-head.svg" type="image/svg+xml">
     <link rel="stylesheet" href="Assets/css/styles.css">
 </head>
@@ -38,10 +30,6 @@ $pedido = isset($_SESSION['pedido']) ? $_SESSION['pedido'] : null;
                 </a>
             </div>
             <div class="icons">
-                <input type="checkbox" id="search-toggle" hidden>
-                <label for="search-toggle">
-                    <img src="assets/img/ICONOS/HEADER/icon-lupa.png" alt="Buscar" class="icon">
-                </label>
                 <a href="Cesta.php">
                     <img src="assets/img/ICONOS/HEADER/icon-cesta.png" alt="Cesta" class="icon">
                 </a>
@@ -54,55 +42,51 @@ $pedido = isset($_SESSION['pedido']) ? $_SESSION['pedido'] : null;
 
     <!-- Panel de Usuario -->
     <div class="user-section">
-        <h2>Bienvenido, <?php echo htmlspecialchars($_SESSION['usuario']->getNombre()); ?></h2> <!-- Nombre dinámico del usuario -->
-        
-        <!-- Último pedido -->
-        <?php if ($pedido): ?>
-        <div class="last-order">
-            <div class="order-details">
-                <h3>Tu último pedido</h3>
-                <p><strong>Pedido #<?php echo htmlspecialchars($pedido['id_pedido']); ?></strong></p>
-                <p>Fecha: <?php echo htmlspecialchars($pedido['fecha']); ?></p>
-                <p>Total: $<?php echo htmlspecialchars($pedido['total']); ?></p>
-            </div>
-            <form action="Cesta.php" method="GET">
-                <button type="submit" class="reservation-button">Volver a pedir</button>
-            </form>
-        </div>
-        <?php else: ?>
-        <p>No tienes pedidos anteriores.</p>
-        <?php endif; ?>
-        
-        <!-- Formulario para editar datos -->
-        <div class="edit-profile">
-            <h3>Editar tus datos</h3>
-            <form action="index.php?controller=usuario&action=actualizar_datos" method="POST" id="editProfileForm">
-                <div class="input-Log-Sign">
-                    <input type="text" name="name" id="name" required placeholder=" " value="<?php echo htmlspecialchars($_SESSION['usuario']->getNombre()); ?>">
-                    <label for="name">Nombre</label>
-                </div>
-                <div class="input-Log-Sign">
-                    <input type="text" name="lastname" id="lastname" required placeholder=" " value="<?php echo htmlspecialchars($_SESSION['usuario']->getApellido()); ?>">
-                    <label for="lastname">Apellido</label>
-                </div>
-                <div class="input-Log-Sign">
-                    <input type="email" name="email" id="email" required placeholder=" " value="<?php echo htmlspecialchars($_SESSION['usuario']->getEmail()); ?>">
-                    <label for="email">Correo Electrónico</label>
-                </div>
-                <div class="input-Log-Sign">
-                    <input type="number" name="phone" id="phone" required placeholder=" " value="<?php echo htmlspecialchars($_SESSION['usuario']->getTelefono()); ?>">
-                    <label for="phone">Teléfono</label>
-                </div>
-                <button type="submit" class="reservation-button">Guardar Cambios</button>
-            </form>
-        </div>
+        <?php if (isset($_SESSION['login']) && $_SESSION['login'] === true): ?>
+            <h2>Bienvenido, <?php echo htmlspecialchars($_SESSION['usuario']->nombre); ?></h2>
 
-        <!-- Botón para cerrar sesión -->
-        <div class="logout">
-            <form action="index.php?controller=usuario&action=cerrar_sesion" method="POST">
-                <button type="submit" class="reservation-button">Cerrar Sesión</button>
-            </form>
-        </div>
+            <!-- Formulario para editar datos -->
+            <div class="edit-profile">
+                <h3>Editar tus datos</h3>
+                <form action="index.php?controller=usuario&action=actualizar_datos" method="POST">
+                    <div class="input-Log-Sign">
+                        <input type="text" name="name" id="name" required placeholder=" " value="<?php echo htmlspecialchars($_SESSION['usuario']->nombre); ?>">
+                        <label for="name">Nombre</label>
+                    </div>
+                    <div class="input-Log-Sign">
+                        <input type="text" name="lastname" id="lastname" required placeholder=" " value="<?php echo htmlspecialchars($_SESSION['usuario']->apellido); ?>">
+                        <label for="lastname">Apellido</label>
+                    </div>
+                    <div class="input-Log-Sign">
+                        <input type="email" name="email" id="email" required placeholder=" " value="<?php echo htmlspecialchars($_SESSION['usuario']->email); ?>">
+                        <label for="email">Correo Electrónico</label>
+                    </div>
+                    <div class="input-Log-Sign">
+                        <input type="text" name="phone" id="phone" required placeholder=" " value="<?php echo htmlspecialchars($_SESSION['usuario']->telefono); ?>">
+                        <label for="phone">Teléfono</label>
+                    </div>
+                    <div class="input-Log-Sign">
+                        <input type="text" name="address" id="address" required placeholder=" " value="<?php echo htmlspecialchars($_SESSION['usuario']->direccion); ?>">
+                        <label for="address">Dirección</label>
+                    </div>
+                    <button type="submit" class="reservation-button">Guardar Cambios</button>
+                </form>
+            </div>
+
+            <!-- Botón para cerrar sesión -->
+            <div class="logout">
+                <form action="index.php?controller=usuario&action=cerrar_sesion" method="POST">
+                    <button type="submit" class="reservation-button">Cerrar Sesión</button>
+                </form>
+            </div>
+        <?php else: ?>
+            <h2>No has iniciado sesión</h2>
+            <p>Para acceder a esta página, por favor, inicia sesión o regístrate.</p>
+            <div class="auth-buttons">
+                <a href="Login.php" class="reservation-button">Iniciar Sesión</a>
+                <a href="Sign-Up.php" class="reservation-button">Registrarse</a>
+            </div>
+        <?php endif; ?>
     </div>
 
     <footer class="footer">
@@ -116,12 +100,12 @@ $pedido = isset($_SESSION['pedido']) ? $_SESSION['pedido'] : null;
                         <label for="email">Correo electrónico</label>
                     </div>
                     <button type="submit">SUSCRIBIRSE</button>
-    
+
                     <!-- Logo y redes sociales -->
                     <div class="logo">
                         <img src="assets/img/ICONOS/HEADER/logo-polbeiro.svg" alt="Polbeiro Logo">
                     </div>
-                    
+
                     <div class="social-icons">
                         <a href="#"><img src="assets/img/ICONOS/REDES/icon-instagram.png" alt="Instagram"></a>
                         <a href="#"><img src="assets/img/ICONOS/REDES/icon-pinterest.png" alt="Pinterest"></a>
@@ -131,18 +115,18 @@ $pedido = isset($_SESSION['pedido']) ? $_SESSION['pedido'] : null;
                     </div>
                 </form>
             </div>
-    
+
             <div class="footer-section">
                 <h3>OFERTAS ACTUALES</h3>
                 <p>CÓDIGO: POLBEIRO (10%)</p>
             </div>
-            
+
             <div class="footer-section">
                 <h3>SUPPORT</h3>
                 <p><a href="#">CONTACT</a></p>
                 <p><a href="#">TRABAJA CON NOSOTROS</a></p>
             </div>
-            
+
             <div class="footer-section">
                 <h3>POLÍTICAS</h3>
                 <p><a href="#">POLÍTICA DE PRIVACIDAD</a></p>
