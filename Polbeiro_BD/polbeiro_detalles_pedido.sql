@@ -16,31 +16,33 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `reservas`
+-- Table structure for table `detalles_pedido`
 --
 
-DROP TABLE IF EXISTS `reservas`;
+DROP TABLE IF EXISTS `detalles_pedido`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `reservas` (
-  `id_reserva` int NOT NULL AUTO_INCREMENT,
-  `id_usuario` int NOT NULL,
-  `fecha_reserva` varchar(16) DEFAULT NULL,
-  `cantidad_personas` int NOT NULL,
-  `comentarios` text,
-  PRIMARY KEY (`id_reserva`),
-  KEY `id_usuario` (`id_usuario`),
-  CONSTRAINT `reservas_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `detalles_pedido` (
+  `id_detalle` int NOT NULL AUTO_INCREMENT,
+  `id_pedido` int NOT NULL,
+  `id_plato` int NOT NULL,
+  `cantidad` int NOT NULL,
+  `subtotal` decimal(10,2) NOT NULL,
+  PRIMARY KEY (`id_detalle`),
+  KEY `id_pedido` (`id_pedido`),
+  KEY `id_plato` (`id_plato`),
+  CONSTRAINT `detalles_pedido_ibfk_1` FOREIGN KEY (`id_pedido`) REFERENCES `pedidos` (`id_pedido`) ON DELETE CASCADE,
+  CONSTRAINT `detalles_pedido_ibfk_2` FOREIGN KEY (`id_plato`) REFERENCES `platos` (`id_plato`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `reservas`
+-- Dumping data for table `detalles_pedido`
 --
 
-LOCK TABLES `reservas` WRITE;
-/*!40000 ALTER TABLE `reservas` DISABLE KEYS */;
-/*!40000 ALTER TABLE `reservas` ENABLE KEYS */;
+LOCK TABLES `detalles_pedido` WRITE;
+/*!40000 ALTER TABLE `detalles_pedido` DISABLE KEYS */;
+/*!40000 ALTER TABLE `detalles_pedido` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -52,4 +54,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-12-19 18:50:15
+-- Dump completed on 2025-01-04 15:16:17
