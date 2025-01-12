@@ -5,10 +5,10 @@ class Reserva {
     private $id_usuario;
     private $fecha_reserva;
     private $cantidad_personas;
-    private $comentarios;
+    private $nombre;
 
     // Constructor con valores predeterminados para comentarios (pueden ser nulos)
-    public function __construct($id_reserva = null, $id_usuario, $fecha_reserva, $cantidad_personas, $comentarios = null) {
+    public function __construct($id_reserva = null, $id_usuario, $fecha_reserva, $cantidad_personas, $nombre = null) {
         if (!$id_usuario || !$fecha_reserva || !$cantidad_personas) {
             throw new InvalidArgumentException("Todos los campos son obligatorios.");
         }
@@ -17,7 +17,7 @@ class Reserva {
         $this->id_usuario = $id_usuario;
         $this->fecha_reserva = $fecha_reserva;
         $this->cantidad_personas = $cantidad_personas;
-        $this->comentarios = $comentarios;
+        $this->nombre = $nombre;
     }
     
     // Getters
@@ -37,8 +37,8 @@ class Reserva {
         return $this->cantidad_personas;
     }
 
-    public function getComentarios() {
-        return $this->comentarios;
+    public function getNombre() {
+        return $this->nombre;
     }
 
     // Setters con validación
@@ -64,12 +64,15 @@ class Reserva {
         }
     }
 
-    public function setComentarios($comentarios) {
-        // Permitir comentarios nulos o cadenas de texto
-        if ($comentarios === null || is_string($comentarios)) {
-            $this->comentarios = $comentarios;
+    public function setNombre($nombre) {
+        // Verificar que $nombre sea una cadena de texto y no nula
+        if (is_string($nombre)) {
+            $this->nombre = $nombre;
+        } else {
+            throw new InvalidArgumentException("El nombre no puede ser nulo y debe ser una cadena de texto.");
         }
     }
+    
 
     // Convertir objeto a array para facilitar la inserción en la base de datos
     public function toArray() {
@@ -78,13 +81,10 @@ class Reserva {
             'id_usuario' => $this->id_usuario,
             'fecha_reserva' => $this->fecha_reserva,
             'cantidad_personas' => $this->cantidad_personas,
-            'comentarios' => $this->comentarios
+            'nombre' => $this->nombre
         ];
     }
-
-    // Método para mostrar la información de la reserva de forma legible
-    public function mostrarReserva() {
-        return "Reserva ID: " . $this->id_reserva . " para " . $this->cantidad_personas . " personas, fecha: " . $this->fecha_reserva . ($this->comentarios ? ", Comentarios: " . $this->comentarios : "");
-    }
 }
-?>
+
+
+

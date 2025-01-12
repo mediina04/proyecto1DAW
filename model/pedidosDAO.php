@@ -7,6 +7,37 @@ class PedidosDAO {
         $this->db = $db;
     }
 
+    public function eliminarPlatoDeCesta(int $id_plato): void {
+        // Verificar que el método sea POST
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id_plato = filter_input(INPUT_POST, 'id_plato', FILTER_VALIDATE_INT);
+
+            // Validar ID del plato
+            if (!$id_plato) {
+                setSessionMessage('error', 'ID de plato inválido.');
+                redirect('Cesta.php');
+                return;
+            }
+
+            // Verificar si el carrito está definido en la sesión
+            if (!isset($_SESSION['carrito']) || !is_array($_SESSION['carrito'])) {
+                setSessionMessage('error', 'No hay carrito activo.');
+                redirect('Cesta.php');
+                return;
+            }
+
+            // Verificar si el plato existe en el carrito
+            if (isset($_SESSION['carrito'][$id_plato])) {
+                unset($_SESSION['carrito'][$id_plato]); // Eliminar plato del carrito
+                setSessionMessage('success', 'El plato ha sido eliminado del carrito.');
+            } else {
+                setSessionMessage('error', 'El plato no se encontró en el carrito.');
+            }
+
+            redirect('Cesta.php'); // Redirigir a la página del carrito
+        }
+    }
+
     public function crearPedido($usuarioId, $productos, $total) {
         try {
             // Iniciar una transacción

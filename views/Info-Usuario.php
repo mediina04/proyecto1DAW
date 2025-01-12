@@ -30,13 +30,17 @@ $pedido = isset($_SESSION['pedido']) ? $_SESSION['pedido'] : null;
                 </a>
             </div>
             <div class="icons">
-                <a href="Cesta.php">
-                    <img src="assets/img/ICONOS/HEADER/icon-cesta.png" alt="Cesta" class="icon">
-                </a>
-                <a href="Usuario.php">
-                    <img src="assets/img/ICONOS/HEADER/icon-usuario.svg" alt="Usuario" class="icon">
-                </a>
-            </div>
+            <input type="checkbox" id="search-toggle" hidden>
+            <label for="search-toggle">
+                <img src="assets/img/ICONOS/HEADER/icon-lupa.png" alt="Buscar" class="icon">
+            </label>
+            <a href="Cesta.php">
+                <img src="assets/img/ICONOS/HEADER/icon-cesta.png" alt="Cesta" class="icon">
+            </a>
+            <a href="Info-Usuario.php">
+                <img src="assets/img/ICONOS/HEADER/icon-usuario.svg" alt="Usuario" class="icon">
+            </a>
+        </div>
         </div>
     </header>
 
@@ -83,8 +87,8 @@ $pedido = isset($_SESSION['pedido']) ? $_SESSION['pedido'] : null;
             <h2>No has iniciado sesión</h2>
             <p>Para acceder a esta página, por favor, inicia sesión o regístrate.</p>
             <div class="auth-buttons">
-                <a href="Login.php" class="reservation-button">Iniciar Sesión</a>
-                <a href="Sign-Up.php" class="reservation-button">Registrarse</a>
+                <a href="Login.php" class="button-web">Iniciar Sesión</a>
+                <a href="Sign-Up.php" class="button-web">Registrarse</a>
             </div>
         <?php endif; ?>
     </div>
@@ -99,7 +103,7 @@ $pedido = isset($_SESSION['pedido']) ? $_SESSION['pedido'] : null;
                         <input type="email" id="email" required placeholder=" ">
                         <label for="email">Correo electrónico</label>
                     </div>
-                    <button type="submit">SUSCRIBIRSE</button>
+                    <button class="button-footer">SUSCRIBIRSE</button>
 
                     <!-- Logo y redes sociales -->
                     <div class="logo">
@@ -107,11 +111,11 @@ $pedido = isset($_SESSION['pedido']) ? $_SESSION['pedido'] : null;
                     </div>
 
                     <div class="social-icons">
-                        <a href="#"><img src="assets/img/ICONOS/REDES/icon-instagram.png" alt="Instagram"></a>
-                        <a href="#"><img src="assets/img/ICONOS/REDES/icon-pinterest.png" alt="Pinterest"></a>
-                        <a href="#"><img src="assets/img/ICONOS/REDES/icon-youtube.png" alt="YouTube"></a>
-                        <a href="#"><img src="assets/img/ICONOS/REDES/icon-tiktok.png" alt="TikTok"></a>
-                        <a href="#"><img src="assets/img/ICONOS/REDES/icon-whatsapp.png" alt="WhatsApp"></a>
+                        <a href="https://www.instagram.com"><img src="assets/img/ICONOS/REDES/icon-instagram.png" alt="Instagram"></a>
+                        <a href="https://www.pinterest.com"><img src="assets/img/ICONOS/REDES/icon-pinterest.png" alt="Pinterest"></a>
+                        <a href="https://www.youtube.com"><img src="assets/img/ICONOS/REDES/icon-youtube.png" alt="YouTube"></a>
+                        <a href="https://www.tiktok.com"><img src="assets/img/ICONOS/REDES/icon-tiktok.png" alt="TikTok"></a>
+                        <a href="https://www.whatsapp.com"><img src="assets/img/ICONOS/REDES/icon-whatsapp.png" alt="WhatsApp"></a>
                     </div>
                 </form>
             </div>

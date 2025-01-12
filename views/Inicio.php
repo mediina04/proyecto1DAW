@@ -1,6 +1,6 @@
 <?php
-require_once '../config/data_base.php';
-require_once '../model/ProductosDAO.php';
+require_once __DIR__ . '/../config/data_base.php';
+require_once __DIR__ . '/../model/ProductosDAO.php';
 require_once __DIR__ . '/../model/ReservasDAO.php';
 
 session_start(); // Iniciar la sesión si no está iniciada
@@ -136,9 +136,9 @@ $reservasUsuario = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Polbeiro</title>
-    <link rel="icon" href="Assets\IMG\ICONOS\HEADER\logo-polbeiro-head.svg" type="image/svg+xml">
+    <link rel="icon" href="assets\IMG\ICONOS\HEADER\logo-polbeiro-head.svg" type="image/svg+xml">
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="Assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
     <!-- Encabezado -->
@@ -188,17 +188,17 @@ $reservasUsuario = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     <div class="contenedor-slider">
         <!-- Diapositiva 1: Vídeo -->
         <div class="diapositiva activa">
-            <video src="Assets/IMG/SLIDER/Slide-Polbeiro-1.mp4" autoplay muted loop></video>
+            <video src="assets/IMG/SLIDER/Slide-Polbeiro-1.mp4" autoplay muted loop></video>
         </div>
         
         <!-- Diapositiva 2: Imagen -->
         <div class="diapositiva">
-            <img src="Assets/IMG/SLIDER/Slide-2-Polbeiro.png" alt="Slide-2-Polbeiro" />
+            <img src="assets/IMG/SLIDER/Slide-2-Polbeiro.png" alt="Slide-2-Polbeiro" />
         </div>
 
         <!-- Diapositiva 3: Vídeo -->
         <div class="diapositiva">
-            <video src="Assets/IMG/SLIDER/Slide-Polbeiro-3.mp4" autoplay muted loop></video>
+            <video src="assets/IMG/SLIDER/Slide-Polbeiro-3.mp4" autoplay muted loop></video>
         </div>
 
         <!-- Botones de navegación con círculos de progreso -->
@@ -255,10 +255,10 @@ $reservasUsuario = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
     <section class="restaurant">
         <div class="blackWhiteImg">
-            <img src="Assets/IMG/img-restauranteBW.webp" alt="restauranteimg">
+            <img src="assets/IMG/img-restauranteBW.webp" alt="restauranteimg">
             <div class="overlay">
                 <h2>DESCUBRE NUESTRO RESTAURANTE</h2>
-                <a href="Restaurante.php" class="visit-button">VISITAR</a>
+                <a href="Restaurante.php" class="button-web">VISITAR</a>
             </div>
         </div>
     </section>
@@ -294,14 +294,14 @@ $reservasUsuario = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                     <label for="hora">Fecha y Hora</label>
                     <input type="time" name="hora" value="<?php echo htmlspecialchars($reservasUsuario[0]['fecha_reserva']); ?>" required>
                 </div>
-                <button type="submit" class="reservation-button">Modificar Reserva</button>
+                <button type="submit" class="button-web">Modificar Reserva</button>
             </form>
 
             <!-- Botón para anular la reserva -->
             <form method="POST" action="Inicio.php" style="display: inline-block;">
                 <input type="hidden" name="accion" value="anular">
                 <input type="hidden" name="id_reserva" value="<?php echo htmlspecialchars($reservasUsuario[0]['id_reserva']); ?>">
-                <button type="submit" class="reservation-button">Anular Reserva</button>
+                <button type="submit" class="button-web">Anular Reserva</button>
             </form>
         <?php else: ?>
             <!-- Formulario para crear una reserva -->
@@ -324,7 +324,7 @@ $reservasUsuario = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                     <input type="time" name="hora" value="<?php echo isset($_POST['hora']) ? htmlspecialchars($_POST['hora']) : ''; ?>" required placeholder="">
                     <label for="hora">Hora</label>
                 </div>
-                <button type="submit" class="reservation-button">RESERVAR</button>
+                <button type="submit" class="button-web">RESERVAR</button>
             </form>
         <?php endif; ?>
 
@@ -342,7 +342,7 @@ $reservasUsuario = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                         <input type="email" id="email" required placeholder=" ">
                         <label for="email">Correo electrónico</label>
                     </div>
-                    <button type="submit">SUSCRIBIRSE</button>
+                    <button class="button-footer">SUSCRIBIRSE</button>
     
                     <!-- Logo y redes sociales -->
                     <div class="logo">
@@ -350,11 +350,11 @@ $reservasUsuario = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                     </div>
                     
                     <div class="social-icons">
-                        <a href="#"><img src="assets/img/ICONOS/REDES/icon-instagram.png" alt="Instagram"></a>
-                        <a href="#"><img src="assets/img/ICONOS/REDES/icon-pinterest.png" alt="Pinterest"></a>
-                        <a href="#"><img src="assets/img/ICONOS/REDES/icon-youtube.png" alt="YouTube"></a>
-                        <a href="#"><img src="assets/img/ICONOS/REDES/icon-tiktok.png" alt="TikTok"></a>
-                        <a href="#"><img src="assets/img/ICONOS/REDES/icon-whatsapp.png" alt="WhatsApp"></a>
+                        <a href="https://www.instagram.com"><img src="assets/img/ICONOS/REDES/icon-instagram.png" alt="Instagram"></a>
+                        <a href="https://www.pinterest.com"><img src="assets/img/ICONOS/REDES/icon-pinterest.png" alt="Pinterest"></a>
+                        <a href="https://www.youtube.com"><img src="assets/img/ICONOS/REDES/icon-youtube.png" alt="YouTube"></a>
+                        <a href="https://www.tiktok.com"><img src="assets/img/ICONOS/REDES/icon-tiktok.png" alt="TikTok"></a>
+                        <a href="https://www.whatsapp.com"><img src="assets/img/ICONOS/REDES/icon-whatsapp.png" alt="WhatsApp"></a>
                     </div>
                 </form>
             </div>
@@ -380,6 +380,6 @@ $reservasUsuario = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
             </div>
         </div>
     </footer>
-    <script src="Assets/js/script.js"></script>
+    <script src="assets/js/script.js"></script>
 </body>
 </html>

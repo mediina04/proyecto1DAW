@@ -9,20 +9,6 @@ const ERROR_INVALID_ID = "";
 const ERROR_NOT_FOUND = "";
 const SUCCESS_REMOVE = "";
 
-
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_plato'])) {
-    $id_plato = filter_input(INPUT_POST, 'id_plato', FILTER_VALIDATE_INT);
-    
-    if ($id_plato) {
-        eliminarPlatoDeCesta($id_plato);
-    } else {
-        setSessionMessage('error', ERROR_INVALID_ID);
-    }
-
-    redirect('Cesta.php');
-}
-
 // Lógica para actualizar la cantidad de un producto
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action'], $_GET['id_plato'], $_GET['accion']) && $_GET['action'] === 'update') {
     $id_plato = filter_input(INPUT_GET, 'id_plato', FILTER_VALIDATE_INT);
@@ -34,16 +20,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action'], $_GET['id_pla
 
     // Redirige a la misma página para reflejar los cambios en el carrito
     redirect('Cesta.php');
-}
-
-
-function eliminarPlatoDeCesta(int $id_plato): void {
-    if (isset($_SESSION['carrito'][$id_plato])) {
-        unset($_SESSION['carrito'][$id_plato]);
-        setSessionMessage('success', SUCCESS_REMOVE);
-    } else {
-        setSessionMessage('error', ERROR_NOT_FOUND);
-    }
 }
 
 function actualizarCantidad(int $id_plato, string $accion): void {
@@ -169,7 +145,7 @@ if (!isset($_SESSION['last_regeneration']) || time() - $_SESSION['last_regenerat
                     <tr>
                         <td class="product-cell">
                             <div class="product">
-                                <img src="proyecto1DAW/views/Assets/IMG/PRODUCTOS/<?= htmlspecialchars($producto['imagen']) ?> "class="product-image">
+                                <img src="<?= htmlspecialchars($producto['imagen']) ?> "class="product-image">
                                 <div class="product-details">
                                     <span class="product-name"> <?= htmlspecialchars($producto['nombre']); ?> </span>
                                     <span class="product-description"> <?= htmlspecialchars($producto['descripcion'] ?? ''); ?> </span>
@@ -204,13 +180,13 @@ if (!isset($_SESSION['last_regeneration']) || time() - $_SESSION['last_regenerat
         <div class="cart-summary">
             <p>Total: <span>&euro; <?= number_format($total, 2); ?></span></p>
             <p class="note">Impuesto incluidos.</p>
-            <a class="checkout-btn" href="index.php?controller=pedido&action=crear">FINALIZAR COMPRA</a>
+            <a class="button-web" href="pedido_finalizado.php">FINALIZAR COMPRA</a>
         </div>
     <?php else: ?>
         <div class="empty-cart">
             <h1>CESTA</h1>
             <p>La cesta está vacía.</p>
-            <button onclick="window.location.href='Nuestra-Carta.php'">SEGUIR COMPRANDO</button>
+            <a class="button-web" href="Nuestra-Carta.php">SEGUIR COMPRANDO</a>
         </div>
     <?php endif; ?>
 </main>

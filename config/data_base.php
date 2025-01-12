@@ -3,13 +3,10 @@
 class DataBase {
     public static function connect($host = 'localhost', $user = 'root', $passwd = 'Asdqwe!23', $dbname = 'polbeiro') {
         $con = new mysqli($host, $user, $passwd, $dbname);
-
-        // Verificar si hay errores en la conexión
-        if ($con->connect_error) {
-            die("Error de conexión a la base de datos: " . $con->connect_error);
-        }
-
-        return $con; // Devuelve la instancia de mysqli
+        if ($con ===false) {
+            die("Error de conexión a la base de datos: " . mysqli_connect_error());
+        };
+        $con->set_charset('utf8mb4');
+        return $con;
     }
 }
-?>

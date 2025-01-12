@@ -30,7 +30,7 @@ class UsuarioController {
                 exit;
             } else {
                 // Redirigir al login con un mensaje de error
-                header("Location: index.php?controller=usuario&action=login&error=1");
+                header("Location: Login.php?controller=usuario&action=login&error=1");
                 exit;
             }
         } else {
@@ -38,7 +38,7 @@ class UsuarioController {
             $error = isset($_GET['error']) ? "Nombre de usuario o contraseña incorrectos." : null;
     
             // Mostrar la vista de inicio de sesión
-            include_once 'views/Login.php';
+            include_once 'Login.php';
         }
     }
     
@@ -61,7 +61,7 @@ class UsuarioController {
                 $_SESSION['usuario'] = $user;
 
                 // Redirigir a Inicio.php después del registro
-                header("Location: views/Inicio.php");
+                header("Location: views/Inicio.php?controller=usuario&action=menu_usuario");
                 exit;
             } else {
                 echo "<div>Error: No se ha completado el registro.</div>";

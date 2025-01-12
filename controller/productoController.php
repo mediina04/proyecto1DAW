@@ -75,12 +75,12 @@ class ProductoController {
         }
 
         $id_plato = filter_input(INPUT_POST, 'id_plato', FILTER_VALIDATE_INT);
-        $accion = filter_input(INPUT_POST, 'accion', FILTER_SANITIZE_STRING);
+        $accion = filter_input(INPUT_POST, 'accion');
 
         $carrito = &$this->obtenerCarrito();
 
         if (isset($carrito[$id_plato])) {
-            if ($accion === '+') {
+            if ($accion === '+'&& $carrito[$id_plato]['cantidad'] < 1) {
                 $carrito[$id_plato]['cantidad']++;
             } elseif ($accion === '-' && $carrito[$id_plato]['cantidad'] > 1) {
                 $carrito[$id_plato]['cantidad']--;

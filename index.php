@@ -5,53 +5,33 @@ include_once("controller/ProductoController.php");
 include_once("controller/UsuarioController.php");
 include_once("controller/PedidoController.php");
 include_once("controller/ReservaController.php");
+include_once("controller/AdminController.php");
 include_once("config/parameters.php");
 
-// Redirigir a la URL por defecto si no se especifica controlador o acción
-if (empty($_GET['controller']) || empty($_GET['action'])) {
+if (!isset($_GET['controller']) || !isset($_GET['action'])) {
     header('Location: ' . url_base . '?controller=producto&action=index');
-    exit;
-}
-
-// Sanitize and validate controller and action
-$controller = isset($_GET['controller']) ? filter_var($_GET['controller'], FILTER_SANITIZE_STRING) : 'producto';
-$action = isset($_GET['action']) ? filter_var($_GET['action'], FILTER_SANITIZE_STRING) : 'index';
-
-// Validar el controlador y la acción
-$allowedControllers = ['producto', 'usuario', 'pedido', 'reserva']; // Puedes agregar más controladores aquí
-$allowedActions = ['index', 'login', 'registrar', 'menu_usuario', 'cerrar_sesion', 'pedidos_info', 'panel_admin']; // Acciones permitidas
-
-if (!in_array($controller, $allowedControllers)) {
-    die("Controlador no válido.");
-}
-
-if (!in_array($action, $allowedActions)) {
-    die("Acción no válida.");
-}
-
-// Define el nombre del controlador a cargar
-$controllerClass = ucfirst($controller) . "Controller";
-
-// Comprobar si la clase existe
-if (class_exists($controllerClass)) {
-    // Crear una instancia del controlador
-    $controllerObj = new $controllerClass();
-
-    // Verificar si la acción solicitada existe en el controlador
-    if (method_exists($controllerObj, $action)) {
-        try {
-            // Ejecutar la acción solicitada
-            $controllerObj->$action();
-        } catch (Exception $e) {
-            // Manejo de errores: se captura y muestra el error
-            echo "Error al ejecutar la acción: " . htmlspecialchars($e->getMessage());
-        }
-    } else {
-        // Si la acción no existe, redirigir o mostrar error
-        echo "La acción '" . htmlspecialchars($action) . "' no existe en el controlador '" . htmlspecialchars($controllerClass) . "'.";
-    }
 } else {
-    // Si el controlador no existe, mostrar un mensaje de error
-    echo "El controlador '" . htmlspecialchars($controllerClass) . "' no existe.";
+    if (isset($_GET['controller'])) {
+        header('Location: ' . url_base . '?controller=producto&action=index');
+    } else {
+        if (isset($_GET['controller'])) {
+            header('Location: ' . url_base . '?controller=producto&action=index');
+        } else {
+            $controller_nombre = $_GET['controller']."Controller";
+            if (class_exists($controller_nombre)) {
+                $controllerObj = new $controller_nombre();
+
+                if (isset($_GET['action']) && (method_exists($controllerObj, $GET["action"]))) {
+                    $action = $_GET["action"];
+                } else {
+                    $action = default_action;
+               }
+                    
+                $controllerObj->$action();
+
+            } else {
+                echo "El controlador " . $controller_nombre . " no existe.";
+            }
+        }
+    }
 }
-?>

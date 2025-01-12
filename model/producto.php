@@ -10,10 +10,6 @@ class Producto {
     private $imagenSecundaria;
 
     public function __construct($id, $nombre, $descripcion, $precio, $imagenPrincipal, $imagenSecundaria) {
-        if (!is_numeric($precio) || $precio < 0) {
-            throw new InvalidArgumentException("El precio debe ser un número positivo.");
-        }
-
         $this->id = $id;
         $this->nombre = $nombre;
         $this->descripcion = $descripcion;
@@ -48,11 +44,8 @@ class Producto {
     }
 
     // Setters
-    public function setPrecio($precio) {
-        if (!is_numeric($precio) || $precio < 0) {
-            throw new InvalidArgumentException("El precio debe ser un número positivo.");
-        }
-        $this->precio = $precio;
+    public function setId($id) {
+        $this->id = $id;
     }
 
     public function setNombre($nombre) {
@@ -63,6 +56,10 @@ class Producto {
         $this->descripcion = $descripcion;
     }
 
+    public function setPrecio($precio) {
+        $this->precio = $precio;
+    }
+
     public function setImagenPrincipal($imagenPrincipal) {
         $this->imagenPrincipal = $imagenPrincipal;
     }
@@ -70,16 +67,6 @@ class Producto {
     public function setImagenSecundaria($imagenSecundaria) {
         $this->imagenSecundaria = $imagenSecundaria;
     }
-
-    // Método para convertir a array
-    public function toArray() {
-        return [
-            'id' => $this->id,
-            'nombre' => $this->nombre,
-            'descripcion' => $this->descripcion,
-            'precio' => $this->precio,
-            'imagen_principal' => $this->imagenPrincipal,
-            'imagen_secundaria' => $this->imagenSecundaria,
-        ];
-    }
 }
+
+?>

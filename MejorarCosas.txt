@@ -1,0 +1,13 @@
+Cosas a mejorar:
+
+ - Si finalizas pedido que se cree en la base de datos y salga la pantalla de pedido_finalizado
+
+ - Login y registro de usuarios
+
+ - Panel de administración con JavaScript y api monedas
+
+ - Crear ofertas (no prioritario)
+
+ - Mejorar apartado reserva mesa (no prioritario)
+
+ - Quitar codigo php de views

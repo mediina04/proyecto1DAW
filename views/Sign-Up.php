@@ -48,7 +48,7 @@
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token ?? ''); ?>">
 
             <div class="button-container">
-                <button type="submit" class="reservation-button">Registrarse</button>
+                <button type="submit" class="button-web" href="Inicio.php">Registrarse</button>
             </div>
         </form>
 

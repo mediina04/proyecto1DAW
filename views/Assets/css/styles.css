@@ -74,89 +74,20 @@ body {
     margin-top: 20px;
 }
 
-/* Botón de inicio de sesión */
-.logIn-button {
-    background-color: #000096;
-    color: #FFFFFF;
-    padding: 12px 28px;
-    font-size: 14px;
-    border: none;
-    cursor: pointer;
-    text-transform: uppercase;
-    transition: background-color 0.3s ease;
-    width: 100%;
-}
-
-.logIn-button:hover {
-    background-color: #3333ff;
-}
-
-/* Botón de registro */
-.signUp-button {
-    background-color: #000096;
-    color: #FFFFFF;
-    padding: 12px 28px;
-    font-size: 14px;
-    border: none;
-    cursor: pointer;
-    text-transform: uppercase;
-    transition: background-color 0.3s ease;
-    width: 100%;
-}
-
-.signUp-button:hover {
-    background-color: #3333ff;
-}
-
-/* Botón para redireccionar al login */
-.redirect-login {
+.redirect-signup, .redirect-login {
     text-align: center;
     margin-top: 20px;
     font-size: 14px;
     color: #000096;
+    text-decoration-line: none;
 }
-
-.redirect-login a {
-    color: #000096;
-    text-decoration: none;
-    font-weight: bold;
-    transition: color 0.3s ease;
-}
-
-.redirect-login a:hover {
-    color: #3333ff;
-    text-decoration: underline;
-}
-
-/* Botón para redireccionar al registro */
-.redirect-signup {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 14px;
-    color: #000096;
-}
-
-.redirect-signup a {
-    color: #000096;
-    text-decoration: none;
-    font-weight: bold;
-    transition: color 0.3s ease;
-}
-
-.redirect-signup a:hover {
-    color: #3333ff;
-    text-decoration: underline;
-}
-
 
 /* Estilos específicos para el panel de usuario */
 .user-section {
     margin-top: 40px;
     padding: 20px;
-    /* Se elimina el fondo de color gris y el borde */
-    border: none; /* Eliminamos el borde */
+    border: none; 
     text-align: center;
-    /* Añadimos una sombra ligera para dar un toque sutil */
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -169,13 +100,13 @@ body {
 
 /* Último pedido */
 .last-order {
-    display: flex; /* Usamos flexbox para alinear los elementos */
-    justify-content: space-between; /* Asegura que el contenido se distribuya entre el texto y el botón */
-    align-items: center; /* Alinea los elementos verticalmente */
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
     margin-top: 30px;
     padding: 20px;
-    background-color: #ffffff; /* Fondo blanco para limpiar la sección */
-    border: 1px solid #000096; /* Mantener el borde azul */
+    background-color: #ffffff; 
+    border: 1px solid #000096; 
     border-radius: 10px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 }
@@ -188,7 +119,7 @@ body {
 }
 
 .order-details {
-    flex-grow: 1; /* Permite que los detalles del pedido ocupen el espacio restante */
+    flex-grow: 1; 
     text-align: left;
 }
 
@@ -222,7 +153,7 @@ body {
 .input-group input {
     width: 100%;
     padding: 10px;
-    border: 1px solid #000096; /* Mantener borde azul */
+    border: 1px solid #000096; 
     border-radius: 5px;
     font-size: 14px;
     background-color: transparent;
@@ -230,7 +161,7 @@ body {
 }
 
 .input-group input:focus {
-    border-color: #3333ff; /* Cambio de color de borde al enfocar */
+    border-color: #3333ff; 
 }
 
 .input-group label {
@@ -622,13 +553,15 @@ body {
     margin-left: 20px;
 }
 
-/* Botón de visitar */
-.visit-button {
+/* Botón de la web*/
+.button-web {
     display: inline-block;
     background-color: #000096;
     color: #FFFFFF;
     padding: 10px 28px;
     text-decoration: none;
+    margin-top: 20px;
+    margin-bottom: 10px;
     margin-left: 20px;
     font-size: 12px;
     font-family: 'Archivo', sans-serif;
@@ -642,7 +575,7 @@ body {
 }
 
 /* Efecto deslizante en el botón */
-.visit-button::before {
+.button-web::before {
     content: "";
     position: absolute;
     top: 0;
@@ -654,11 +587,11 @@ body {
     z-index: -1; 
 }
 
-.visit-button:hover::before {
+.button-web:hover::before {
     width: 100%; 
 }
 
-.visit-button:hover {
+.button-web:hover {
     color: #000096; 
     border-color: #000096; 
 }
@@ -666,9 +599,9 @@ body {
 
 /* Estilos para la sección de reserva */
 .reservation {
-    max-width: 1450px; /* Asegura que ocupe todo el ancho disponible */
-    margin: 60px auto; /* Centrar la sección */
-    padding: 20px 40px; /* Espaciado interno */
+    max-width: 1450px; 
+    margin: 60px auto; 
+    padding: 20px 40px; 
     border: 1px solid #000096;
     text-align: center;
     position: relative;
@@ -689,21 +622,21 @@ body {
 
 /* Contenedor del formulario */
 .reservation-container {
-    display: flex; /* Coloca los inputs y el botón en fila */
-    flex-wrap: wrap; /* Permite que los elementos bajen si no hay espacio */
-    justify-content: space-between; /* Espacio igual entre los elementos */
-    align-items: center; /* Alinea los elementos verticalmente */
-    gap: 20px; /* Espaciado entre los inputs */
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: space-between; 
+    align-items: center; 
+    gap: 20px;
     max-width: 1450px;
-    margin: 0 auto; /* Centra el formulario horizontalmente */
+    margin: 0 auto; 
 }
 
 /* Estilo para los grupos de inputs */
 .reserva-form {
     position: relative;
-    flex: 1; /* Los inputs ocupan todo el espacio disponible */
-    min-width: 150px; /* Ancho mínimo para los inputs */
-    margin: 0; /* Elimina márgenes extra */
+    flex: 1; 
+    min-width: 150px; 
+    margin: 0; 
 }
 
 /* Estilo para los inputs */
@@ -712,7 +645,7 @@ body {
     border-bottom: 1px solid #000096;
     outline: none;
     padding: 8px 5px;
-    width: 100%; /* Input ocupa todo el contenedor */
+    width: 100%; 
     font-size: 14px;
     background: transparent;
     transition: border-color 0.3s ease;
@@ -736,55 +669,12 @@ body {
     transition: 0.2s ease all;
 }
 
-/* Cuando el input está enfocado o tiene valor */
 .reserva-form input:focus + label,
 .reserva-form input:not(:placeholder-shown) + label {
     bottom: 25px;
     font-size: 12px;
     color: #000096;
 }
-
-/* Botón de reserva */
-.reservation-button {
-    background-color: #000096;
-    color: #FFFFFF;
-    padding: 12px 20px; /* Ajusta el tamaño del botón */
-    font-size: 14px;
-    font-family: 'Helvetica', sans-serif;
-    cursor: pointer;
-    border: 2px solid transparent;
-    text-transform: uppercase;
-    position: relative;
-    overflow: hidden;
-    transition: color 0.3s, border-color 0.3s;
-    z-index: 1;
-    flex-shrink: 0; /* Evita que el botón se reduzca */
-    align-self: stretch; /* Asegura que el botón tenga la misma altura que los inputs */
-}
-
-/* Efecto del botón al pasar el mouse */
-.reservation-button::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 0;
-    height: 100%;
-    background-color: #FFFFFF;
-    transition: width 0.3s;
-    z-index: -1;
-}
-
-.reservation-button:hover::before {
-    width: 100%;
-}
-
-.reservation-button:hover {
-    color: #000096;
-    border-color: #000096;
-}
-
-
 
 /* Sección Sobre Nosotros */
 .sobre-nosotros {
@@ -922,7 +812,6 @@ body {
     object-fit: contain;
 }
 
-/* Mueve el elemento "Ubicación" ligeramente a la derecha */
 .contact-item:nth-child(2) {
     margin-right: 75px;
 }
@@ -980,7 +869,6 @@ body {
     transition: 0.2s ease all;
 }
 
-/* Ajuste del label flotante cuando el campo está enfocado o tiene texto */
 .contact-input input:focus + label,
 .contact-input input:not(:placeholder-shown) + label {
     bottom: 30px; 
@@ -1009,7 +897,7 @@ body {
 .contact-button {
     background-color: #000096;
     color: #FFFFFF;
-    padding: 0.8em 2em; /* Usar valores relativos para escalabilidad */
+    padding: 0.8em 2em; 
     font-size: 1em;
     font-family: 'Archivo', sans-serif;
     cursor: pointer;
@@ -1034,7 +922,7 @@ body {
 }
 
 .contact-button:hover::before,
-.contact-button:focus::before { /* Compatibilidad con dispositivos táctiles */
+.contact-button:focus::before { 
     left: 0; 
 }
 
@@ -1062,57 +950,11 @@ body {
     font-size: 2em;
     margin-bottom: 20px;
 }
-/* Botón de Cesta Vacía */
-.empty-cart button {
-    background-color: #000096;
-    color: #FFFFFF;
-    margin-top: 20px;
-    padding: 12px 28px;
-    font-size: 12px;
-    font-family: 'Archivo', sans-serif;
-    cursor: pointer;
-    border: 2px solid transparent;
-    text-transform: uppercase;
-    position: relative;
-    overflow: hidden; 
-    transition: color 0.3s, border-color 0.3s; 
-    z-index: 1; 
-}
-
-/* Efecto deslizante en el botón */
-.empty-cart button::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%; 
-    width: 100%;
-    height: 100%;
-    background-color: #FFFFFF;
-    z-index: 0; /* Asegura que el efecto no cubra el texto */
-    transition: left 0.3s ease; 
-}
-
-.empty-cart button:hover::before {
-    left: 0; 
-}
-
-.empty-cart button:hover {
-    color: #000096; 
-    border-color: #000096; 
-    z-index: 1; /* Mantiene el texto visible */
-}
-
-
-
-.empty-cart button span {
-    position: relative;
-    z-index: 2; 
-}
 
 .container {
     width: 100%;  
     padding: 20px;
-    box-sizing: border-box; /* Asegura que el padding no afecte el ancho total */
+    box-sizing: border-box; 
 }
 
 /* Título */
@@ -1145,9 +987,9 @@ body {
 
 /* Celdas de la tabla */
 .cart-table td {
-    padding: 10px 5px; /* Reducido para mejorar alineación */
+    padding: 10px 5px; 
     border-bottom: 1px solid #ddd;
-    vertical-align: middle; /* Alineación vertical centrada */
+    vertical-align: middle; /
 }
 
 /* Sección del producto */
@@ -1162,8 +1004,8 @@ body {
 }
 
 .product-image {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 120px;
     margin-right: 15px;
     border: 1px solid #000096;
     object-fit: cover;
@@ -1189,9 +1031,9 @@ body {
 /* Columna de cantidad */
 .quantity-cell {
     text-align: center;
-    vertical-align: middle; /* Alinea verticalmente el contenido */
-    padding: 0; /* Elimina padding adicional */
-    height: 100%; /* Asegura que la celda se expanda completamente */
+    vertical-align: middle; 
+    padding: 0; 
+    height: 100%; 
 }
 
 
@@ -1199,14 +1041,16 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 5px; /* Espacio entre elementos */
-    margin: 0; /* Elimina márgenes innecesarios */
+    gap: 5px; 
+    margin: 0; 
 }
 
 .quantity-button {
     background-color: transparent;
     border: 1px solid #000096;
-    color: #000096;
+    color: #ffffff;
+    background-color: #000096;
+    text-decoration: none;
     font-size: 16px;
     width: 30px;
     height: 30px;
@@ -1217,8 +1061,8 @@ body {
 }
 
 .quantity-button:hover {
-    background-color: #000096;
-    color: #fff;
+    background-color: #FFFFFF;
+    color: #000096;
 }
 
 .quantity-input {
@@ -1228,25 +1072,25 @@ body {
     border: 1px solid #ddd;
     font-size: 14px;
     color: #000096;
-    margin: 0; /* Elimina margen innecesario */
-    box-sizing: border-box; /* Asegura consistencia en altura */
+    margin: 0; 
+    box-sizing: border-box; 
 }
 
 /* Botón Quitar */
 .delete-btn-container {
-    text-align: center; /* Centra el botón horizontalmente */
-    margin-top: 5px; /* Espacio uniforme superior */
+    text-align: center; 
+    margin-top: 5px; 
 }
 
 .delete-btn {
     background: none;
     color: #000096;
     border: none;
-    text-decoration: underline;
+    text-decoration: none;
     font-size: 12px;
     cursor: pointer;
-    margin: 0; /* Elimina margen superior innecesario */
-    padding: 0; /* Consistencia */
+    margin: 0; 
+    padding: 0; 
 }
 
 
@@ -1256,7 +1100,7 @@ body {
     color: #000096;
     font-weight: normal;
     font-size: 1.2em;
-    flex-grow: 1; /* Deja que el total ocupe el máximo espacio disponible */
+    flex-grow: 1; 
 }
 
 /* Resumen de la cesta */
@@ -1339,12 +1183,42 @@ body {
 
 /* Espaciado entre elementos dentro del contenedor */
 .checkout-container > * {
-    flex-grow: 1; /* Hace que los elementos crezcan para ocupar el espacio disponible */
+    flex-grow: 1; 
 }
 
-/*Botones Info Usuario*/
-.auth-buttons{
-    margin-top: 30px;
+/* Estilos mensaje pedido finalizado */
+body.pedido-finalizado {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; 
+    margin: 0;
+    background-color: #ffffff; 
+}
+
+/* Estilo personalizado del mensaje */
+.pedido-mensaje {
+    color: #000096;
+    background-color: #ffffff;
+    border: 1px solid #000096;
+    padding: 20px;
+    text-align: center;
+    width: 80%;
+    max-width: 600px; 
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+}
+
+.pedido-mensaje h2 {
+    margin: 0;
+    font-size: 1.8em;
+    color: #000096;
+}
+
+.pedido-mensaje p {
+    margin: 10px 0 0;
+    font-size: 14px;
+    color: #000;
 }
 
 /* Footer */
@@ -1358,21 +1232,21 @@ body {
 /* Sección superior del footer */
 .footer-top {
     display: flex;
-    justify-content: space-between; /* Espacio igual entre columnas */
+    justify-content: space-between; 
     flex-wrap: wrap;
     margin-bottom: 20px;
     border-top: 1px solid #000;
     padding-top: 20px;
     width: 100%;
     box-sizing: border-box;
-    gap: 20px; /* Espaciado uniforme en dispositivos más pequeños */
+    gap: 20px; 
 }
 
 /* Columnas individuales del footer */
 .footer-section {
     flex: 1;
     min-width: 200px;
-    max-width: 300px; /* Limitar el ancho máximo de las columnas */
+    max-width: 300px; 
     padding: 10px;
     text-align: left;
     box-sizing: border-box;
@@ -1403,14 +1277,14 @@ body {
 .subscribe-form {
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* Alinear todos los elementos a la izquierda */
+    align-items: flex-start; 
     justify-content: flex-start;
     margin-top: 20px;
     width: 100%;
-    max-width: 300px; /* Limitar el ancho del formulario */
-    margin-left: 0; /* Alinear a la izquierda de la página */
+    max-width: 300px; 
+    margin-left: 0; 
     margin-right: auto;
-    gap: 20px; /* Espaciado uniforme entre elementos */
+    gap: 20px; 
 }
 
 /* Grupo de input */
@@ -1419,7 +1293,7 @@ body {
     width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* Alinear label e input a la izquierda */
+    align-items: flex-start; 
 }
 
 /* Input */
@@ -1431,7 +1305,7 @@ body {
     outline: none;
     font-size: 14px;
     transition: border-color 0.3s ease;
-    text-align: left; /* Texto alineado a la izquierda */
+    text-align: left; 
     box-sizing: border-box;
 }
 
@@ -1439,7 +1313,7 @@ body {
 .subscribe-form label {
     position: absolute;
     bottom: 10px;
-    left: 0; /* Asegurar que el label comience desde el borde izquierdo */
+    left: 0; 
     color: #000096;
     font-size: 14px;
     pointer-events: none;
@@ -1458,72 +1332,75 @@ body {
 }
 
 /* Botón del footer */
-.subscribe-form button {
+.button-footer {
+    display: inline-block;
     background-color: #000096;
     color: #FFFFFF;
     padding: 10px 20px;
+    text-decoration: none;
     font-family: 'Helvetica', sans-serif;
     font-size: 14px;
     cursor: pointer;
     border: 2px solid transparent;
     text-transform: uppercase;
-    position: relative; /* Necesario para el efecto deslizante */
-    overflow: hidden; /* Asegura que el pseudoelemento se oculte fuera del botón */
-    transition: color 0.3s, border-color 0.3s, background-color 0.3s;
-    width: 100%; /* El botón ocupa todo el ancho del formulario */
-    text-align: center; /* Texto centrado dentro del botón */
+    position: relative;
+    overflow: hidden; 
+    transition: color 0.3s, border-color 0.3s;
+    width: 100%;
+    text-align: center;
     box-sizing: border-box;
+    z-index: 1; 
 }
 
-/* Pseudoelemento para el efecto deslizante */
-.subscribe-form button::before {
+/* Efecto deslizante en el botón */
+.button-footer::before {
     content: "";
     position: absolute;
+    text-decoration: none;
     top: 0;
-    left: -100%; /* El pseudoelemento comienza fuera del botón */
-    width: 100%;
+    left: 0;
+    width: 0;
     height: 100%;
-    background-color: #FFFFFF; /* Color del efecto deslizante */
-    transition: left 0.3s ease; /* Transición suave para el efecto */
-    z-index: 0; /* El pseudoelemento se coloca por debajo del texto */
+    background-color: #FFFFFF;
+    transition: width 0.3s; 
+    z-index: -1; 
 }
 
-/* Efecto cuando el cursor está sobre el botón */
-.subscribe-form button:hover::before {
-    left: 0; /* El pseudoelemento se desliza hacia el interior del botón */
+.button-footer:hover::before {
+    width: 100%;
+    text-decoration: none; 
 }
 
-.subscribe-form button:hover {
-    color: #000096; /* Cambia el color del texto */
-    border-color: #000096; /* Cambia el color del borde */
+.button-footer:hover {
+    color: #000096; 
+    border-color: #000096;
+    text-decoration: none; 
 }
-
 
 /* Logo */
 .subscribe-form .logo {
     margin-top: 20px;
-    text-align: left; /* Asegurar que el logo esté alineado a la izquierda */
-    width: 100%; /* Ocupa todo el ancho del contenedor */
-    display: flex; /* Usar flexbox para manejar el contenido dentro del logo */
-    justify-content: flex-start; /* Asegurar alineación izquierda del contenido */
+    text-align: left; 
+    width: 100%; 
+    display: flex; 
+    justify-content: flex-start; 
 }
 
 .subscribe-form .logo img {
-    max-width: 200px; /* Limitar el tamaño máximo del logo */
+    max-width: 200px; 
     height: auto;
-    display: block; /* Asegura que se respete el tamaño y posición */
-    margin: 0; /* Eliminar cualquier margen por defecto */
-    padding: 0; /* Eliminar cualquier padding adicional */
+    display: block; 
+    margin: 0; 
+    padding: 0; 
 }
-
 
 /* Redes sociales */
 .subscribe-form .social-icons {
     display: flex;
-    justify-content: flex-start; /* Íconos alineados a la izquierda */
+    justify-content: flex-start; 
     align-items: center;
     margin-top: 10px;
-    gap: 45px; /* Espaciado uniforme entre íconos */
+    gap: 45px; 
 }
 
 .subscribe-form .social-icons a {
