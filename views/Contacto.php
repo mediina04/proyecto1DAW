@@ -1,5 +1,5 @@
 <?php
-// Aquí puedes agregar configuraciones o lógica PHP si es necesario, como variables dinámicas o datos de la base de datos.
+session_start();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -33,11 +33,11 @@
                 
                 <!-- Etiqueta para el icono de la lupa -->
                 <label for="search-toggle">
-                    <img src="assets/img/ICONOS/HEADER/icon-lupa.png" alt="Buscar" class="icon">
+                    <img src="assets/img/ICONOS/HEADER/icon-lupa.svg" alt="Lupa" class="icon">
                 </label>
 
                 <a href="Cesta.php">
-                    <img src="assets/img/ICONOS/HEADER/icon-cesta.png" alt="Cesta" class="icon">
+                    <img src="assets/img/ICONOS/HEADER/<?php echo (count($_SESSION['carrito']) > 0) ? 'icon-cesta-punto.svg' : 'icon-cesta.svg'; ?>" alt="Cesta" class="icon">
                 </a>
 
                 <a href="Info-Usuario.php">

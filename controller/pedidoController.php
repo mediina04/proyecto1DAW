@@ -1,11 +1,14 @@
 <?php
 require_once 'model/Pedido.php';
 require_once 'model/PedidosDAO.php';
+require_once 'config/data_base.php';
 
 class PedidoController {
 
     public function crear() {
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
 
         // Comprobar que el usuario esté autenticado
         if (!isset($_SESSION['usuario']) || empty($_SESSION['usuario'])) {
@@ -20,14 +23,14 @@ class PedidoController {
 
             // Calcular el total del pedido
             $total = array_reduce($productos, function ($sum, $producto) {
-                return $sum + $producto['subtotal'];
+                return $sum + (isset($producto['subtotal']) ? $producto['subtotal'] : 0);
             }, 0);
 
             $pedidoDAO = new PedidosDAO(DataBase::connect());
 
             try {
                 // Intentar crear el pedido
-                $pedidoId = $pedidoDAO->crearPedido($usuarioId, $productos, $total);
+                $pedidoId = $pedidoDAO->insertarPedido(null, $usuarioId, date('Y-m-d H:i:s'), $total, 'pendiente');
 
                 if ($pedidoId) {
                     $_SESSION['carrito'] = []; // Vaciar el carrito
@@ -49,20 +52,4 @@ class PedidoController {
         }
     }
 
-    public function historial() {
-        session_start();
-
-        // Verificar autenticación del usuario
-        if (!isset($_SESSION['usuario'])) {
-            $_SESSION['error'] = "Debes iniciar sesión para ver tu historial.";
-            header("Location: views/Login.php");
-            exit();
-        }
-
-        $usuarioId = $_SESSION['usuario']->getId();
-        $pedidoDAO = new PedidosDAO(DataBase::connect());
-        $pedidos = $pedidoDAO->obtenerPedidosPorUsuario($usuarioId);
-
-        require_once 'views/pedidos/historial.php'; // Mostrar historial en la vista
-    }
 }

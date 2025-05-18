@@ -2,6 +2,10 @@ Cosas a mejorar:
 
  - Si finalizas pedido que se cree en la base de datos y salga la pantalla de pedido_finalizado
 
+ - Mensaje de exito cuando haces acciones como añadir al carrito, eliminar plato, etc.
+
+ - Modificar cantidad y quitar platos de la cesta, que se vea bien este apartado
+
  - Login y registro de usuarios
 
  - Panel de administración con JavaScript y api monedas
@@ -9,5 +13,7 @@ Cosas a mejorar:
  - Crear ofertas (no prioritario)
 
  - Mejorar apartado reserva mesa (no prioritario)
+
+ - Mejorar las imagenes de los platos (no prioritario)
 
  - Quitar codigo php de views

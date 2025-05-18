@@ -1,14 +1,18 @@
+<?php
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedido en Reparto</title>
+    <title>Pedido Finalizado</title>
     <link rel="icon" href="assets\IMG\ICONOS\HEADER\logo-polbeiro-head.svg" type="image/svg+xml">
     <link rel="stylesheet" href="Assets/css/styles.css">
 </head>
 <body class="pedido-finalizado">
-    <header class="header">
+<header class="header">
         <div class="nav">
             <ul class="menu">
                 <li><a href="Inicio.php">INICIO</a></li>
@@ -21,14 +25,20 @@
                     <img src="assets/img/ICONOS/HEADER/logo-polbeiro.svg" alt="Logo Polbeiro">
                 </a>
             </div>
+            
             <div class="icons">
+
                 <input type="checkbox" id="search-toggle" hidden>
+                
+                <!-- Etiqueta para el icono de la lupa -->
                 <label for="search-toggle">
-                    <img src="assets/img/ICONOS/HEADER/icon-lupa.png" alt="Buscar" class="icon">
+                    <img src="assets/img/ICONOS/HEADER/icon-lupa.svg" alt="Lupa" class="icon">
                 </label>
+
                 <a href="Cesta.php">
-                    <img src="assets/img/ICONOS/HEADER/icon-cesta.png" alt="Cesta" class="icon">
+                    <img src="assets/img/ICONOS/HEADER/<?php echo (count($_SESSION['carrito']) > 0) ? 'icon-cesta-punto.svg' : 'icon-cesta.svg'; ?>" alt="Cesta" class="icon">
                 </a>
+
                 <a href="Info-Usuario.php">
                     <img src="assets/img/ICONOS/HEADER/icon-usuario.svg" alt="Usuario" class="icon">
                 </a>

@@ -38,44 +38,101 @@ class PedidosDAO {
         }
     }
 
-    public function crearPedido($usuarioId, $productos, $total) {
-        try {
-            // Iniciar una transacción
-            $this->db->beginTransaction();
+    public static function insertarPedido($pedidoId, $usuarioId, $fecha, $total, $estado) {
+        // Conectar a la base de datos
+        $conexion = DataBase::connect();
 
-            // Insertar el pedido en la tabla `pedidos`
-            $stmt = $this->db->prepare("INSERT INTO pedidos (id_usuario, total, estado) VALUES (?, ?, 'pendiente')");
-            $stmt->execute([$usuarioId, $total]);
-
-            // Obtener el ID del pedido recién creado
-            $pedidoId = $this->db->lastInsertId();
-
-            // Insertar los detalles del pedido
-            $stmtDetalle = $this->db->prepare("INSERT INTO detalles_pedido (id_pedido, id_plato, cantidad, subtotal) VALUES (?, ?, ?, ?)");
-            foreach ($productos as $id_plato => $producto) {
-                $stmtDetalle->execute([$pedidoId, $id_plato, $producto['cantidad'], $producto['subtotal']]);
-            }
-
-            // Confirmar la transacción
-            $this->db->commit();
-
-            return $pedidoId;
-        } catch (Exception $e) {
-            // Revertir la transacción si ocurre un error
-            $this->db->rollBack();
-            error_log("Error al crear el pedido: " . $e->getMessage());
-            return false;
+        // Si la fecha ya viene en formato correcto, no la conviertas
+        if (strtotime($fecha) !== false) {
+            $fecha = date('Y-m-d H:i:s', strtotime($fecha));
         }
-    }
 
-    // Obtener el último pedido de un usuario
-    public function getLatestPedidoByUsuarioId($id_usuario) {
-        $query = "SELECT * FROM pedidos WHERE id_usuario = :id_usuario ORDER BY fecha DESC LIMIT 1";
-        $stmt = $this->db->prepare($query); // Cambié $this->con por $this->db
-        $stmt->bindParam(":id_usuario", $id_usuario, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC); // Devuelve el último pedido
+        // Preparar la consulta SQL
+        $stmt = $conexion->prepare("INSERT INTO pedidos (id_pedido, id_usuario, fecha, total, estado) VALUES (?, ?, ?, ?, ?)");
+
+        // Verificar si la preparación fue exitosa
+        if (!$stmt) {
+            die("Error al preparar la consulta: " . $conexion->error);
+        }
+
+        // Asignar los parámetros con el formato correcto
+        // Orden: id_pedido (i), id_usuario (i), fecha (s), total (d), estado (s)
+        $stmt->bind_param("iids", $pedidoId, $usuarioId, $fecha, $total, $estado);
+
+        // Ejecutar la consulta y verificar errores
+        if (!$stmt->execute()) {
+            die("Error al ejecutar la consulta: " . $stmt->error);
+        }
+
+        // Obtener el ID del pedido recién insertado
+        $id_pedido = $stmt->insert_id;
+
+        // Cerrar la declaración y la conexión
+        $stmt->close();
+        $conexion->close();
+
+        // Retornar el ID del pedido insertado
+        return $id_pedido;
     }
+    
+
+    public static function obtenerUltimoPedidoPorUsuario($id_usuario) {
+        // Conexión a la base de datos
+        $conexion = DataBase::connect();
+    
+        // Consulta para obtener el último pedido
+        $query = "SELECT p.*, 
+                         GROUP_CONCAT(dp.id_plato, ':', dp.cantidad, ':', dp.subtotal SEPARATOR '|') AS productos 
+                  FROM pedidos p
+                  LEFT JOIN detalles_pedido dp ON p.id_pedido = dp.id_pedido
+                  WHERE p.id_usuario = ? 
+                  GROUP BY p.id_pedido 
+                  ORDER BY p.fecha DESC 
+                  LIMIT 1";
+    
+        $stmt = $conexion->prepare($query);
+    
+        if (!$stmt) {
+            die("Error al preparar la consulta: " . $conexion->error);
+        }
+    
+        // Vincular los parámetros
+        $stmt->bind_param("i", $id_usuario); // "i" indica un entero
+    
+        // Ejecutar la consulta
+        if (!$stmt->execute()) {
+            die("Error al ejecutar la consulta: " . $stmt->error);
+        }
+    
+        // Obtener los resultados
+        $result = $stmt->get_result();
+        $pedido = $result->fetch_assoc();
+    
+        if ($pedido) {
+            // Procesar productos en un array
+            $productos = [];
+            if (!empty($pedido['productos'])) {
+                $productosDetalles = explode('|', $pedido['productos']);
+                foreach ($productosDetalles as $detalle) {
+                    [$id_plato, $cantidad, $subtotal] = explode(':', $detalle);
+                    $productos[] = [
+                        'id_plato' => $id_plato,
+                        'cantidad' => $cantidad,
+                        'subtotal' => $subtotal,
+                    ];
+                }
+            }
+            $pedido['productos'] = $productos;
+        }
+    
+        // Cerrar la declaración y la conexión
+        $stmt->close();
+        $conexion->close();      
+        
+        return $pedido; // Retornar el pedido con productos
+    }
+    
+
 
     // Obtener todos los productos de un pedido
     public function getProductosByPedidoId($id_pedido) {

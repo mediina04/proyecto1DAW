@@ -3,41 +3,53 @@ include_once __DIR__ . '/../model/Usuario.php';
 include_once __DIR__ . '/../config/data_base.php';
 
 class UsuariosDAO {
-    // Esta funcion permite insertar un usuario en la base de datos
+    // Esta función permite insertar un usuario en la base de datos
     public static function insert(Usuario $usuario) {
         $con = DataBase::connect();
         $query = "INSERT INTO usuarios (usuario, nombre, apellido, email, contrasena, telefono) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $con->prepare($query);
-        $stmt->bind_param("ssssss", $usuario->usuario, $usuario->nombre, $usuario->apellido, $usuario->email, $usuario->contrasena, $usuario->telefono);
+        $stmt->bind_param(
+            "ssssss",
+            $usuario->getUsuario(),
+            $usuario->getNombre(),
+            $usuario->getApellido(),
+            $usuario->getEmail(),
+            $usuario->getContrasena(),
+            $usuario->getTelefono()
+        );
         $result = $stmt->execute();
         $stmt->close();
         $con->close();
-        return $result;
+        return $result; // Devuelve si la inserción fue exitosa
     }
 
-    // Esta funcion permite validar el login de un usuario
+    // Esta función valida el login de un usuario
     public static function validateLogin($usuario, $password) {
         $con = DataBase::connect();
-        $sql = "SELECT id_usuario FROM usuarios WHERE usuario='$usuario' AND contrasena='$password'";
-        $result = $con->query($sql);
+        $sql = "SELECT id_usuario FROM usuarios WHERE usuario=? AND contrasena=?";
+        $stmt = $con->prepare($sql);
+        $stmt->bind_param("ss", $usuario, $password); // Usar parámetros preparados para evitar SQL injection
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
         $con->close();
-        return $result->num_rows > 0;
+        return $result->num_rows > 0; // Retorna verdadero si hay un usuario que coincide
     }
 
-    // Esta funcion permite obtener todos los usuarios de la base de datos
+    // Esta función obtiene todos los usuarios de la base de datos
     public static function getAll() {
         $con = DataBase::connect();
         $sql = "SELECT * FROM usuarios";
         $result = $con->query($sql);
         $usuarios = [];
         while ($row = $result->fetch_assoc()) {
-            $usuarios[] = $row;
+            $usuarios[] = $row; // Agrega cada usuario a la lista
         }
         $con->close();
-        return $usuarios;
+        return $usuarios; // Retorna la lista de todos los usuarios
     }
 
-    // Esta funcion permite obtener un usuario por su ID
+    // Esta función obtiene un usuario por su nombre de usuario
     public static function getUserByUsername($usuario) {
         $con = DataBase::connect();
         $query = "SELECT id_usuario, nombre, apellido, email, telefono, direccion, contrasena FROM usuarios WHERE usuario = ?";
@@ -48,10 +60,10 @@ class UsuariosDAO {
         $user = $result->fetch_assoc();
         $stmt->close();
         $con->close();
-        return $user;
+        return $user; // Devuelve el usuario encontrado
     }
 
-    // Esta funcion permite verificar si un usuario es administrador
+    // Esta función verifica si un usuario es administrador
     public static function isAdmin($id_usuario) {
         $con = DataBase::connect();
         $query = "SELECT administrador FROM usuarios WHERE id_usuario = ?";
@@ -62,7 +74,7 @@ class UsuariosDAO {
         $stmt->fetch();
         $stmt->close();
         $con->close();
-        return $administrador == 1;
+        return $administrador == 1; // Retorna verdadero si es administrador
     }
 }
 ?>

@@ -1,8 +1,34 @@
 <?php
-session_start(); // Asegúrate de que la sesión esté iniciada
+session_start();
 
-// Simulación del último pedido (puedes reemplazarlo con datos reales desde la base de datos)
-$pedido = isset($_SESSION['pedido']) ? $_SESSION['pedido'] : null;
+// Simulación de un usuario logueado
+$_SESSION['login'] = true; // Usuario logueado
+$_SESSION['usuario'] = (object) [ // Usuario simulado como un objeto
+    'id_usuario' => 1,
+    'rol' => 'admin',
+    'usuario' => 'Mediina', // Nombre de usuario
+    'nombre' => 'Iago', // Nombre
+    'apellido' => 'Medina', // Apellido
+    'email' => 'iago@correo.com', // Email
+    'telefono' => '123456789', // Teléfono
+    'direccion' => 'Av. Collserola 2' // Dirección
+];
+
+// Función para obtener el último pedido
+function obtenerUltimoPedido($id_usuario) {
+    include_once __DIR__ . '/../config/data_base.php'; // Ruta relativa
+    include_once __DIR__ . '/../model/PedidosDAO.php'; // Ruta relativa
+ // Modelo de pedidos
+
+    // Obtener el último pedido del usuario desde la base de datos
+    return PedidosDAO::obtenerUltimoPedidoPorUsuario($id_usuario);
+}
+
+// Si el usuario está logueado, buscar su último pedido
+$ultimoPedido = null;
+if (isset($_SESSION['login']) && $_SESSION['login'] === true) {
+    $ultimoPedido = obtenerUltimoPedido($_SESSION['usuario']->id_usuario);
+}
 ?>
 
 <!DOCTYPE html>
@@ -29,25 +55,64 @@ $pedido = isset($_SESSION['pedido']) ? $_SESSION['pedido'] : null;
                     <img src="assets/img/ICONOS/HEADER/logo-polbeiro.svg" alt="Logo Polbeiro">
                 </a>
             </div>
+            
             <div class="icons">
-            <input type="checkbox" id="search-toggle" hidden>
-            <label for="search-toggle">
-                <img src="assets/img/ICONOS/HEADER/icon-lupa.png" alt="Buscar" class="icon">
-            </label>
-            <a href="Cesta.php">
-                <img src="assets/img/ICONOS/HEADER/icon-cesta.png" alt="Cesta" class="icon">
-            </a>
-            <a href="Info-Usuario.php">
-                <img src="assets/img/ICONOS/HEADER/icon-usuario.svg" alt="Usuario" class="icon">
-            </a>
-        </div>
+
+                <input type="checkbox" id="search-toggle" hidden>
+                
+                <!-- Etiqueta para el icono de la lupa -->
+                <label for="search-toggle">
+                    <img src="assets/img/ICONOS/HEADER/icon-lupa.svg" alt="Lupa" class="icon">
+                </label>
+
+                <a href="Cesta.php">
+                    <img src="assets/img/ICONOS/HEADER/<?php echo (count($_SESSION['carrito']) > 0) ? 'icon-cesta-punto.svg' : 'icon-cesta.svg'; ?>" alt="Cesta" class="icon">
+                </a>
+
+                <a href="Info-Usuario.php">
+                    <img src="assets/img/ICONOS/HEADER/icon-usuario.svg" alt="Usuario" class="icon">
+                </a>
+            </div>
         </div>
     </header>
 
     <!-- Panel de Usuario -->
     <div class="user-section">
         <?php if (isset($_SESSION['login']) && $_SESSION['login'] === true): ?>
-            <h2>Bienvenido, <?php echo htmlspecialchars($_SESSION['usuario']->nombre); ?></h2>
+            <h2>Bienvenido, <?php echo htmlspecialchars($_SESSION['usuario']->usuario); ?></h2>
+
+            <!-- Mostrar último pedido -->
+            <?php if ($ultimoPedido): ?>
+    <div class="last-order">
+        <h3>Tu último pedido</h3>
+        <p><strong>Fecha:</strong> <?php echo htmlspecialchars($ultimoPedido['fecha']); ?></p>
+        <!-- <p><strong>Productos:</strong></p>
+        <ul>
+            <?php foreach ($ultimoPedido['productos'] as $producto): ?>
+                <li>
+                    <?php echo htmlspecialchars($producto['cantidad']) . 'x ' . 
+                                htmlspecialchars($producto['id_plato']) . ' - €' . 
+                                htmlspecialchars($producto['subtotal']); ?>
+                </li>
+            <?php endforeach; ?>
+        </ul>-->
+        <p><strong>Total:</strong> €<?php echo htmlspecialchars($ultimoPedido['total']); ?></p>
+        <form action="Cesta.php" method="POST">
+            <input type="hidden" name="productos" value="<?php echo htmlspecialchars(json_encode($ultimoPedido['productos'])); ?>">
+            <button type="submit" class="button-web">Repetir Pedido</button>
+        </form>
+    </div>
+<?php else: ?>
+    <p>No tienes ningún pedido reciente.</p>
+<?php endif; ?>
+
+
+            <!-- Botón para el Panel de Administración si es administrador -->
+            <?php if ($_SESSION['usuario']->rol === 'admin'): ?>
+                <div class="admin-panel">
+                    <a href="../API/Panel_Admin.php" class="button-web">Ir al Panel de Administración</a>
+                </div>
+            <?php endif; ?>
 
             <!-- Formulario para editar datos -->
             <div class="edit-profile">
@@ -73,16 +138,16 @@ $pedido = isset($_SESSION['pedido']) ? $_SESSION['pedido'] : null;
                         <input type="text" name="address" id="address" required placeholder=" " value="<?php echo htmlspecialchars($_SESSION['usuario']->direccion); ?>">
                         <label for="address">Dirección</label>
                     </div>
-                    <button type="submit" class="reservation-button">Guardar Cambios</button>
+                    <!--<button type="submit" class="button-web">Guardar Cambios</button> -->
                 </form>
             </div>
 
             <!-- Botón para cerrar sesión -->
-            <div class="logout">
+            <!-- <div class="logout">
                 <form action="index.php?controller=usuario&action=cerrar_sesion" method="POST">
-                    <button type="submit" class="reservation-button">Cerrar Sesión</button>
+                    <button type="submit" class="button-web">Cerrar Sesión</button>
                 </form>
-            </div>
+            </div> -->
         <?php else: ?>
             <h2>No has iniciado sesión</h2>
             <p>Para acceder a esta página, por favor, inicia sesión o regístrate.</p>
@@ -92,53 +157,5 @@ $pedido = isset($_SESSION['pedido']) ? $_SESSION['pedido'] : null;
             </div>
         <?php endif; ?>
     </div>
-
-    <footer class="footer">
-        <div class="footer-top">
-            <div class="footer-section">
-                <h3>NO TE PIERDAS NUESTRAS OFERTAS</h3>
-                <p>Suscríbete a nuestra newsletter y recibe tu primer pedido gratis</p>
-                <form class="subscribe-form">
-                    <div class="subscribe-input">
-                        <input type="email" id="email" required placeholder=" ">
-                        <label for="email">Correo electrónico</label>
-                    </div>
-                    <button class="button-footer">SUSCRIBIRSE</button>
-
-                    <!-- Logo y redes sociales -->
-                    <div class="logo">
-                        <img src="assets/img/ICONOS/HEADER/logo-polbeiro.svg" alt="Polbeiro Logo">
-                    </div>
-
-                    <div class="social-icons">
-                        <a href="https://www.instagram.com"><img src="assets/img/ICONOS/REDES/icon-instagram.png" alt="Instagram"></a>
-                        <a href="https://www.pinterest.com"><img src="assets/img/ICONOS/REDES/icon-pinterest.png" alt="Pinterest"></a>
-                        <a href="https://www.youtube.com"><img src="assets/img/ICONOS/REDES/icon-youtube.png" alt="YouTube"></a>
-                        <a href="https://www.tiktok.com"><img src="assets/img/ICONOS/REDES/icon-tiktok.png" alt="TikTok"></a>
-                        <a href="https://www.whatsapp.com"><img src="assets/img/ICONOS/REDES/icon-whatsapp.png" alt="WhatsApp"></a>
-                    </div>
-                </form>
-            </div>
-
-            <div class="footer-section">
-                <h3>OFERTAS ACTUALES</h3>
-                <p>CÓDIGO: POLBEIRO (10%)</p>
-            </div>
-
-            <div class="footer-section">
-                <h3>SUPPORT</h3>
-                <p><a href="#">CONTACT</a></p>
-                <p><a href="#">TRABAJA CON NOSOTROS</a></p>
-            </div>
-
-            <div class="footer-section">
-                <h3>POLÍTICAS</h3>
-                <p><a href="#">POLÍTICA DE PRIVACIDAD</a></p>
-                <p><a href="#">POLÍTICA DE ENVÍO</a></p>
-                <p><a href="#">COOKIES</a></p>
-                <p><a href="#">TÉRMINOS Y CONDICIONES</a></p>
-            </div>
-        </div>
-    </footer>
 </body>
 </html>

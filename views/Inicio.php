@@ -4,7 +4,6 @@ require_once __DIR__ . '/../model/ProductosDAO.php';
 require_once __DIR__ . '/../model/ReservasDAO.php';
 
 session_start(); // Iniciar la sesión si no está iniciada
-
 // Crear la conexión con la base de datos
 $con = DataBase::connect();
 
@@ -83,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['accion'])) {
         $personas = $_POST['personas'];
         $fecha_reserva = $_POST['hora'];
 
-        $query = "INSERT INTO reservas (id_usuario, fecha_reserva, cantidad_personas, comentarios, telefono) VALUES (?, ?, ?, ?, ?)";
+        $query = "INSERT INTO reservas (id_usuario, fecha_reserva, cantidad_personas, nombre, telefono) VALUES (?, ?, ?, ?, ?)";
         $stmt = $con->prepare($query);
         $stmt->bind_param('isiss', $usuarioId, $fecha_reserva, $personas, $nombre, $telefono);
         $stmt->execute();
@@ -127,7 +126,6 @@ $stmt = $con->prepare($query);
 $stmt->bind_param('i', $usuarioId);
 $stmt->execute();
 $reservasUsuario = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-
 ?>
 
 <!DOCTYPE html>
@@ -162,11 +160,11 @@ $reservasUsuario = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                 
                 <!-- Etiqueta para el icono de la lupa -->
                 <label for="search-toggle">
-                    <img src="assets/img/ICONOS/HEADER/icon-lupa.png" alt="Buscar" class="icon">
+                    <img src="assets/img/ICONOS/HEADER/icon-lupa.svg" alt="Lupa" class="icon">
                 </label>
 
                 <a href="Cesta.php">
-                    <img src="assets/img/ICONOS/HEADER/icon-cesta.png" alt="Cesta" class="icon">
+                    <img src="assets/img/ICONOS/HEADER/<?php echo (count($_SESSION['carrito']) > 0) ? 'icon-cesta-punto.svg' : 'icon-cesta.svg'; ?>" alt="Cesta" class="icon">
                 </a>
 
                 <a href="Info-Usuario.php">
@@ -277,25 +275,40 @@ $reservasUsuario = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         <?php if (!empty($reservasUsuario)): ?>
             <!-- Mostrar detalles de la reserva -->
             <h3>Tienes una reserva activa</h3>
-            <p><strong>Fecha y hora:</strong> <?php echo htmlspecialchars($reservasUsuario[0]['fecha_reserva']); ?></p>
-            <p><strong>Cantidad de personas:</strong> <?php echo htmlspecialchars($reservasUsuario[0]['cantidad_personas']); ?></p>
-            <p><strong>Nombre:</strong> <?php echo htmlspecialchars($reservasUsuario[0]['comentarios']); ?></p>
 
-            <!-- Botón para modificar la reserva -->
-            <form method="POST" action="Inicio.php" style="display: inline-block;">
-                <input type="hidden" name="accion" value="modificar">
-                <input type="hidden" name="id_reserva" value="<?php echo htmlspecialchars($reservasUsuario[0]['id_reserva']); ?>">
+<!-- Formulario para modificar la reserva -->
+<form method="POST" action="Inicio.php">
+    <input type="hidden" name="accion" value="modificar">
+    <input type="hidden" name="id_reserva" value="<?php echo htmlspecialchars($reservasUsuario[0]['id_reserva']); ?>">
 
-                <div class="reserva-form">
-                    <label for="personas">Personas</label>
-                    <input type="number" name="personas" min="1" value="<?php echo htmlspecialchars($reservasUsuario[0]['cantidad_personas']); ?>" required>
-                </div>
-                <div class="reserva-form">
-                    <label for="hora">Fecha y Hora</label>
-                    <input type="time" name="hora" value="<?php echo htmlspecialchars($reservasUsuario[0]['fecha_reserva']); ?>" required>
-                </div>
-                <button type="submit" class="button-web">Modificar Reserva</button>
-            </form>
+    <!-- Campo para la fecha y hora -->
+    <div class="reserva-form">
+        <label for="hora">Fecha y Hora</label>
+        <input type="datetime-local" name="hora" value="<?php echo htmlspecialchars(date('Y-m-d\TH:i', strtotime($reservasUsuario[0]['fecha_reserva']))); ?>" required>
+    </div>
+
+    <!-- Campo para la cantidad de personas -->
+    <div class="reserva-form">
+        <label for="personas">Cantidad de personas</label>
+        <input type="number" name="personas" min="1" value="<?php echo htmlspecialchars($reservasUsuario[0]['cantidad_personas']); ?>" required placeholder="">
+    </div>
+
+    <!-- Campo para el nombre -->
+    <div class="reserva-form">
+        <label for="nombre">Nombre</label>
+        <input type="text" name="nombre" value="<?php echo htmlspecialchars($reservasUsuario[0]['nombre']); ?>" required>
+    </div>
+
+    <!-- Campo para el teléfono -->
+    <div class="reserva-form">
+        <label for="telefono">Teléfono</label>
+        <input type="tel" name="telefono" value="<?php echo htmlspecialchars($reservasUsuario[0]['telefono']); ?>" required>
+    </div>
+
+    <!-- Botón para enviar la modificación -->
+    <button type="submit" class="button-web">Modificar Reserva</button>
+</form>
+
 
             <!-- Botón para anular la reserva -->
             <form method="POST" action="Inicio.php" style="display: inline-block;">

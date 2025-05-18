@@ -1,0 +1,283 @@
+/* Estilos generales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Archivo', sans-serif;
+}
+
+body {
+    display: flex;
+    height: 100vh;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+/* Barra lateral fija */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100%;
+    background-color: #000096;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.sidebar .logo {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border-bottom: 2px solid #fff;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    padding: 15px 20px;
+    cursor: pointer;
+    border-top: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+}
+
+.sidebar ul li:hover,
+.sidebar ul li.active {
+    background-color: #fff;
+    color: #000096;
+}
+
+.sidebar .cerrarPanel {
+    padding: 20px;
+    text-align: center;
+    background-color: #000096;
+    color: #ffffff;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.sidebar .cerrarPanel:hover {
+    background-color: #ffffff;
+    color: #000096;
+}
+
+/* Contenido principal */
+.main-content {
+    flex: 1;
+    margin-left: 250px;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.main-content h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+/* Sección general */
+.section {
+    display: none;
+}
+
+.section.active {
+    display: block;
+}
+
+/* Estilo de botones y formularios */
+button {
+    background-color: #000096;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #ffffff;
+    color: #000096;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+/* Formulario común */
+form {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+    display: none;
+}
+
+form h3 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #444;
+}
+
+/* Tabla común */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+}
+
+th, td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #000096;
+    color: #fff;
+    font-size: 1.1em;
+}
+
+td {
+    font-size: 1em;
+    color: #444;
+}
+
+td button {
+    color: #ffffff;
+    padding: 5px 10px;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.9em;
+    cursor: pointer;
+}
+
+td button:hover {
+    background-color: #ffffff;
+    color: #000096;
+}
+
+/* Modals */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    width: 400px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h3 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    color: #444;
+}
+
+.modal-content input,
+.modal-content select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+.modal-content button {
+    background-color: #000096;
+    color: #fff;
+    font-size: 1.1em;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.modal-content button:hover {
+    background-color: #ffffff;
+    color: #000096;
+}
+
+/* Ocultar elementos */
+.hidden {
+    display: none;
+}
+
+/* Estilo para la sección de Usuarios, Pedidos, Platos, y Reservas */
+h2, h3 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+p {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+/* Ajustes para formularios */
+#formulario-agregar-usuario,
+#formulario-agregar-pedido,
+#formulario-agregar-reserva,
+#formulario-plato {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+/* Modificaciones de las tablas */
+#tabla-usuarios,
+#tabla-pedidos,
+#tabla-platos,
+#tabla-reservas {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+/* Formulario para editar registros */
+#formulario-editar-usuario,
+#formulario-editar-pedido,
+#formulario-editar-reserva {
+    display: none;
+}
+
+button {
+    margin-top: 10px;
+}
+
+#reservas ul li {
+    background-color: #f1f1f1;
+}

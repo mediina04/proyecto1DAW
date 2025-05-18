@@ -1030,19 +1030,20 @@ body {
 
 /* Columna de cantidad */
 .quantity-cell {
-    text-align: center;
-    vertical-align: middle; 
-    padding: 0; 
-    height: 100%; 
+    text-align: center; /* Centra el contenido horizontalmente */
+    vertical-align: middle; /* Centra el contenido verticalmente */
+    padding: 0; /* Elimina relleno adicional */
+    box-sizing: border-box;
 }
 
-
+/* Controles de cantidad */
 .quantity-controls {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 5px; 
-    margin: 0; 
+    justify-content: center; /* Centra los elementos horizontalmente */
+    align-items: center; /* Alinea los elementos verticalmente */
+    gap: 5px; /* Espacio entre los botones y el input */
+    margin: 0 auto; /* Centra los controles en la celda */
+    height: 100%; /* Ajusta la altura al contenido */
 }
 
 .quantity-button {

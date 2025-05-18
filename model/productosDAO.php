@@ -1,5 +1,6 @@
 <?php
-require_once 'Producto.php';
+include_once __DIR__ . '/../config/data_base.php';
+include_once __DIR__ . '/../model/Producto.php';
 
 class ProductosDAO {
 
@@ -64,81 +65,4 @@ class ProductosDAO {
     }
     
 
-    // Agregar un nuevo producto
-    public function agregar($producto) {
-        if (!$producto instanceof Producto) {
-            throw new InvalidArgumentException("El objeto proporcionado no es una instancia de Producto.");
-        }
-
-        $query = "INSERT INTO platos (nombre, descripcion, precio, imagen_principal, imagen_secundaria) 
-                  VALUES (?, ?, ?, ?, ?)";
-
-        $stmt = $this->conexion->prepare($query);
-
-        if (!$stmt) {
-            throw new Exception("Error al preparar la consulta: " . $this->conexion->error);
-        }
-
-        $stmt->bind_param(
-            "ssdss", // Tipos: s (string), d (double), i (integer)
-            $producto->getNombre(),
-            $producto->getDescripcion(),
-            $producto->getPrecio(),
-            $producto->getImagenPrincipal(),
-            $producto->getImagenSecundaria()
-        );
-
-        $resultado = $stmt->execute();
-        $stmt->close(); // Cerrar el statement
-        return $resultado;
-    }
-
-    // Eliminar un producto por ID
-    public function eliminar($id) {
-        if (!is_numeric($id) || $id <= 0) {
-            throw new InvalidArgumentException("ID de producto inválido.");
-        }
-
-        $query = "DELETE FROM platos WHERE id_plato = ?";
-        $stmt = $this->conexion->prepare($query);
-
-        if (!$stmt) {
-            throw new Exception("Error al preparar la consulta: " . $this->conexion->error);
-        }
-
-        $stmt->bind_param("i", $id);
-        $resultado = $stmt->execute();
-        $stmt->close(); // Cerrar el statement
-        return $resultado;
-    }
-
-    // Actualizar un producto existente
-    public function actualizar($producto) {
-        if (!$producto instanceof Producto) {
-            throw new InvalidArgumentException("El objeto proporcionado no es una instancia de Producto.");
-        }
-
-        $query = "UPDATE platos SET nombre = ?, descripcion = ?, precio = ?, imagen_principal = ?, imagen_secundaria = ?
-                  WHERE id_plato = ?";
-
-        $stmt = $this->conexion->prepare($query);
-
-        if (!$stmt) {
-            throw new Exception("Error al preparar la consulta: " . $this->conexion->error);
-        }
-
-        $stmt->bind_param(
-            "ssdssi", // Tipos: s (string), d (double), i (integer)
-            $producto->getNombre(),
-            $producto->getDescripcion(),
-            $producto->getPrecio(),
-            $producto->getImagenPrincipal(),
-            $producto->getImagenSecundaria(),
-            $producto->getId()
-        );
-
-        $resultado = $stmt->execute();
-        $stmt->close(); // Cerrar el statement
-        return $resultado;
-    }
 }
