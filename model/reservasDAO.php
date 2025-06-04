@@ -1,125 +1,135 @@
 <?php
-require_once 'reserva.php';
 
 class ReservasDAO {
     private $db;
 
     public function __construct($db) {
+        // $db es una instancia de mysqli
         $this->db = $db;
     }
 
-    // Crear una reserva en la base de datos
-    public function crearReserva($reserva) {
-        try {
-            // Preparar la consulta SQL para insertar una nueva reserva
-            $sql = "INSERT INTO reservas (id_usuario, fecha_reserva, cantidad_personas, comentarios) 
-                    VALUES (?, ?, ?, ?)";
-            
-            // Preparar la sentencia
-            $stmt = $this->db->prepare($sql);
-            
-            // Verificar qué datos estamos intentando insertar
-            error_log("Datos de la reserva a insertar: " . 
-                      $reserva->getIdUsuario() . " - " .
-                      $reserva->getFechaReserva() . " - " .
-                      $reserva->getCantidadPersonas() . " - " .
-                      $reserva->getComentarios());
-            
-            // Ejecutar la sentencia con los datos de la reserva
-            $stmt->execute([
-                $reserva->getIdUsuario(),
-                $reserva->getFechaReserva(),
-                $reserva->getCantidadPersonas(),
-                $reserva->getComentarios()
-            ]);
-    
-            // Obtener el ID de la reserva recién insertada
-            $lastInsertId = $this->db->lastInsertId();
-    
-            // Verificar si el ID fue generado correctamente
-            error_log("ID de la reserva insertada: " . $lastInsertId);
-    
-            return $lastInsertId; // Esto debería devolver el ID generado automáticamente
-        } catch (PDOException $e) {
-            // Si hay un error en la ejecución, lo mostramos
-            error_log("Error al crear la reserva: " . $e->getMessage());
-            return false; // Indicamos que la inserción falló
+    // Crear nueva reserva
+    public function crearReserva($id_usuario, $fecha_reserva, $cantidad_personas, $comentarios = null) {
+        $sql = "INSERT INTO reservas (id_usuario, fecha_reserva, cantidad_personas, comentarios) VALUES (?, ?, ?, ?)";
+        $stmt = $this->db->prepare($sql);
+        if (!$stmt) {
+            error_log("Error en preparar consulta crearReserva: " . $this->db->error);
+            return false;
+        }
+        $stmt->bind_param("isis", $id_usuario, $fecha_reserva, $cantidad_personas, $comentarios);
+        if ($stmt->execute()) {
+            return $this->db->insert_id;
+        } else {
+            error_log("Error en ejecutar crearReserva: " . $stmt->error);
+            return false;
         }
     }
-    
-    
-    
 
-    // Obtener todas las reservas de un usuario
-    public function obtenerReservasPorUsuario($id_usuario) {
-        try {
-            $stmt = $this->db->prepare("SELECT * FROM reservas WHERE id_usuario = ? ORDER BY fecha_reserva DESC");
-            $stmt->execute([$id_usuario]);
-            $reservas = [];
-            while ($reservaData = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $reservas[] = new Reserva(
-                    $reservaData['id_reserva'],
-                    $reservaData['id_usuario'],
-                    $reservaData['fecha_reserva'],
-                    $reservaData['cantidad_personas'],
-                    $reservaData['comentarios']
-                );
-            }
-            return $reservas;
-        } catch (Exception $e) {
-            echo "Error al obtener las reservas del usuario: " . $e->getMessage();
+    // Obtener todas las reservas
+    public function getAll() {
+        $sql = "SELECT * FROM reservas ORDER BY fecha_reserva DESC";
+        $result = $this->db->query($sql);
+        if (!$result) {
+            error_log("Error en consulta getAll: " . $this->db->error);
             return [];
         }
-    }
-    
-
-    // Eliminar una reserva
-    public function eliminarReserva($id_reserva) {
-        try {
-            $stmt = $this->db->prepare("DELETE FROM reservas WHERE id_reserva = ?");
-            $stmt->execute([$id_reserva]);
-            return true; // Indicamos que la eliminación fue exitosa
-        } catch (PDOException $e) {
-            echo "Error al eliminar la reserva: " . $e->getMessage();
-            return false;
+        $reservas = [];
+        while ($row = $result->fetch_assoc()) {
+            $reservas[] = $row;
         }
+        return $reservas;
     }
 
-    // Obtener una reserva por su ID
-    public function obtenerReservaPorId($id_reserva) {
-        try {
-            $stmt = $this->db->prepare("SELECT * FROM reservas WHERE id_reserva = ?");
-            $stmt->execute([$id_reserva]);
-            $reservaData = $stmt->fetch(PDO::FETCH_ASSOC);
+    // Obtener reservas por usuario
+    public function obtenerReservasPorUsuario($id_usuario) {
+        $sql = "SELECT * FROM reservas WHERE id_usuario = ? ORDER BY fecha_reserva DESC";
+        $stmt = $this->db->prepare($sql);
+        if (!$stmt) {
+            error_log("Error en preparar consulta obtenerReservasPorUsuario: " . $this->db->error);
+            return [];
+        }
+        $stmt->bind_param("i", $id_usuario);
+        if (!$stmt->execute()) {
+            error_log("Error en ejecutar obtenerReservasPorUsuario: " . $stmt->error);
+            return [];
+        }
+        $result = $stmt->get_result();
+        $reservas = [];
+        while ($row = $result->fetch_assoc()) {
+            $reservas[] = $row;
+        }
+        return $reservas;
+    }
 
-            if ($reservaData) {
-                // Convertir la fila en un objeto Reserva
-                return new Reserva(
-                    $reservaData['id_reserva'],
-                    $reservaData['id_usuario'],
-                    $reservaData['fecha_reserva'],
-                    $reservaData['cantidad_personas'],
-                    $reservaData['comentarios']
-                );
-            } else {
-                return null; // No se encuentra la reserva
-            }
-        } catch (PDOException $e) {
-            echo "Error al obtener la reserva por ID: " . $e->getMessage();
+    // Obtener reserva por id
+    public function obtenerReservaPorId($id_reserva) {
+        $sql = "SELECT * FROM reservas WHERE id_reserva = ?";
+        $stmt = $this->db->prepare($sql);
+        if (!$stmt) {
+            error_log("Error en preparar consulta obtenerReservaPorId: " . $this->db->error);
             return null;
         }
+        $stmt->bind_param("i", $id_reserva);
+        if (!$stmt->execute()) {
+            error_log("Error en ejecutar obtenerReservaPorId: " . $stmt->error);
+            return null;
+        }
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
     }
 
-    // Actualizar una reserva
-    public function actualizarReserva($id_reserva, $fecha_reserva, $personas) {
-        try {
-            $stmt = $this->db->prepare("UPDATE reservas SET fecha_reserva = ?, cantidad_personas = ? WHERE id_reserva = ?");
-            $stmt->execute([$fecha_reserva, $personas, $id_reserva]);
-            return true; // Indicamos que la actualización fue exitosa
-        } catch (PDOException $e) {
-            echo "Error al actualizar la reserva: " . $e->getMessage();
+    // Actualizar reserva
+    public function actualizarReserva($id_reserva, $fecha_reserva, $cantidad_personas, $comentarios = null) {
+        $sql = "UPDATE reservas SET fecha_reserva = ?, cantidad_personas = ?, comentarios = ? WHERE id_reserva = ?";
+        $stmt = $this->db->prepare($sql);
+        if (!$stmt) {
+            error_log("Error en preparar consulta actualizarReserva: " . $this->db->error);
             return false;
         }
+        $stmt->bind_param("sisi", $fecha_reserva, $cantidad_personas, $comentarios, $id_reserva);
+        if (!$stmt->execute()) {
+            error_log("Error en ejecutar actualizarReserva: " . $stmt->error);
+            return false;
+        }
+        return true;
     }
+
+    // Eliminar reserva
+    public function eliminarReserva($id_reserva) {
+        $sql = "DELETE FROM reservas WHERE id_reserva = ?";
+        $stmt = $this->db->prepare($sql);
+        if (!$stmt) {
+            error_log("Error en preparar consulta eliminarReserva: " . $this->db->error);
+            return false;
+        }
+        $stmt->bind_param("i", $id_reserva);
+        if (!$stmt->execute()) {
+            error_log("Error en ejecutar eliminarReserva: " . $stmt->error);
+            return false;
+        }
+        return true;
+    }
+    // Obtener la reserva activa (más próxima o actual) de un usuario
+    public function getReservaActiva($id_usuario) {
+        $hoy = date('d-m-Y'); 
+
+        $sql = "SELECT * FROM reservas WHERE id_usuario = ? AND fecha_reserva >= ? ORDER BY fecha_reserva ASC LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        if (!$stmt) {
+            error_log("Error en preparar consulta getReservaActiva: " . $this->db->error);
+            return null;
+        }
+
+        $stmt->bind_param("is", $id_usuario, $hoy);
+        if (!$stmt->execute()) {
+            error_log("Error en ejecutar getReservaActiva: " . $stmt->error);
+            return null;
+        }
+
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
+    }
+
 }
-?>
+
+

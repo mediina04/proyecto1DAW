@@ -8,7 +8,7 @@ class Reserva {
     private $nombre;
 
     // Constructor con valores predeterminados para comentarios (pueden ser nulos)
-    public function __construct($id_reserva = null, $id_usuario, $fecha_reserva, $cantidad_personas, $nombre = null) {
+    public function __construct($id_usuario, $fecha_reserva, $cantidad_personas, $nombre = null, $id_reserva = null) {
         if (!$id_usuario || !$fecha_reserva || !$cantidad_personas) {
             throw new InvalidArgumentException("Todos los campos son obligatorios.");
         }

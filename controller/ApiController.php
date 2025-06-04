@@ -1,14 +1,14 @@
 <?php
 
 // Incluir los archivos necesarios para las clases que vamos a usar
-include_once 'model/UsuariosDAO.php';
-include_once 'model/PedidosDAO.php';
-include_once 'model/PlatosDAO.php';
-include_once 'model/ReservasDAO.php';
-include_once 'config/data_base.php';
+include_once(__DIR__ . '/../model/UsuariosDAO.php');
+include_once(__DIR__ . '/../model/PedidosDAO.php');
+include_once(__DIR__ . '/../model/ProductosDAO.php');
+include_once(__DIR__ . '/../model/ReservasDAO.php');
+include_once(__DIR__ . '/../config/data_base.php');
+
 
 class ApiController {
-
     // Acción para mostrar el panel de administración
     public function panel() {
         include_once 'API/Panel_Admin.php';
@@ -36,21 +36,51 @@ class ApiController {
         if ($data) {
             try {
                 if (!isset($data->usuario, $data->nombre, $data->apellido, $data->email, $data->contrasena, $data->telefono)) {
+                    http_response_code(400);
                     echo json_encode(["error" => "Datos incompletos para el usuario"]);
                     return;
                 }
 
-                $usuario = new Usuario(null, $data->usuario, $data->nombre, $data->apellido, $data->email, $data->contrasena, $data->telefono);
+                // Validación de email
+                if (!filter_var($data->email, FILTER_VALIDATE_EMAIL)) {
+                    http_response_code(400);
+                    echo json_encode(["error" => "Email no válido"]);
+                    return;
+                }
+
+                // Validación de contraseña
+                if (strlen($data->contrasena) < 8) {
+                    http_response_code(400);
+                    echo json_encode(["error" => "La contraseña debe tener al menos 8 caracteres"]);
+                    return;
+                }
+
+                // Hashear la contraseña
+                $data->contrasena = password_hash($data->contrasena, PASSWORD_DEFAULT);
+
+                $usuario = new Usuario(
+                    $data->usuario,
+                    $data->nombre,
+                    $data->apellido,
+                    $data->contrasena,
+                    $data->email,
+                    $data->telefono,
+                    $data->direccion ?? null
+                );
 
                 if (UsuariosDAO::insert($usuario)) {
+                    http_response_code(201);
                     echo json_encode(["success" => true, "message" => "Usuario agregado con éxito."]);
                 } else {
+                    http_response_code(500);
                     echo json_encode(["error" => "Error al agregar el usuario."]);
                 }
             } catch (Exception $e) {
+                http_response_code(500);
                 echo json_encode(["error" => "Error al agregar usuario: " . $e->getMessage()]);
             }
         } else {
+            http_response_code(400);
             echo json_encode(["error" => "Datos no válidos o faltantes."]);
         }
     }
@@ -61,9 +91,9 @@ class ApiController {
 
         $data = json_decode(file_get_contents("php://input"));
 
-        if ($data && isset($data->id)) {
+        if ($data && isset($data->id_usuario)) {
             try {
-                if (UsuariosDAO::eliminar($data->id)) {
+                if (UsuariosDAO::eliminar($data->id_usuario)) {
                     echo json_encode(["success" => true, "message" => "Usuario eliminado con éxito."]);
                 } else {
                     echo json_encode(["error" => "Error al eliminar el usuario."]);
@@ -82,14 +112,14 @@ class ApiController {
 
         $data = json_decode(file_get_contents("php://input"));
 
-        if ($data && isset($data->id)) {
+        if ($data && isset($data->id_usuario)) {
             try {
                 if (!isset($data->nombre, $data->apellido, $data->email, $data->telefono)) {
                     echo json_encode(["error" => "Datos incompletos para actualizar el usuario."]);
                     return;
                 }
 
-                if (UsuariosDAO::actualizar($data->id, $data->nombre, $data->apellido, $data->email, $data->telefono)) {
+                if (UsuariosDAO::actualizar($data->id_usuario, $data->nombre, $data->apellido, $data->email, $data->telefono, $data->direccion ?? null)) {
                     echo json_encode(["success" => true, "message" => "Usuario actualizado con éxito."]);
                 } else {
                     echo json_encode(["error" => "Error al actualizar el usuario."]);
@@ -103,121 +133,150 @@ class ApiController {
     }
 
     // PEDIDOS
-    public function obtenerPedidos() {
-        header("Access-Control-Allow-Origin: *");
-        header("Content-Type: application/json; charset=UTF-8");
+public function obtenerPedidos() {
 
+    try {
+        $db = DataBase::connect();
+        $pedidosDAO = new PedidosDAO($db);
+
+        $pedidos = $pedidosDAO->getAll();
+        echo json_encode($pedidos ?: ["mensaje" => "No hay pedidos disponibles"], JSON_PRETTY_PRINT);
+    } catch (Exception $e) {
+        echo json_encode(["error" => "Error al obtener pedidos: " . $e->getMessage()]);
+    }
+}
+
+public function agregarPedido() {
+
+    $data = json_decode(file_get_contents("php://input"));
+
+    if ($data) {
         try {
-            $pedidos = PedidosDAO::getAll();
-            echo json_encode($pedidos ?: ["mensaje" => "No hay pedidos disponibles"], JSON_PRETTY_PRINT);
-        } catch (Exception $e) {
-            echo json_encode(["error" => "Error al obtener pedidos: " . $e->getMessage()]);
-        }
-    }
-
-    public function agregarPedido() {
-        header("Access-Control-Allow-Origin: *");
-        header("Content-Type: application/json; charset=UTF-8");
-
-        $data = json_decode(file_get_contents("php://input"));
-
-        if ($data) {
-            try {
-                if (!isset($data->id_cliente, $data->fecha_pedido, $data->productos)) {
-                    echo json_encode(["error" => "Datos incompletos para el pedido."]);
-                    return;
-                }
-
-                $idPedido = PedidosDAO::insert($data->id_cliente, $data->fecha_pedido, $data->productos);
-
-                if ($idPedido) {
-                    echo json_encode(["success" => true, "id_pedido" => $idPedido]);
-                } else {
-                    echo json_encode(["error" => "Error al agregar el pedido."]);
-                }
-            } catch (Exception $e) {
-                echo json_encode(["error" => "Error al agregar pedido: " . $e->getMessage()]);
+            if (!isset($data->id_usuario, $data->fecha_pedido, $data->total)) {
+                echo json_encode(["error" => "Datos incompletos para el pedido."]);
+                return;
             }
-        } else {
-            echo json_encode(["error" => "Datos no válidos o faltantes."]);
+
+            $estado = isset($data->pendiente) && $data->pendiente ? 'pendiente' : 'completado';
+
+            $db = DataBase::connect();
+            $pedidosDAO = new PedidosDAO($db);
+
+            $idPedido = $pedidosDAO->insert($data->id_usuario, $data->fecha_pedido, $data->total, $estado);
+
+            if ($idPedido) {
+                echo json_encode(["success" => true, "id_pedido" => $idPedido]);
+            } else {
+                echo json_encode(["error" => "Error al agregar el pedido."]);
+            }
+        } catch (Exception $e) {
+            echo json_encode(["error" => "Error al agregar pedido: " . $e->getMessage()]);
         }
+    } else {
+        echo json_encode(["error" => "Datos no válidos o faltantes."]);
     }
+}
+
 
     // PLATOS
-    public function obtenerPlatos() {
-        header("Access-Control-Allow-Origin: *");
-        header("Content-Type: application/json; charset=UTF-8");
+public function obtenerPlatos() {
 
+    try {
+        $db = DataBase::connect();
+        $productosDAO = new ProductosDAO($db);
+
+        $platos = $productosDAO->obtenerTodos();
+        echo json_encode($platos ?: ["mensaje" => "No hay platos disponibles"], JSON_PRETTY_PRINT);
+    } catch (Exception $e) {
+        echo json_encode(["error" => "Error al obtener platos: " . $e->getMessage()]);
+    }
+}
+
+public function agregarPlato() {
+
+    $data = json_decode(file_get_contents("php://input"));
+
+    if ($data) {
         try {
-            $platos = PlatosDAO::getAll();
-            echo json_encode($platos ?: ["mensaje" => "No hay platos disponibles"], JSON_PRETTY_PRINT);
-        } catch (Exception $e) {
-            echo json_encode(["error" => "Error al obtener platos: " . $e->getMessage()]);
-        }
-    }
-
-    public function agregarPlato() {
-        header("Access-Control-Allow-Origin: *");
-        header("Content-Type: application/json; charset=UTF-8");
-
-        $data = json_decode(file_get_contents("php://input"));
-
-        if ($data) {
-            try {
-                if (!isset($data->nombre, $data->precio, $data->descripcion)) {
-                    echo json_encode(["error" => "Datos incompletos para el plato."]);
-                    return;
-                }
-
-                if (PlatosDAO::insert($data->nombre, $data->precio, $data->descripcion)) {
-                    echo json_encode(["success" => true, "message" => "Plato agregado con éxito."]);
-                } else {
-                    echo json_encode(["error" => "Error al agregar el plato."]);
-                }
-            } catch (Exception $e) {
-                echo json_encode(["error" => "Error al agregar plato: " . $e->getMessage()]);
+            if (!isset($data->nombre, $data->precio, $data->descripcion)) {
+                echo json_encode(["error" => "Datos incompletos para el plato."]);
+                return;
             }
-        } else {
-            echo json_encode(["error" => "Datos no válidos o faltantes."]);
+
+            $db = DataBase::connect();
+            $productosDAO = new ProductosDAO($db);
+
+            $resultado = $productosDAO->insertar(
+                $data->nombre,
+                $data->precio,
+                $data->descripcion,
+                $data->imagen_principal ?? null,
+                $data->imagen_secundaria ?? null
+            );
+
+            if ($resultado) {
+                echo json_encode(["success" => true, "message" => "Plato agregado con éxito."]);
+            } else {
+                echo json_encode(["error" => "Error al agregar el plato."]);
+            }
+        } catch (Exception $e) {
+            echo json_encode(["error" => "Error al agregar plato: " . $e->getMessage()]);
         }
+    } else {
+        echo json_encode(["error" => "Datos no válidos o faltantes."]);
     }
+}
+
 
     // RESERVAS
     public function obtenerReservas() {
-        header("Access-Control-Allow-Origin: *");
-        header("Content-Type: application/json; charset=UTF-8");
 
         try {
-            $reservas = ReservasDAO::getAll();
+            $db = DataBase::connect();               // Obtienes la conexión
+            $reservasDAO = new ReservasDAO($db);    // Creas el DAO con la conexión
+            $reservas = $reservasDAO->getAll();     // Obtienes las reservas
             echo json_encode($reservas ?: ["mensaje" => "No hay reservas disponibles"], JSON_PRETTY_PRINT);
         } catch (Exception $e) {
             echo json_encode(["error" => "Error al obtener reservas: " . $e->getMessage()]);
         }
     }
 
+
     public function agregarReserva() {
-        header("Access-Control-Allow-Origin: *");
-        header("Content-Type: application/json; charset=UTF-8");
+    $data = json_decode(file_get_contents("php://input"));
 
-        $data = json_decode(file_get_contents("php://input"));
-
-        if ($data) {
-            try {
-                if (!isset($data->id_usuario, $data->fecha, $data->hora, $data->num_personas)) {
-                    echo json_encode(["error" => "Datos incompletos para la reserva."]);
-                    return;
-                }
-
-                if (ReservasDAO::insert($data->id_usuario, $data->fecha, $data->hora, $data->num_personas)) {
-                    echo json_encode(["success" => true, "message" => "Reserva agregada con éxito."]);
-                } else {
-                    echo json_encode(["error" => "Error al agregar la reserva."]);
-                }
-            } catch (Exception $e) {
-                echo json_encode(["error" => "Error al agregar reserva: " . $e->getMessage()]);
+    if ($data) {
+        try {
+            if (!isset($data->id_usuario, $data->fecha, $data->hora, $data->num_personas)) {
+                echo json_encode(["error" => "Datos incompletos para la reserva."]);
+                return;
             }
-        } else {
-            echo json_encode(["error" => "Datos no válidos o faltantes."]);
+
+            $db = DataBase::connect();                         // Obtiene conexión
+            $reservasDAO = new ReservasDAO($db);               // Crea instancia DAO
+
+            // Opcionalmente puedes combinar fecha y hora si tu base de datos lo requiere
+            $fechaHora = $data->fecha . ' ' . $data->hora;
+
+            $reservaId = $reservasDAO->crearReserva(
+                $data->id_usuario,
+                $fechaHora,
+                $data->num_personas,
+                $data->comentarios ?? null
+            );
+
+            if ($reservaId) {
+                echo json_encode(["success" => true, "message" => "Reserva agregada con éxito.", "id" => $reservaId]);
+            } else {
+                echo json_encode(["error" => "Error al agregar la reserva."]);
+            }
+        } catch (Exception $e) {
+            echo json_encode(["error" => "Error al agregar reserva: " . $e->getMessage()]);
         }
+    } else {
+        echo json_encode(["error" => "Datos no válidos o faltantes."]);
     }
+}
+
+    
 }

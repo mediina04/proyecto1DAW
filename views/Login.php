@@ -1,3 +1,9 @@
+    <?php
+    include_once __DIR__ . '/../model/usuario.php';
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -10,10 +16,16 @@
 <body>
     <div class="contenedor">
         <div class="title">Login</div>
+            <?php if (isset($_GET['error'])): ?>
+                <div class="error-msg" style="color: red; margin-bottom: 1em;">
+                    <?php echo htmlspecialchars($_GET['error']); ?>
+                </div>
+            <?php endif; ?>
+
             <form action="index.php?controller=usuario&action=login" method="POST" class="login-form">
                 <div class="input-Log-Sign">
-                    <input type="text" name="username" id="username" required placeholder=" " value="<?php echo htmlspecialchars(isset($_GET['username']) ? $_GET['username'] : ''); ?>">
-                    <label for="username">Usuario</label>
+                    <input type="text" name="usuario" id="usuario" required placeholder=" " value="<?php echo htmlspecialchars($_GET['usuario'] ?? ''); ?>">
+                    <label for="usuario">Usuario</label>
                 </div>
                 <div class="input-Log-Sign">
                     <input type="password" name="password" id="password" required placeholder=" ">

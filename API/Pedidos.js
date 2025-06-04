@@ -1,15 +1,6 @@
-let pedidos = [
-    { id: 1, cliente: "Carlos López", fecha: "2025-01-20", total: 30 },
-    { id: 2, cliente: "Laura Martín", fecha: "2025-01-21", total: 50 }
-];
-
-let exchangeRates = {}; // Almacenará los tipos de cambio
-const API_KEY = 'TU_API_KEY'; // Sustituir con una clave válida
-
 // Obtener tasas de cambio
 async function fetchExchangeRates() {
     try {
-        const response = await fetch(`https://api.freecurrencyapi.com/v1/latest?apikey=${API_KEY}&base_currency=EUR`);
         const data = await response.json();
         exchangeRates = data.data;
     } catch (error) {
@@ -24,44 +15,51 @@ function convertirPrecio(montoEnEUR, monedaDestino) {
     return (montoEnEUR * tasa).toFixed(2) + " " + monedaDestino;
 }
 
-// Renderizar pedidos con conversión de moneda
-function renderizarPedidos() {
+// Renderizar pedidos
+function renderizarPedidos(pedidos) {
     const tablaCuerpo = document.getElementById('cuerpo-tabla-pedidos');
     tablaCuerpo.innerHTML = '';
-    const monedaSeleccionada = localStorage.getItem('selectedCurrency') || 'EUR';
-
     pedidos.forEach(pedido => {
         const fila = document.createElement('tr');
         fila.innerHTML = `
-            <td>${pedido.cliente}</td>
-            <td>${pedido.fecha}</td>
-            <td>${convertirPrecio(pedido.total, monedaSeleccionada)}</td>
+            <td>${pedido.nombre_cliente || pedido.cliente || ''}</td>
+            <td>${pedido.fecha || pedido.fecha_pedido || ''}</td>
+            <td>${parseFloat(pedido.total).toFixed(2)} €</td>
             <td>
-                <button onclick="editarPedido(${pedido.id})">Editar</button>
-                <button onclick="eliminarPedido(${pedido.id})">Eliminar</button>
+                <button onclick="editarPedido(${pedido.id_pedido})">Editar</button>
+                <button onclick="eliminarPedido(${pedido.id_pedido})">Eliminar</button>
             </td>
         `;
         tablaCuerpo.appendChild(fila);
     });
 }
 
-// Cambiar moneda y actualizar precios
-document.getElementById('currency-select').addEventListener('change', () => {
-    const selectedCurrency = document.getElementById('currency-select').value;
-    localStorage.setItem('selectedCurrency', selectedCurrency);
-    renderizarPedidos();
-});
+// Cargar pedidos desde la API
+function cargarPedidos() {
+    fetch('/proyecto1DAW/controller/ApiController.php?action=obtenerPedidos')
+        .then(res => res.json())
+        .then(pedidos => renderizarPedidos(pedidos))
+        .catch(err => console.error("Error al cargar pedidos:", err));
+}
 
 // Agregar un nuevo pedido
 function agregarPedido() {
-    const cliente = document.getElementById('nombre-cliente').value;
-    const fecha = document.getElementById('fecha-pedido').value;
+    const id_cliente = document.getElementById('id-cliente-pedido').value;
+    const fecha_pedido = document.getElementById('fecha-pedido').value;
     const total = parseFloat(document.getElementById('total-pedido').value);
 
-    if (cliente && fecha && total) {
-        pedidos.push({ id: Date.now(), cliente, fecha, total });
-        renderizarPedidos();
-        cerrarFormulario('formulario-agregar-pedido');
+    if (id_cliente && fecha_pedido && !isNaN(total)) {
+        fetch('/proyecto1DAW/controller/ApiController.php?action=agregarPedido', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_cliente, fecha_pedido, total })
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.message || data.error);
+            cargarPedidos();
+            cerrarFormulario('formulario-agregar-pedido');
+        });
     } else {
         alert("Por favor, completa todos los campos.");
     }
@@ -70,36 +68,53 @@ function agregarPedido() {
 // Eliminar pedido
 function eliminarPedido(id) {
     if (confirm("¿Estás seguro de que deseas eliminar este pedido?")) {
-        pedidos = pedidos.filter(pedido => pedido.id !== id);
-        renderizarPedidos();
+        fetch('/proyecto1DAW/controller/ApiController.php?action=eliminarPedido', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.message || data.error);
+            cargarPedidos();
+        });
     }
 }
 
-// Editar pedido
+// Editar pedido (mostrar datos en formulario)
 function editarPedido(id) {
-    const pedido = pedidos.find(p => p.id === id);
-    if (pedido) {
-        document.getElementById('nombre-cliente-editar').value = pedido.cliente;
-        document.getElementById('fecha-pedido-editar').value = pedido.fecha;
-        document.getElementById('total-pedido-editar').value = pedido.total;
-        document.getElementById('pedido-id-editar').value = pedido.id;
-        document.getElementById('formulario-editar-pedido').classList.remove('hidden');
-    }
+    fetch('/proyecto1DAW/controller/ApiController.php?action=obtenerPedidos')
+        .then(res => res.json())
+        .then(pedidos => {
+            const pedido = pedidos.find(p => p.id_pedido == id);
+            if (pedido) {
+                document.getElementById('id-cliente-pedido-editar').value = pedido.id_cliente;
+                document.getElementById('fecha-pedido-editar').value = pedido.fecha || pedido.fecha_pedido;
+                document.getElementById('total-pedido-editar').value = pedido.total;
+                document.getElementById('pedido-id-editar').value = pedido.id_pedido;
+                document.getElementById('formulario-editar-pedido').classList.remove('hidden');
+            }
+        });
 }
 
 // Guardar edición de un pedido
 function guardarEdicionPedido() {
-    const id = parseInt(document.getElementById('pedido-id-editar').value);
-    const cliente = document.getElementById('nombre-cliente-editar').value;
-    const fecha = document.getElementById('fecha-pedido-editar').value;
+    const id = document.getElementById('pedido-id-editar').value;
+    const id_cliente = document.getElementById('id-cliente-pedido-editar').value;
+    const fecha_pedido = document.getElementById('fecha-pedido-editar').value;
     const total = parseFloat(document.getElementById('total-pedido-editar').value);
 
-    const pedidoIndex = pedidos.findIndex(p => p.id === id);
-    if (pedidoIndex !== -1) {
-        pedidos[pedidoIndex] = { id, cliente, fecha, total };
-        renderizarPedidos();
+    fetch('/proyecto1DAW/controller/ApiController.php?action=actualizarPedido', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, id_cliente, fecha_pedido, total })
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message || data.error);
+        cargarPedidos();
         cerrarFormulario('formulario-editar-pedido');
-    }
+    });
 }
 
 // Mostrar formulario de agregar pedido
@@ -113,12 +128,4 @@ function cerrarFormulario(formularioId) {
 }
 
 // Inicializar la página
-document.addEventListener('DOMContentLoaded', async () => {
-    await fetchExchangeRates();
-    
-    // Restaurar la selección de moneda
-    const savedCurrency = localStorage.getItem('selectedCurrency') || 'EUR';
-    document.getElementById('currency-select').value = savedCurrency;
-
-    renderizarPedidos();
-});
+document.addEventListener('DOMContentLoaded', cargarPedidos);

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Administración</title>
-    <link rel="icon" href="Assets/IMG/ICONOS/HEADER/logo-polbeiro-head.svg" type="image/svg+xml">
+    <link rel="icon" href="/proyecto1DAW/Assets/IMG/ICONOS/HEADER/logo-polbeiro-head.svg" type="image/svg+xml">
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="Admin.css">
 </head>
@@ -29,6 +29,7 @@
         <div id="usuarios" class="section active">
             <h2>Gestión de Usuarios</h2>
 
+            <!-- Formulario para agregar usuario -->
             <div id="formulario-agregar-usuario" class="hidden">
                 <h3>Agregar Nuevo Usuario</h3>
                 <input type="text" id="nombre-usuario" placeholder="Nombre" required>
@@ -37,8 +38,22 @@
                     <option value="Administrador">Administrador</option>
                     <option value="Usuario">Usuario</option>
                 </select>
-                <button onclick="if (typeof agregarUsuario === 'function') agregarUsuario();">Agregar</button>
+                <button onclick="agregarUsuario()">Agregar</button>
                 <button onclick="cerrarFormulario('formulario-agregar-usuario')">Cancelar</button>
+            </div>
+
+            <!-- Formulario para editar usuario -->
+            <div id="formulario-editar-usuario" class="hidden">
+                <h3>Editar Usuario</h3>
+                <input type="hidden" id="usuario-id-editar">
+                <input type="text" id="nombre-usuario-editar" placeholder="Nombre" required>
+                <input type="email" id="email-usuario-editar" placeholder="Email" required>
+                <select id="rol-usuario-editar" required>
+                    <option value="Administrador">Administrador</option>
+                    <option value="Usuario">Usuario</option>
+                </select>
+                <button onclick="guardarEdicionUsuario()">Guardar</button>
+                <button onclick="cerrarFormulario('formulario-editar-usuario')">Cancelar</button>
             </div>
 
             <table id="tabla-usuarios">
@@ -64,6 +79,27 @@
         <div id="pedidos" class="section">
             <h2>Gestión de Pedidos</h2>
 
+            <!-- Formulario para agregar pedido -->
+            <div id="formulario-agregar-pedido" class="hidden">
+                <h3>Agregar Nuevo Pedido</h3>
+                <input type="text" id="id-cliente-pedido" placeholder="ID Cliente" required>
+                <input type="date" id="fecha-pedido" required>
+                <input type="number" id="total-pedido" placeholder="Total (€)" required>
+                <button onclick="agregarPedido()">Agregar</button>
+                <button onclick="cerrarFormulario('formulario-agregar-pedido')">Cancelar</button>
+            </div>
+
+            <!-- Formulario para editar pedido -->
+            <div id="formulario-editar-pedido" class="hidden">
+                <h3>Editar Pedido</h3>
+                <input type="hidden" id="pedido-id-editar">
+                <input type="text" id="id-cliente-pedido-editar" placeholder="ID Cliente" required>
+                <input type="date" id="fecha-pedido-editar" required>
+                <input type="number" id="total-pedido-editar" placeholder="Total (€)" required>
+                <button onclick="guardarEdicionPedido()">Guardar</button>
+                <button onclick="cerrarFormulario('formulario-editar-pedido')">Cancelar</button>
+            </div>
+
             <table id="tabla-pedidos">
                 <thead>
                     <tr>
@@ -87,6 +123,26 @@
         <div id="platos" class="section">
             <h2>Gestión de Platos</h2>
 
+            <!-- Formulario para agregar plato -->
+            <div id="formulario-agregar-plato" class="hidden">
+                <h3>Agregar Nuevo Plato</h3>
+                <input type="text" id="nombre-plato" placeholder="Nombre" required>
+                <input type="text" id="descripcion-plato" placeholder="Descripción" required>
+                <input type="number" id="precio-plato" placeholder="Precio (€)" step="0.01" required>
+                <button onclick="agregarPlato(event)">Agregar</button>
+                <button onclick="cerrarFormulario('formulario-agregar-plato')">Cancelar</button>
+            </div>
+
+            <!-- Formulario para editar plato -->
+            <div id="formulario-editar-plato" class="hidden" data-plato-id="">
+                <h3>Editar Plato</h3>
+                <input type="text" id="nombre-plato-editar" placeholder="Nombre" required>
+                <input type="text" id="descripcion-plato-editar" placeholder="Descripción" required>
+                <input type="number" id="precio-plato-editar" placeholder="Precio (€)" step="0.01" required>
+                <button onclick="guardarEdicionPlato(event)">Guardar</button>
+                <button onclick="cerrarFormulario('formulario-editar-plato')">Cancelar</button>
+            </div>
+
             <table id="tabla-platos">
                 <thead>
                     <tr>
@@ -109,6 +165,29 @@
         <!-- Sección Reservas -->
         <div id="reservas" class="section">
             <h2>Gestión de Reservas</h2>
+
+            <!-- Formulario para agregar reserva -->
+            <div id="formulario-agregar-reserva" class="hidden">
+                <h3>Agregar Nueva Reserva</h3>
+                <input type="text" id="id-usuario-reserva" placeholder="ID Usuario" required>
+                <input type="date" id="fecha-reserva" required>
+                <input type="time" id="hora-reserva" required>
+                <input type="number" id="personas-reserva" placeholder="Nº Personas" required>
+                <button onclick="agregarReserva()">Agregar</button>
+                <button onclick="cerrarFormulario('formulario-agregar-reserva')">Cancelar</button>
+            </div>
+
+            <!-- Formulario para editar reserva -->
+            <div id="formulario-editar-reserva" class="hidden">
+                <h3>Editar Reserva</h3>
+                <input type="hidden" id="reserva-id-editar">
+                <input type="text" id="id-usuario-reserva-editar" placeholder="ID Usuario" required>
+                <input type="date" id="fecha-reserva-editar" required>
+                <input type="time" id="hora-reserva-editar" required>
+                <input type="number" id="personas-reserva-editar" placeholder="Nº Personas" required>
+                <button onclick="guardarEdicionReserva()">Guardar</button>
+                <button onclick="cerrarFormulario('formulario-editar-reserva')">Cancelar</button>
+            </div>
 
             <table id="tabla-reservas">
                 <thead>
@@ -135,7 +214,6 @@
     <script src="Pedidos.js"></script>
     <script src="Platos.js"></script>
     <script src="Reservas.js"></script>
-    <script src="admin.js"></script>
 
     <script>
         // Funcionalidad para cambiar entre secciones

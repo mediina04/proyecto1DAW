@@ -12,10 +12,10 @@ class ReservaController {
         }
 
         // Recoger los datos del formulario
-        $nombre = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_STRING);
-        $telefono = filter_input(INPUT_POST, 'telefono', FILTER_SANITIZE_STRING);
-        $personas = filter_input(INPUT_POST, 'personas', FILTER_VALIDATE_INT);
-        $fecha_reserva = filter_input(INPUT_POST, 'fecha_reserva', FILTER_SANITIZE_STRING);
+        $nombre = filter_input(INPUT_POST, 'nombre', );
+        $telefono = filter_input(INPUT_POST, 'telefono',);
+        $personas = filter_input(INPUT_POST, 'personas',);
+        $fecha_reserva = filter_input(INPUT_POST, 'fecha_reserva',);
 
         // Validar la fecha con expresión regular (formato YYYY-MM-DD)
         if (!preg_match("/^\d{4}-\d{2}-\d{2}$/", $fecha_reserva)) {
@@ -30,7 +30,12 @@ class ReservaController {
 
             // Crear la reserva
             $reserva = new Reserva(null, $usuarioId, $fecha_reserva, $personas, null);
-            $reservaId = $reservaDAO->crearReserva($reserva);
+            $reservaId = $reservaDAO->crearReserva(
+    $reserva['id_usuario'], 
+    $reserva['fecha_reserva'], 
+    $reserva['cantidad_personas']
+);
+
 
             if ($reservaId) {
                 $_SESSION['success'] = "Reserva realizada con éxito.";
@@ -107,7 +112,7 @@ class ReservaController {
         }
 
         $id_reserva = filter_input(INPUT_POST, 'id_reserva', FILTER_VALIDATE_INT);
-        $fecha_reserva = filter_input(INPUT_POST, 'fecha_reserva', FILTER_SANITIZE_STRING);
+        $fecha_reserva = filter_input(INPUT_POST, 'fecha_reserva',);
         $personas = filter_input(INPUT_POST, 'personas', FILTER_VALIDATE_INT);
 
         // Validar la fecha con expresión regular (formato YYYY-MM-DD)

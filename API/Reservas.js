@@ -1,79 +1,116 @@
-// Datos iniciales de reservas (puedes reemplazar esto con una API o base de datos real)
-let reservas = [
-    { id: 1, cliente: "Iago Medina", fecha: "2025-01-22", personas: 4 },
-    { id: 2, cliente: "Irian Raso", fecha: "2025-01-23", personas: 2 }
-];
-
-// Función para renderizar la tabla de reservas
-function renderizarReservas() {
+// Renderizar reservas desde la base de datos
+function renderizarReservas(reservas) {
     const tablaCuerpo = document.getElementById('cuerpo-tabla-reservas');
-    tablaCuerpo.innerHTML = ''; // Limpiar contenido previo
-
+    tablaCuerpo.innerHTML = '';
     reservas.forEach(reserva => {
         const fila = document.createElement('tr');
         fila.innerHTML = `
-            <td>${reserva.cliente}</td>
+            <td>${reserva.nombre_cliente || reserva.cliente || ''}</td>
             <td>${reserva.fecha}</td>
-            <td>${reserva.personas}</td>
+            <td>${reserva.num_personas || reserva.personas}</td>
             <td>
-                <button onclick="editarReserva(${reserva.id})">Editar</button>
-                <button onclick="eliminarReserva(${reserva.id})">Eliminar</button>
+                <button onclick="editarReserva(${reserva.id_reserva})">Editar</button>
+                <button onclick="eliminarReserva(${reserva.id_reserva})">Eliminar</button>
             </td>
         `;
         tablaCuerpo.appendChild(fila);
     });
 }
 
-// Función para agregar una nueva reserva
-function agregarReserva() {
-    const cliente = document.getElementById('nombre-cliente-reserva').value;
-    const fecha = document.getElementById('fecha-reserva').value;
-    const personas = parseInt(document.getElementById('personas-reserva').value);
+// Cargar reservas desde la API
+function obtenerReservas() {
+    fetch('/proyecto1DAW/controller/ApiController.php?action=obtenerReservas')
+        .then(res => res.json())
+        .then(reservas => renderizarReservas(reservas))
+        .catch(err => console.error("Error al cargar reservas:", err));
+}
 
-    if (cliente && fecha && personas) {
-        const nuevaReserva = { id: Date.now(), cliente, fecha, personas };
-        reservas.push(nuevaReserva);
-        renderizarReservas();
-        cerrarFormulario('formulario-agregar-reserva');
+// Agregar reserva
+function agregarReserva() {
+    const id_usuario = document.getElementById('id-usuario-reserva').value;
+    const fecha = document.getElementById('fecha-reserva').value;
+    const hora = document.getElementById('hora-reserva').value;
+    const num_personas = parseInt(document.getElementById('personas-reserva').value);
+
+    if (id_usuario && fecha && hora && num_personas) {
+        fetch('/proyecto1DAW/controller/ApiController.php?action=agregarReserva', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_usuario, fecha, hora, num_personas })
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.message || data.error);
+            cargarReservas();
+            cerrarFormulario('formulario-agregar-reserva');
+        });
     } else {
         alert("Por favor, completa todos los campos.");
     }
 }
 
-// Función para eliminar una reserva
+// Eliminar reserva
 function eliminarReserva(id) {
     if (confirm("¿Estás seguro de que deseas eliminar esta reserva?")) {
-        reservas = reservas.filter(reserva => reserva.id !== id);
-        renderizarReservas();
+        fetch('/controller/ApiController.php?action=eliminarReserva', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.message || data.error);
+            cargarReservas();
+        });
     }
 }
 
-// Función para editar una reserva
+// Editar reserva (mostrar datos en formulario)
 function editarReserva(id) {
-    const reserva = reservas.find(r => r.id === id);
-    if (reserva) {
-        document.getElementById('nombre-cliente-reserva-editar').value = reserva.cliente;
-        document.getElementById('fecha-reserva-editar').value = reserva.fecha;
-        document.getElementById('personas-reserva-editar').value = reserva.personas;
-        document.getElementById('reserva-id-editar').value = reserva.id;
-
-        document.getElementById('formulario-editar-reserva').classList.remove('hidden');
-    }
+    fetch('/proyecto1DAW/controller/ApiController.php?action=obtenerReservas')
+        .then(res => res.json())
+        .then(reservas => {
+            const reserva = reservas.find(r => r.id_reserva == id);
+            if (reserva) {
+                document.getElementById('id-usuario-reserva-editar').value = reserva.id_usuario;
+                document.getElementById('fecha-reserva-editar').value = reserva.fecha;
+                document.getElementById('hora-reserva-editar').value = reserva.hora;
+                document.getElementById('personas-reserva-editar').value = reserva.num_personas;
+                document.getElementById('reserva-id-editar').value = reserva.id_reserva;
+                document.getElementById('formulario-editar-reserva').classList.remove('hidden');
+            }
+        });
 }
 
-// Función para guardar la edición de una reserva
+// Guardar edición de reserva
 function guardarEdicionReserva() {
-    const id = parseInt(document.getElementById('reserva-id-editar').value);
-    const cliente = document.getElementById('nombre-cliente-reserva-editar').value;
+    const id = document.getElementById('reserva-id-editar').value;
+    const id_usuario = document.getElementById('id-usuario-reserva-editar').value;
     const fecha = document.getElementById('fecha-reserva-editar').value;
-    const personas = parseInt(document.getElementById('personas-reserva-editar').value);
+    const hora = document.getElementById('hora-reserva-editar').value;
+    const num_personas = parseInt(document.getElementById('personas-reserva-editar').value);
 
-    const reservaIndex = reservas.findIndex(r => r.id === id);
-    if (reservaIndex !== -1) {
-        reservas[reservaIndex] = { id, cliente, fecha, personas };
-        renderizarReservas();
+    fetch('/proyecto1DAW/controller/ApiController.php?action=actualizarReserva', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, id_usuario, fecha, hora, num_personas })
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message || data.error);
+        cargarReservas();
         cerrarFormulario('formulario-editar-reserva');
-    }
+    });
+}
+
+// Mostrar formulario de agregar reserva
+function mostrarFormularioAgregarReserva() {
+    document.getElementById('formulario-agregar-reserva').classList.remove('hidden');
+}
+
+// Cerrar formularios
+function cerrarFormulario(formularioId) {
+    document.getElementById(formularioId).classList.add('hidden');
 }
 
 // Función para mostrar el formulario de agregar reserva
@@ -81,12 +118,5 @@ function mostrarFormularioAgregarReserva() {
     document.getElementById('formulario-agregar-reserva').classList.remove('hidden');
 }
 
-// Función para cerrar formularios
-function cerrarFormulario(formularioId) {
-    document.getElementById(formularioId).classList.add('hidden');
-}
-
 // Inicializar la tabla de reservas al cargar
-document.addEventListener('DOMContentLoaded', () => {
-    renderizarReservas();
-});
+document.addEventListener('DOMContentLoaded', cargarReservas);

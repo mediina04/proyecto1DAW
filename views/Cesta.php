@@ -4,18 +4,18 @@ session_start();
 require_once __DIR__ . '/../config/data_base.php';
 require_once __DIR__ . '/../model/ProductosDAO.php';
 require_once __DIR__ . '/../model/PedidosDAO.php';
+include_once __DIR__ . '/../model/usuario.php';
 
 // Mensajes predefinidos
 const ERROR_INVALID_ID = "ID de producto inválido.";
 const ERROR_NOT_FOUND = "Producto no encontrado.";
 const SUCCESS_REMOVE = "Producto eliminado de la cesta      .";
 
-$usuarioId = 1;
 
 // Lógica para actualizar la cantidad de un producto
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action'], $_GET['id_plato'], $_GET['accion']) && $_GET['action'] === 'update') {
     $id_plato = filter_input(INPUT_GET, 'id_plato', FILTER_VALIDATE_INT);
-    $accion = filter_input(INPUT_GET, 'accion', FILTER_SANITIZE_STRING);
+    $accion = filter_input(INPUT_GET, 'accion');
 
     if ($id_plato && in_array($accion, ['+', '-'])) {
         actualizarCantidad($id_plato, $accion);
@@ -41,22 +41,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_plato'])) {
 }
 
 function actualizarCantidad(int $id_plato, string $accion): void {
-    if (isset($_SESSION['carrito'][$id_plato])) {
-        $cantidad = $_SESSION['carrito'][$id_plato]['cantidad'];
+    if (!isset($_SESSION['carrito'][$id_plato])) {
+        setSessionMessage('error', ERROR_INVALID_ID);
+        return;
+    }
 
-        // Actualizar la cantidad según la acción
-        $cantidad = ($accion === '+') ? $cantidad + 1 : max(0, $cantidad - 1);
+    $cantidad = $_SESSION['carrito'][$id_plato]['cantidad'];
+    $cantidad = ($accion === '+') ? $cantidad + 1 : max(0, $cantidad - 1);
 
-        // Si la cantidad es 0, eliminar el producto del carrito
-        if ($cantidad <= 0) {
-            unset($_SESSION['carrito'][$id_plato]);
-            setSessionMessage('success', SUCCESS_REMOVE);
-        } else {
-            $_SESSION['carrito'][$id_plato]['cantidad'] = $cantidad;
-            $_SESSION['carrito'][$id_plato]['subtotal'] = $cantidad * $_SESSION['carrito'][$id_plato]['precio'];
-        }
+    if ($cantidad <= 0) {
+        unset($_SESSION['carrito'][$id_plato]);
+        setSessionMessage('success', SUCCESS_REMOVE);
+    } else {
+        $_SESSION['carrito'][$id_plato]['cantidad'] = $cantidad;
+        $_SESSION['carrito'][$id_plato]['subtotal'] = $cantidad * $_SESSION['carrito'][$id_plato]['precio'];
     }
 }
+
 
 function redirect(string $url): void {
     header("Location: $url");
@@ -176,7 +177,7 @@ if (!isset($_SESSION['last_regeneration']) || time() - $_SESSION['last_regenerat
                             <div class="quantity-controls">
                                 <a href="Cesta.php?action=update&id_plato=<?= htmlspecialchars($id_plato); ?>&accion=-" class="quantity-button">-</a>
                                 <input type="number" value="<?= htmlspecialchars($producto['cantidad']); ?>" min="1" class="quantity-input" readonly>
-                                <a href="Cesta.php?action=update&id_plato=<?= htmlspecialchars($id_plato); ?>&accion=+" class="quantity-button">+</a>
+                                <a href="Cesta.php?action=update&id_plato=<?= htmlspecialchars($id_plato); ?>&accion=%2B" class="quantity-button">+</a>
                             </div>
                             <form method="POST" action="Cesta.php" class="delete-btn-container">
                                 <input type="hidden" name="id_plato" value="<?= htmlspecialchars($id_plato); ?>">
@@ -192,7 +193,14 @@ if (!isset($_SESSION['last_regeneration']) || time() - $_SESSION['last_regenerat
         <div class="cart-summary">
             <p>Total: <span>&euro;<?= number_format($total, 2); ?></span></p>
             <p class="note">Impuestos incluidos.</p>
-            <a class="button-web" href="pedido_finalizado.php">FINALIZAR COMPRA</a>
+            <?php if (isset($_SESSION['usuario'])): ?>
+                <form method="post" action="index.php?controller=pedido&action=crear">
+                    <button type="submit" class="button-web">FINALIZAR COMPRA</button>
+                </form>
+            <?php else: ?>
+                <a href="Info-Usuario.php" class="button-web">INICIAR SESIÓN PARA COMPRAR</a>
+            <?php endif; ?>
+
         </div>
     <?php else: ?>
         <div class="empty-cart">

@@ -1,7 +1,7 @@
 <?php
 class Usuario {
     // Atributos privados
-    private $id;
+    private $id_usuario;
     private $usuario;
     private $nombre;
     private $apellido;
@@ -9,6 +9,7 @@ class Usuario {
     private $email;
     private $telefono;
     private $direccion;
+    private $rol;
 
     /**
      * Constructor para usuarios.
@@ -21,7 +22,8 @@ class Usuario {
         string $email,
         ?string $telefono = null,
         ?string $direccion = null,
-        ?int $id = null
+        ?int $id_usuario = null,
+        ?string $rol = null
     ) {
         $this->usuario = $usuario;
         $this->nombre = $nombre;
@@ -30,12 +32,13 @@ class Usuario {
         $this->email = $email;
         $this->telefono = $telefono;
         $this->direccion = $direccion;
-        $this->id = $id;
+        $this->id_usuario = $id_usuario;
+        $this->rol = $rol;
     }
 
     // Getters
-    public function getId(): ?int {
-        return $this->id;
+    public function getIdUsuario(): ?int {
+        return $this->id_usuario;
     }
     public function getUsuario(): string {
         return $this->usuario;
@@ -58,10 +61,13 @@ class Usuario {
     public function getDireccion(): ?string {
         return $this->direccion;
     }
+    public function getRol(): ?string {
+        return $this->rol;
+    }
 
-    // Setters (puedes añadir validaciones aquí si lo necesitas)
-    public function setId(int $id): void {
-        $this->id = $id;
+    // Setters
+    public function setIdUsuario(int $id_usuario): void {
+        $this->id_usuario = $id_usuario;
     }
     public function setUsuario(string $usuario): void {
         $this->usuario = $usuario;
@@ -83,6 +89,9 @@ class Usuario {
     }
     public function setDireccion(?string $direccion): void {
         $this->direccion = $direccion;
+    }
+    public function setRol(?string $rol): void {
+        $this->rol = $rol;
     }
 }
 ?>

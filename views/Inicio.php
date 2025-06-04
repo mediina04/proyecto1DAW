@@ -1,15 +1,26 @@
 <?php
+include_once __DIR__ . '/../model/usuario.php'; // <-- Añade esto
 require_once __DIR__ . '/../config/data_base.php';
 require_once __DIR__ . '/../model/ProductosDAO.php';
 require_once __DIR__ . '/../model/ReservasDAO.php';
 
-session_start(); // Iniciar la sesión si no está iniciada
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Crear la conexión con la base de datos
 $con = DataBase::connect();
 
 // Inicializar el carrito si no existe
 if (!isset($_SESSION['carrito'])) {
     $_SESSION['carrito'] = [];
+}
+    
+// Obtener el id del usuario logueado (corregido)
+if (isset($_SESSION['usuario']) && $_SESSION['usuario'] instanceof Usuario) {
+    $usuarioId = $_SESSION['usuario']->getIdUsuario();
+} else {
+    $usuarioId = null;
 }
 
 // Verificar si el formulario de añadir a la cesta ha sido enviado
@@ -74,7 +85,11 @@ if ($result && $result->num_rows > 0) {
 
 // Verificar si el formulario de reserva ha sido enviado
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['accion'])) {
-    $usuarioId = 1; // Simulando un usuario fijo
+    if ($usuarioId === null) {
+        // Si no hay usuario logueado, redirige a login
+        header("Location: Login.php");
+        exit;
+    }
 
     if ($_POST['accion'] == 'crear') {
         $nombre = $_POST['nombre'];
@@ -87,7 +102,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['accion'])) {
         $stmt->bind_param('isiss', $usuarioId, $fecha_reserva, $personas, $nombre, $telefono);
         $stmt->execute();
 
-
         $_SESSION['success'] = "Mesa reservada con éxito.";
         header('Location: Inicio.php');
         exit();
@@ -98,7 +112,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['accion'])) {
         $stmt = $con->prepare($query);
         $stmt->bind_param('i', $id_reserva);
         $stmt->execute();
-
 
         $_SESSION['success'] = "Reserva anulada.";
         header('Location: Inicio.php');
@@ -113,21 +126,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['accion'])) {
         $stmt->bind_param('sii', $fecha_reserva, $personas, $id_reserva);
         $stmt->execute();
 
-
         $_SESSION['success'] = "Reserva modificada con éxito.";
         header('Location: Inicio.php');
         exit();
     }
 }
 
-// Obtener la reserva activa para el usuario
-$query = "SELECT * FROM reservas WHERE id_usuario = ? ORDER BY fecha_reserva DESC LIMIT 1";
-$stmt = $con->prepare($query);
-$stmt->bind_param('i', $usuarioId);
-$stmt->execute();
-$reservasUsuario = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+// Obtener la reserva activa para el usuario (solo si hay usuario logueado)
+$reservasUsuario = [];
+if ($usuarioId !== null) {
+    $query = "SELECT * FROM reservas WHERE id_usuario = ? ORDER BY fecha_reserva DESC LIMIT 1";
+    $stmt = $con->prepare($query);
+    $stmt->bind_param('i', $usuarioId);
+    $stmt->execute();
+    $reservasUsuario = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+}
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -286,20 +300,14 @@ $reservasUsuario = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         <label for="hora">Fecha y Hora</label>
         <input type="datetime-local" name="hora" value="<?php echo htmlspecialchars(date('Y-m-d\TH:i', strtotime($reservasUsuario[0]['fecha_reserva']))); ?>" required>
     </div>
-
-    <!-- Campo para la cantidad de personas -->
     <div class="reserva-form">
         <label for="personas">Cantidad de personas</label>
         <input type="number" name="personas" min="1" value="<?php echo htmlspecialchars($reservasUsuario[0]['cantidad_personas']); ?>" required placeholder="">
     </div>
-
-    <!-- Campo para el nombre -->
     <div class="reserva-form">
         <label for="nombre">Nombre</label>
         <input type="text" name="nombre" value="<?php echo htmlspecialchars($reservasUsuario[0]['nombre']); ?>" required>
     </div>
-
-    <!-- Campo para el teléfono -->
     <div class="reserva-form">
         <label for="telefono">Teléfono</label>
         <input type="tel" name="telefono" value="<?php echo htmlspecialchars($reservasUsuario[0]['telefono']); ?>" required>
@@ -322,19 +330,19 @@ $reservasUsuario = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                 <input type="hidden" name="accion" value="crear">
 
                 <div class="reserva-form">
-                    <input type="text" name="nombre" value="<?php echo isset($_POST['nombre']) ? htmlspecialchars($_POST['nombre']) : ''; ?>" required placeholder="">
+                    <input type="text" name="nombre" required placeholder= "" value="<?php echo isset($_POST['nombre']) ? htmlspecialchars($_POST['nombre']) : ''; ?>">
                     <label for="name">Nombre</label>
                 </div>
                 <div class="reserva-form">
-                    <input type="tel" name="telefono" value="<?php echo isset($_POST['telefono']) ? htmlspecialchars($_POST['telefono']) : ''; ?>" required placeholder="">
+                    <input type="tel" name="telefono" value="<?php echo isset($_POST['telefono']) ? htmlspecialchars($_POST['telefono']) : ''; ?>" required>
                     <label for="phone">Teléfono</label>
                 </div>
                 <div class="reserva-form">
-                    <input type="number" name="personas" min="1" value="<?php echo isset($_POST['personas']) ? htmlspecialchars($_POST['personas']) : ''; ?>" required placeholder="">
+                    <input type="number" name="personas" min="1" value="<?php echo isset($_POST['personas']) ? htmlspecialchars($_POST['personas']) : ''; ?>" required>
                     <label for="people">Personas</label>
                 </div>
                 <div class="reserva-form">
-                    <input type="time" name="hora" value="<?php echo isset($_POST['hora']) ? htmlspecialchars($_POST['hora']) : ''; ?>" required placeholder="">
+                    <input type="time" name="hora" value="<?php echo isset($_POST['hora']) ? htmlspecialchars($_POST['hora']) : ''; ?>" required>
                     <label for="hora">Hora</label>
                 </div>
                 <button type="submit" class="button-web">RESERVAR</button>
